@@ -765,6 +765,8 @@ const SEED_CCRF = {"version":1,"ingressi":[{"id":"in_madi1","nome":"MADI 1 - FUT
 /* -------------------- Navigazione -------------------- */
 const VIEWS=[
   {id:'dashboard', ico:'📊', label:'Dashboard'},
+  {grp:'UNITÀ · REGIE'},
+  {id:'unita', ico:'🏢', label:'Unità / Regie'},
   {grp:'AUDIO · CCRF'},
   {id:'incroci', ico:'🎛️', label:'Quadro Incroci'},
   {id:'ccrf', ico:'🎚️', label:'Regie & Matrice'},
@@ -774,17 +776,28 @@ const VIEWS=[
 function buildNav(){
   const nav=$('#nav'); nav.innerHTML='';
   const cur=location.hash.slice(1)||'dashboard';
+  const mkLink=(id,ico,label,extra)=>{ const cnt=extra?null:navCount(id);
+    const active=(cur===id) || (id==='ccrf'&&cur.startsWith('ccrf/')) || (id==='unita'&&cur==='unita');
+    return el('a',{href:'#'+id, class:(active?'active':'')+(extra?' extra':'')},
+      el('span',{class:'ico'},ico), el('span',{},label), cnt!=null?el('span',{class:'cnt'},String(cnt)):null); };
   for(const it of VIEWS){
     if(it.grp){ nav.append(el('div',{class:'grp'},it.grp)); continue; }
-    const cnt=navCount(it.id);
-    const active=(cur===it.id || (it.id==='ccrf'&&cur.startsWith('ccrf/')));
-    nav.append(el('a',{href:'#'+it.id, class:(active?'active':'')},
-      el('span',{class:'ico'},it.ico), el('span',{},it.label),
-      cnt!=null?el('span',{class:'cnt'},String(cnt)):null));
+    nav.append(mkLink(it.id,it.ico,it.label));
+    if(it.id==='unita'){
+      for(const u of (DB.unita||[])){
+        const active=(cur==='unita/'+u._id);
+        nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
+          el('span',{class:'ico'},'🎙️'), el('span',{},u.nome||'Regia'),
+          el('span',{class:'cnt'},String((u.ingressi||[]).length+(u.uscite||[]).length+(u.patch||[]).length))));
+      }
+      nav.append(mkLink('nuova-unita','➕','Nuova unità…',true));
+    }
   }
 }
 function navCount(id){
-  if(!DB||!DB.ccrf)return null;
+  if(!DB)return null;
+  if(id==='unita')return (DB.unita||[]).length;
+  if(!DB.ccrf)return null;
   if(id==='incroci')return Object.keys(DB.ccrf.incroci||{}).length;
   if(id==='ccrf')return DB.ccrf.ingressi.length+DB.ccrf.uscite.length;
   return null;
@@ -795,6 +808,9 @@ function route(){
   buildNav();
   const c=$('#content'); c.innerHTML='';
   if(hash==='dashboard'){ $('#viewTitle').textContent='Dashboard'; viewDashboard(c); }
+  else if(hash==='unita'){ $('#viewTitle').textContent='Unità / Regie'; viewUnita(c); }
+  else if(hash==='nuova-unita'){ nuovaUnita(); }
+  else if(hash.startsWith('unita/')){ viewUnitaDetail(c, hash.slice(6)); }
   else if(hash==='incroci'){ $('#viewTitle').textContent='Quadro Incroci — Matrice CCRF'; viewIncroci(c); }
   else if(hash==='ccrf'){ $('#viewTitle').textContent='Regie & Matrice audio (CCRF)'; viewCCRF(c); }
   else if(hash.startsWith('ccrf/')){ viewCCRFDevice(c, hash.slice(5)); }
@@ -822,6 +838,7 @@ function viewDashboard(c){
     mk('Dispositivi ingresso', M.ingressi.length, nIn+' canali sorgente',null,'ccrf'),
     mk('Dispositivi uscita', M.uscite.length, nOut+' canali destinazione',null,'ccrf'),
     mk('Uscite instradate', M.uscite.reduce((a,g)=>a+g.canali.filter(oc=>M.incroci[g.id+'#'+oc.idx]).length,0), 'su '+nOut+' canali di uscita','#3b82f6','incroci'),
+    mk('Unità / Regie', (DB.unita||[]).length, (DB.unita||[]).reduce((a,u)=>a+unitaCount(u),0)+' voci (ingressi/uscite/patch)','#eab308','unita'),
   );
   c.append(cards);
   // riepilogo per dispositivo
@@ -841,6 +858,141 @@ function viewDashboard(c){
   };
   box.append(distr('Ingressi (sorgenti)', M.ingressi,'in'), distr('Uscite (destinazioni)', M.uscite,'out'));
   c.append(box);
+}
+
+/* ============================================================
+   UNITÀ · REGIE — ogni unità (regia) contiene i propri
+   INGRESSI, USCITE e PATCH audio. Sezione indipendente dal
+   Quadro Incroci / matrice CCRF.
+   ============================================================ */
+const UNITA_SCHEMA={
+  ingressi:{label:'Ingressi', ico:'🎙️', cols:[
+    {key:'nome',label:'Sorgente / Segnale'},{key:'tipo',label:'Tipo',list:'unitaTipi',w:'130px'},
+    {key:'connettore',label:'Connettore / Presa',w:'150px'},{key:'ch',label:'CH',w:'46px'},
+    {key:'ms',label:'Mono/Stereo',list:'unitaMS',w:'120px'},{key:'livello',label:'Livello',w:'100px'},{key:'note',label:'Note'}]},
+  uscite:{label:'Uscite', ico:'🔊', cols:[
+    {key:'nome',label:'Destinazione / Segnale'},{key:'tipo',label:'Tipo',list:'unitaTipi',w:'130px'},
+    {key:'connettore',label:'Connettore / Presa',w:'150px'},{key:'ch',label:'CH',w:'46px'},
+    {key:'ms',label:'Mono/Stereo',list:'unitaMS',w:'120px'},{key:'livello',label:'Livello',w:'100px'},{key:'note',label:'Note'}]},
+  patch:{label:'Patch audio', ico:'🔌', cols:[
+    {key:'porta',label:'Porta',w:'64px'},{key:'segnale',label:'Etichetta / Segnale'},
+    {key:'norm',label:'Normalizzazione',list:'unitaNorm',w:'150px'},{key:'destinazione',label:'Destinazione'},
+    {key:'note',label:'Note'},{key:'colore',label:'Colore',type:'color',w:'64px'}]},
+};
+const UNITA_KINDS=['ingressi','uscite','patch'];
+function unitaCount(u){ return (u.ingressi||[]).length+(u.uscite||[]).length+(u.patch||[]).length; }
+function findUnita(id){ return (DB.unita||[]).find(x=>x._id===id)||null; }
+
+function nuovaUnita(){
+  const nome=prompt('Nome della nuova unità / regia:','Regia');
+  if(nome===null){ location.hash='unita'; return; }
+  const u={_id:uid('unit_'), nome:(nome.trim()||'Regia'), descrizione:'', ingressi:[], uscite:[], patch:[]};
+  (DB.unita=DB.unita||[]).push(u); markDirty();
+  location.hash='unita/'+u._id;
+}
+
+function viewUnita(c){
+  DB.unita=DB.unita||[];
+  c.append(el('div',{class:'help',html:
+    'Le <b>Unità</b> sono le <b>regie</b> (o postazioni) dell\'impianto. Ogni unità contiene i suoi '+
+    '<b>ingressi</b>, <b>uscite</b> e <b>patch audio</b>, gestiti in modo indipendente dal '+
+    '<b>Quadro Incroci</b> della matrice CCRF. Crea un\'unità per documentare sorgenti, destinazioni e '+
+    'pannelli patch di ciascuna regia.'
+  }));
+  c.append(el('div',{class:'toolbar'}, el('button',{class:'btn primary',onclick:nuovaUnita},'➕ Nuova unità / regia')));
+  if(!DB.unita.length){ c.append(el('div',{class:'empty',style:'padding:20px'},'Nessuna unità: premi «➕ Nuova unità / regia» per crearne una.')); return; }
+  const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(260px,1fr))'});
+  for(const u of DB.unita){
+    const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='unita/'+u._id;
+    card.append(
+      el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🏢 '+(u.nome||'Regia')), el('div',{class:'b'},unitaCount(u)+' voci')),
+      u.descrizione?el('div',{class:'sub',style:'margin-top:6px'},u.descrizione):null,
+      el('div',{class:'chips',style:'margin-top:10px'},
+        el('span',{class:'tag'},'🎙️ '+(u.ingressi||[]).length+' ingressi'),
+        el('span',{class:'tag'},'🔊 '+(u.uscite||[]).length+' uscite'),
+        el('span',{class:'tag'},'🔌 '+(u.patch||[]).length+' patch')));
+    cards.append(card);
+  }
+  c.append(cards);
+}
+
+let unitaTab='ingressi';
+function viewUnitaDetail(c, id){
+  const u=findUnita(id);
+  if(!u){ location.hash='unita'; return; }
+  if(!UNITA_KINDS.includes(unitaTab)) unitaTab='ingressi';
+  $('#viewTitle').textContent='Unità · '+(u.nome||'Regia');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita'},'‹ Unità / Regie'));
+  // datalist condivise
+  c.append(el('datalist',{id:'unitaTipi'}, ...['Microfono','Linea','AES/EBU','Dante','MADI','Analogico','USB','Telefonico','Ritorno','N-1'].map(v=>el('option',{value:v}))));
+  c.append(el('datalist',{id:'unitaMS'}, ...['Mono','Stereo','Mono/Stereo'].map(v=>el('option',{value:v}))));
+  c.append(el('datalist',{id:'unitaNorm'}, ...['Normalizzato','Half-normal','Non normalizzato'].map(v=>el('option',{value:v}))));
+
+  const titleInp=el('input',{value:u.nome||'',style:'font-size:16px;font-weight:600;max-width:340px',
+    onchange:e=>{ u.nome=e.target.value.trim()||'Regia'; markDirty(); buildNav(); $('#viewTitle').textContent='Unità · '+u.nome; }});
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:22px'},'🏢'), titleInp,
+    el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>exportUnitaXLSX(u)},'⤓ Excel'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare l\'unità «'+(u.nome||'Regia')+'» e tutti i suoi dati?')){ DB.unita=DB.unita.filter(x=>x!==u); markDirty(); location.hash='unita'; } }},'🗑 Elimina unità')));
+  c.append(el('div',{class:'fld',style:'max-width:640px;margin-bottom:8px'},
+    el('label',{},'Descrizione / note unità'),
+    el('input',{value:u.descrizione||'',placeholder:'es. Regia radiofonica principale — piano 2',onchange:e=>{ u.descrizione=e.target.value; markDirty(); }})));
+
+  // tab
+  const tabs=el('div',{class:'toolbar'});
+  const area=el('div');
+  function renderArea(){ area.innerHTML=''; area.append(unitaTable(u, unitaTab, ()=>{ renderArea(); buildNav(); })); }
+  for(const k of UNITA_KINDS){
+    const sch=UNITA_SCHEMA[k];
+    tabs.append(el('button',{class:'btn sm'+(unitaTab===k?' primary':''),
+      onclick:()=>{ unitaTab=k; for(const b of tabs.children) b.classList.remove('primary'); tabs.children[UNITA_KINDS.indexOf(k)].classList.add('primary'); renderArea(); }},
+      sch.ico+' '+sch.label+' ('+(u[k]||[]).length+')'));
+  }
+  c.append(tabs, area);
+  renderArea();
+}
+
+function unitaTable(u, kind, reload){
+  const sch=UNITA_SCHEMA[kind]; u[kind]=u[kind]||[];
+  const wrap=el('div');
+  wrap.append(el('div',{class:'toolbar'},
+    el('button',{class:'btn sm',onclick:()=>{ const row={_id:uid('r_')}; if(kind==='patch') row.porta=String(u.patch.length+1); u[kind].push(row); markDirty(); reload(); }},'➕ Aggiungi riga'),
+    el('span',{class:'muted',style:'font-size:12px'},(u[kind].length)+' voci')));
+  const tw=el('div',{class:'tablewrap'});
+  const tbl=el('table');
+  tbl.append(el('thead',{},el('tr',{}, ...sch.cols.map(col=>el('th',{},col.label)), el('th',{},''))));
+  const tb=el('tbody');
+  if(!u[kind].length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(sch.cols.length+1)},'Nessuna voce — premi «➕ Aggiungi riga».')));
+  for(const row of u[kind]){
+    const tr=el('tr');
+    for(const col of sch.cols){
+      let inp;
+      if(col.type==='color'){
+        inp=el('input',{type:'color',value:row[col.key]||'#26385a',style:'width:44px;height:30px;padding:2px',
+          onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
+      } else {
+        inp=el('input',{value:row[col.key]||'',style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),
+          list:col.list||null, onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
+      }
+      tr.append(el('td',{style:col.w?'max-width:'+col.w:''},inp));
+    }
+    tr.append(el('td',{},el('button',{class:'btn sm danger rowbtn',title:'Elimina riga',
+      onclick:()=>{ u[kind]=u[kind].filter(x=>x!==row); markDirty(); reload(); }},'🗑')));
+    tb.append(tr);
+  }
+  tbl.append(tb); tw.append(tbl); wrap.append(tw);
+  return wrap;
+}
+
+function exportUnitaXLSX(u){
+  const sheets=[];
+  for(const kind of UNITA_KINDS){
+    const sch=UNITA_SCHEMA[kind]; const keys=sch.cols.map(c=>c.key), labels=sch.cols.map(c=>c.label);
+    sheets.push({name:sch.label.slice(0,31), rows:[labels, ...(u[kind]||[]).map(r=>keys.map(k=>r[k]==null?'':r[k]))]});
+  }
+  const bytes=XLSX.build(sheets);
+  downloadBytes('unita_'+String(u.nome||'regia').replace(/[^\w]+/g,'_')+'.xlsx', bytes, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Unità esportata in Excel');
 }
 
 /* ============================================================
@@ -1303,6 +1455,12 @@ function ensureCCRF(){
   }
   return changed;
 }
+function ensureUnita(){
+  let changed=false;
+  if(!DB.unita){ DB.unita=[]; changed=true; }
+  for(const u of DB.unita){ for(const k of ['ingressi','uscite','patch']) if(!u[k]){ u[k]=[]; changed=true; } }
+  return changed;
+}
 
 /* -------------------- Backup / Ripristino -------------------- */
 function download(name,text,type){ const b=new Blob([text],{type:type||'application/octet-stream'}); const u=URL.createObjectURL(b); const a=el('a',{href:u,download:name}); document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(u); }
@@ -1312,7 +1470,7 @@ function importJSON(){
   const inp=el('input',{type:'file',accept:'.json',style:'display:none',onchange:async e=>{
     const f=e.target.files[0]; if(!f)return; try{ const d=JSON.parse(await f.text());
       if(!d.ccrf){ toast('File non valido (manca la matrice CCRF)'); return; }
-      if(confirm('Sostituire i dati correnti con il file importato?')){ DB=d; ensureCCRF(); markDirty(); route(); toast('Dati importati'); }
+      if(confirm('Sostituire i dati correnti con il file importato?')){ DB=d; ensureCCRF(); ensureUnita(); markDirty(); route(); toast('Dati importati'); }
     }catch(err){ toast('Errore lettura file'); } }});
   document.body.append(inp); inp.click(); inp.remove();
 }
@@ -1341,7 +1499,8 @@ window.addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerC
 (async function init(){
   try{ await IDB.open(); }catch(e){}
   const src = await loadDB();
-  const seeded = ensureCCRF();
+  let seeded = ensureCCRF();
+  if(ensureUnita()) seeded=true;
   if(!location.hash) location.hash='dashboard';
   route(); renderDbStat();
   if(src==='seed') toast('Database vuoto: premi «📂 Cartella database» per crearlo/collegarlo (o apri AUDIO_database.json)');

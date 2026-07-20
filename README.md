@@ -46,6 +46,16 @@ Ogni canale ha: **canale**, **macchina** (segnale), **CH** (L/R/M), **mono/stere
 
 ## Funzioni principali
 
+- **🏢 Unità / Regie**: sezione per censire le **regie** (o postazioni) dell'impianto. Con
+  **➕ Nuova unità / regia** crei un'unità; ognuna ha un **nome**, una **descrizione** e tre
+  tabelle indipendenti gestite a schede:
+  - **🎙️ Ingressi** — sorgenti della regia (Sorgente/Segnale, Tipo, Connettore/Presa, CH, Mono/Stereo, Livello, Note)
+  - **🔊 Uscite** — destinazioni della regia (stessi campi)
+  - **🔌 Patch audio** — pannello patch (Porta, Etichetta/Segnale, Normalizzazione, Destinazione, Note, **Colore**)
+
+  Ogni tabella ha **aggiungi/elimina riga** ed editing in linea (con suggerimenti per Tipo,
+  Mono/Stereo e Normalizzazione); da ogni unità puoi fare l'**export Excel** (fogli Ingressi,
+  Uscite, Patch). Questa sezione è **indipendente** dal Quadro Incroci / matrice CCRF.
 - **🎛️ Quadro Incroci (tipo Dante Controller)**: gli **ingressi** (sorgenti) sono sulle
   **colonne**, le **uscite** (destinazioni) sulle **righe**. Ogni dispositivo è
   **comprimibile/espandibile**: da compresso occupa una sola colonna/riga verticale con il
