@@ -830,6 +830,8 @@ function schedeGroups(dir){ const out=[];
     if(s.dir!==dir) continue; const canali=s.canali||[]; if(!canali.length) continue;
     out.push({id:s._id, nome:s.nome, unitNome:u.nome, macNome:m.nome, tipo:s.tipo||'', canali}); }
   return out; }
+// etichetta del raggruppamento nel Quadro Incroci: NOME MACCHINA anteposto al nome scheda
+function grpLabel(g){ return (g.macNome? (g.macNome+' · '):'')+g.nome; }
 function schedeOf(m,dir){ return (m.schede||[]).filter(s=>s.dir===dir); }
 function macCanali(m){ return (m.schede||[]).reduce((a,s)=>a+(s.canali||[]).length,0); }
 function unitChanCount(u){ return (u.macchine||[]).reduce((a,m)=>a+macCanali(m),0); }
@@ -991,13 +993,13 @@ function viewIncroci(c){
       if(exp){
         const chans=inChansVis(g); const span=Math.max(chans.length,1);
         rDev.append(el('th',{class:'dev',colspan:String(span),title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.delete(g.id); render(); }},
-          tipoDot(g.tipo),'▾ '+g.nome+(cc?' ':''), cc?el('span',{class:'cc'},'('+cc+')'):null));
+          tipoDot(g.tipo),'▾ '+grpLabel(g)+(cc?' ':''), cc?el('span',{class:'cc'},'('+cc+')'):null));
         if(!chans.length) rCh.append(el('th',{class:'ch'}));
         for(const ch of chans){ const dst=DB.incroci[ch._id]; const df=dst?chFind(dst):null;
           rCh.append(el('th',{class:'ch','data-in':ch._id,title:chLabelFull(ch._id)+(df?('  →  '+chLabelFull(dst)):''),onclick:()=>highlightCol(ch._id)}, el('div',{},chLabel(ch)||'—'))); }
       } else {
         rDev.append(el('th',{class:'devcol',rowspan:'2',title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo)+' — clic per espandere',style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.add(g.id); render(); }},
-          el('div',{}, tipoDot(g.tipo),'▸ '+g.nome+(cc?(' ('+cc+')'):''))));
+          el('div',{}, tipoDot(g.tipo),'▸ '+grpLabel(g)+(cc?(' ('+cc+')'):''))));
       }
     }
     thead.append(rDev,rCh); table.append(thead);
@@ -1007,7 +1009,7 @@ function viewIncroci(c){
       const trDev=el('tr',{class:'devrow'});
       const cc=g.canali.reduce((a,oc)=>a+((srcByOut[oc._id]||[]).length),0); // ingressi alimentati da questa scheda
       trDev.append(el('th',{title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-top-color:'+tipoColor(g.tipo),onclick:()=>{ exp?xpUI.expOut.delete(g.id):xpUI.expOut.add(g.id); render(); }},
-        tipoDot(g.tipo),(exp?'▾ ':'▸ ')+g.nome+' ', cc?el('span',{class:'cc'},'('+cc+')'):null));
+        tipoDot(g.tipo),(exp?'▾ ':'▸ ')+grpLabel(g)+' ', cc?el('span',{class:'cc'},'('+cc+')'):null));
       const outSet=new Set(g.canali.map(oc=>oc._id));
       for(const col of cols){
         if(col.type==='ch'){ const n=countBetween(outSet,[col.id]); trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); render(); })); }
