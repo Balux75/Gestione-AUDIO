@@ -764,8 +764,8 @@ const SEED_CCRF = {"version":1,"ingressi":[{"id":"in_madi1","nome":"MADI 1 - FUT
 
 /* -------------------- Navigazione -------------------- */
 /* ============================================================
-   MODELLO: Unità operativa → Macchine → Ingressi/Uscite.
-   Gli ingressi/uscite di ogni macchina popolano il Quadro Incroci.
+   MODELLO: Unità operativa → Macchine → Schede (ingresso/uscita)
+   → Canali. Le schede di ingresso/uscita popolano il Quadro Incroci.
    Instradamenti in DB.incroci = { idCanaleUscita: idCanaleIngresso }.
    ============================================================ */
 const TIPOLOGIE=[
@@ -779,6 +779,9 @@ function tipoDef(id){ return TIPOLOGIE.find(t=>t.id===id)||null; }
 function tipoColor(t){ const d=tipoDef(t); return d?d.color:'var(--line)'; }
 function tipoLabel(t){ const d=tipoDef(t); return d?d.label:'—'; }
 function tipoDot(t){ return el('span',{style:'display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;background:'+tipoColor(t)}); }
+// colori delle schede per direzione (ingresso / uscita)
+const DIR_META={ in:{label:'Ingresso', plural:'Schede di ingresso', color:'#0ea5e9', ico:'🎙️'},
+                 out:{label:'Uscita', plural:'Schede di uscita', color:'#f97316', ico:'🔊'} };
 
 // colonne canale (schema matrice)
 const CH_COLS=[
@@ -802,7 +805,6 @@ const CCRF_MACHINES=[
   {inId:'in_aes', outId:'out_aes', nome:'AES · Locale',               tipo:'digitale'},
   {inId:'in_analog', outId:'out_analog', nome:'Analogico · Locale',   tipo:'analogico'},
 ];
-// colonne (0-indexed) del foglio MATRICE CCRF per ogni coppia di dispositivi
 const CCRF_COLS=[
   ['in_madi1','out_madi1',[1,2,3,4,5,6]],['in_madi2','out_madi2',[8,9,10,11,12,13]],
   ['in_madi3','out_madi3',[15,16,17,18,19,20]],['in_madi4','out_madi4',[22,23,24,25,26,27]],
@@ -813,20 +815,24 @@ const CCRF_COLS=[
 
 /* -------------------- helper modello -------------------- */
 function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',note:'',slot:''}, o||{}); }
+function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
+function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
 function findUnita(id){ return (DB.unita||[]).find(u=>u._id===id)||null; }
 function findMacchina(uid_, mid){ const u=findUnita(uid_); return u?{u, m:(u.macchine||[]).find(x=>x._id===mid)||null}:{u:null,m:null}; }
-function chFind(id){ for(const u of (DB.unita||[])) for(const m of (u.macchine||[])){
-  for(const c of (m.ingressi||[])) if(c._id===id) return {u,m,c,io:'ingressi'};
-  for(const c of (m.uscite||[])) if(c._id===id) return {u,m,c,io:'uscite'}; } return null; }
+function findScheda(uid_, mid, sid){ const {u,m}=findMacchina(uid_,mid); return {u,m, s:m?(m.schede||[]).find(x=>x._id===sid)||null:null}; }
+function chFind(id){ for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[]))
+  for(const c of (s.canali||[])) if(c._id===id) return {u,m,s,c}; return null; }
 function chLabel(c){ if(!c)return ''; const n=c.macchina||c.canale||''; return n+(c.ch?(' '+c.ch):''); }
-function chLabelFull(id){ const f=chFind(id); if(!f)return ''; return f.u.nome+' · '+f.m.nome+' · '+chLabel(f.c); }
-// gruppi per il Quadro Incroci: una macchina = un gruppo (solo se ha canali in io)
-function machineGroups(io){ const out=[];
-  for(const u of (DB.unita||[])) for(const m of (u.macchine||[])){ const canali=m[io]||[]; if(!canali.length) continue;
-    out.push({id:m._id, nome:m.nome, unitNome:u.nome, tipo:m.tipo||'', canali}); }
+function chLabelFull(id){ const f=chFind(id); if(!f)return ''; return f.u.nome+' · '+f.m.nome+' · '+f.s.nome+' · '+chLabel(f.c); }
+// gruppi per il Quadro Incroci: una scheda = un gruppo
+function schedeGroups(dir){ const out=[];
+  for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){
+    if(s.dir!==dir) continue; const canali=s.canali||[]; if(!canali.length) continue;
+    out.push({id:s._id, nome:s.nome, unitNome:u.nome, macNome:m.nome, tipo:s.tipo||'', canali}); }
   return out; }
-function macCount(m){ return (m.ingressi||[]).length+(m.uscite||[]).length; }
-function unitChanCount(u){ return (u.macchine||[]).reduce((a,m)=>a+macCount(m),0); }
+function schedeOf(m,dir){ return (m.schede||[]).filter(s=>s.dir===dir); }
+function macCanali(m){ return (m.schede||[]).reduce((a,s)=>a+(s.canali||[]).length,0); }
+function unitChanCount(u){ return (u.macchine||[]).reduce((a,m)=>a+macCanali(m),0); }
 
 /* -------------------- Navigazione -------------------- */
 const VIEWS=[
@@ -842,7 +848,7 @@ function buildNav(){
   const nav=$('#nav'); nav.innerHTML='';
   const cur=location.hash.slice(1)||'dashboard';
   const mkLink=(id,ico,label,extra,pad)=>{ const cnt=extra?null:navCount(id);
-    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')));
+    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')));
     return el('a',{href:'#'+id, class:(active?'active':''), style:pad?'padding-left:'+pad:''},
       el('span',{class:'ico'},ico), el('span',{},label), cnt!=null?el('span',{class:'cnt'},String(cnt)):null); };
   for(const it of VIEWS){
@@ -850,7 +856,7 @@ function buildNav(){
     nav.append(mkLink(it.id,it.ico,it.label));
     if(it.id==='unita'){
       for(const u of (DB.unita||[])){
-        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/');
+        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/');
         nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
           el('span',{class:'ico'},'🏢'), el('span',{},u.nome||'Unità'),
           el('span',{class:'cnt'},String((u.macchine||[]).length))));
@@ -874,6 +880,7 @@ function route(){
   else if(hash==='incroci'){ $('#viewTitle').textContent='Quadro Incroci'; viewIncroci(c); }
   else if(hash==='unita'){ $('#viewTitle').textContent='Unità operative'; viewUnita(c); }
   else if(hash==='nuova-unita'){ nuovaUnita(); }
+  else if(hash.startsWith('scheda/')){ const [,uid_,mid,sid]=hash.split('/'); viewScheda(c, uid_, mid, sid); }
   else if(hash.startsWith('macchina/')){ const [,uid_,mid]=hash.split('/'); viewMacchina(c, uid_, mid); }
   else if(hash.startsWith('unita/')){ viewUnitaDetail(c, hash.slice(6)); }
   else if(hash==='backup'){ $('#viewTitle').textContent='Backup / Ripristino'; viewBackup(c); }
@@ -889,49 +896,46 @@ function viewDashboard(c){
     (hasFS?'':'<br><b>Attenzione:</b> questo browser non supporta il salvataggio diretto su file — usa <b>Microsoft Edge</b> o <b>Chrome</b>, oppure la sezione <b>Backup</b>.')
   }));
   const nMac=(DB.unita||[]).reduce((a,u)=>a+(u.macchine||[]).length,0);
-  const nIn=machineGroups('ingressi').reduce((a,g)=>a+g.canali.length,0);
-  const nOut=machineGroups('uscite').reduce((a,g)=>a+g.canali.length,0);
+  const nIn=schedeGroups('in').reduce((a,g)=>a+g.canali.length,0);
+  const nOut=schedeGroups('out').reduce((a,g)=>a+g.canali.length,0);
   const nCross=Object.keys(DB.incroci||{}).length;
   const cards=el('div',{class:'cards'});
   const mk=(k,v,sub,color,go)=>{ const card=el('div',{class:'card'},el('div',{class:'k'},k),el('div',{class:'v',style:color?'color:'+color:''},String(v)),sub?el('div',{class:'sub'},sub):null); if(go){card.style.cursor='pointer';card.onclick=()=>location.hash=go;} return card; };
   cards.append(
     mk('Incroci audio attivi', nCross, 'clic per aprire il Quadro Incroci','#22c55e','incroci'),
     mk('Unità operative', (DB.unita||[]).length, nMac+' macchine totali','#eab308','unita'),
-    mk('Canali di ingresso', nIn, 'sorgenti verso il quadro incroci','#3b82f6','incroci'),
-    mk('Canali di uscita', nOut, 'destinazioni del quadro incroci','#a855f7','incroci'),
+    mk('Canali di ingresso', nIn, 'schede di ingresso','#0ea5e9','incroci'),
+    mk('Canali di uscita', nOut, 'schede di uscita','#f97316','incroci'),
   );
   c.append(cards);
 }
 
 /* ============================================================
    QUADRO INCROCI — matrice audio (tipo "Dante Controller")
-   Colonne = ingressi delle macchine; righe = uscite. Un incrocio
-   instrada un ingresso su un'uscita (una sola sorgente per uscita).
+   Colonne = schede di ingresso; righe = schede di uscita.
    ============================================================ */
 const xpUI = { expIn:new Set(), expOut:new Set(), qIn:'', qOut:'', onlyActive:false, tipoIn:'', tipoOut:'' };
 function grpMatch(g,q){ if(!q)return true; q=q.toLowerCase();
-  if((g.nome+' '+g.unitNome).toLowerCase().includes(q))return true;
+  if((g.nome+' '+g.unitNome+' '+g.macNome).toLowerCase().includes(q))return true;
   return g.canali.some(c=>chMatch(c,q)); }
 function chMatch(c,q){ return [c.canale,c.macchina,c.ch,c.note,c.slot].some(v=>String(v||'').toLowerCase().includes(q)); }
 
 function viewIncroci(c){
   const nCross=()=>Object.keys(DB.incroci||{}).length;
-  if(!machineGroups('ingressi').length && !machineGroups('uscite').length){
-    c.append(el('div',{class:'help'},'Nessun canale nel Quadro Incroci. Crea un\'<b>Unità operativa</b>, poi delle <b>macchine</b> con i loro ingressi e uscite: appariranno qui.'));
+  if(!schedeGroups('in').length && !schedeGroups('out').length){
+    c.append(el('div',{class:'help'},'Nessun canale nel Quadro Incroci. Crea un\'<b>Unità operativa</b>, una <b>macchina</b> e delle <b>schede</b> di ingresso/uscita: appariranno qui.'));
     c.append(el('button',{class:'btn primary',onclick:()=>location.hash='unita'},'🏢 Vai alle Unità operative'));
     return;
   }
   c.append(el('div',{class:'help',html:
     '<b>Quadro Incroci</b> — matrice di smistamento audio in stile <i>Dante Controller</i>. '+
-    'Le <b>colonne</b> sono gli <b>ingressi</b> delle macchine, le <b>righe</b> le <b>uscite</b>. '+
-    'Clicca l\'intestazione di una macchina per <b>espanderla/comprimerla</b>; con entrambi i lati espansi '+
-    'clicca la casella all\'incrocio per <b>instradare</b>. Ogni uscita riceve <b>una sola</b> sorgente (riclicca per staccare). '+
-    'I dati provengono dalle <b>macchine</b> delle unità: ogni modifica lì si riflette qui.'
+    'Le <b>colonne</b> sono le <b>schede di ingresso</b>, le <b>righe</b> le <b>schede di uscita</b> delle macchine. '+
+    'Clicca l\'intestazione di una scheda per <b>espanderla/comprimerla</b>; con entrambi i lati espansi '+
+    'clicca la casella all\'incrocio per <b>instradare</b>. Ogni uscita riceve <b>una sola</b> sorgente (riclicca per staccare).'
   }));
-
   const bar=el('div',{class:'xp-toolbar'});
   const stat=el('span',{class:'xp-stat'});
-  const upStat=()=>stat.innerHTML='Incroci attivi: <b>'+nCross()+'</b> · ingressi '+machineGroups('ingressi').reduce((a,g)=>a+g.canali.length,0)+' · uscite '+machineGroups('uscite').reduce((a,g)=>a+g.canali.length,0);
+  const upStat=()=>stat.innerHTML='Incroci attivi: <b>'+nCross()+'</b> · ingressi '+schedeGroups('in').reduce((a,g)=>a+g.canali.length,0)+' · uscite '+schedeGroups('out').reduce((a,g)=>a+g.canali.length,0);
   const qIn=el('input',{class:'search',style:'max-width:150px',placeholder:'🔎 ingressi…',value:xpUI.qIn,oninput:e=>{xpUI.qIn=e.target.value;render();}});
   const qOut=el('input',{class:'search',style:'max-width:150px',placeholder:'🔎 uscite…',value:xpUI.qOut,oninput:e=>{xpUI.qOut=e.target.value;render();}});
   const onlyA=el('label',{style:'display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)'},
@@ -962,8 +966,8 @@ function viewIncroci(c){
   const scroll=el('div',{class:'xp-scroll'}); c.append(scroll);
 
   function render(){ buildNav(); upStat(); scroll.innerHTML=''; scroll.append(buildMatrix()); }
-  function inGroupsVis(){ return machineGroups('ingressi').filter(g=>grpMatch(g,xpUI.qIn) && (!xpUI.tipoIn||g.tipo===xpUI.tipoIn)); }
-  function outGroupsVis(){ return machineGroups('uscite').filter(g=>grpMatch(g,xpUI.qOut) && (!xpUI.tipoOut||g.tipo===xpUI.tipoOut)); }
+  function inGroupsVis(){ return schedeGroups('in').filter(g=>grpMatch(g,xpUI.qIn) && (!xpUI.tipoIn||g.tipo===xpUI.tipoIn)); }
+  function outGroupsVis(){ return schedeGroups('out').filter(g=>grpMatch(g,xpUI.qOut) && (!xpUI.tipoOut||g.tipo===xpUI.tipoOut)); }
   function inChansVis(g){ return g.canali.filter(c=>!xpUI.qIn || chMatch(c,xpUI.qIn) || g.nome.toLowerCase().includes(xpUI.qIn.toLowerCase())); }
   function outChansVis(g){ let cs=g.canali.filter(c=>!xpUI.qOut || chMatch(c,xpUI.qOut) || g.nome.toLowerCase().includes(xpUI.qOut.toLowerCase()));
     if(xpUI.onlyActive) cs=cs.filter(c=>DB.incroci[c._id]); return cs; }
@@ -975,19 +979,19 @@ function viewIncroci(c){
     for(const g of inGroups){ if(xpUI.expIn.has(g.id)){ for(const ch of inChansVis(g)) cols.push({type:'ch',g,ch,id:ch._id}); } else cols.push({type:'agg',g}); }
     const table=el('table',{class:'xp'});
     const thead=el('thead'); const rDev=el('tr'); const rCh=el('tr');
-    rDev.append(el('th',{class:'corner',rowspan:'2',html:'<b>USCITE \\ INGRESSI</b><small>clic macchina = espandi/comprimi · clic incrocio = instrada</small>'}));
+    rDev.append(el('th',{class:'corner',rowspan:'2',html:'<b>USCITE \\ INGRESSI</b><small>clic scheda = espandi/comprimi · clic incrocio = instrada</small>'}));
     for(const g of inGroups){
       const exp=xpUI.expIn.has(g.id);
       const inIds=new Set(g.canali.map(c=>c._id));
       const cc=Object.values(DB.incroci).filter(s=>inIds.has(s)).length;
       if(exp){
         const chans=inChansVis(g); const span=Math.max(chans.length,1);
-        rDev.append(el('th',{class:'dev',colspan:String(span),title:g.unitNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.delete(g.id); render(); }},
+        rDev.append(el('th',{class:'dev',colspan:String(span),title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.delete(g.id); render(); }},
           tipoDot(g.tipo),'▾ '+g.nome+(cc?' ':''), cc?el('span',{class:'cc'},'('+cc+')'):null));
         if(!chans.length) rCh.append(el('th',{class:'ch'}));
         for(const ch of chans) rCh.append(el('th',{class:'ch','data-in':ch._id,title:chLabelFull(ch._id),onclick:()=>highlightCol(ch._id)}, el('div',{},chLabel(ch)||'—')));
       } else {
-        rDev.append(el('th',{class:'devcol',rowspan:'2',title:g.unitNome+' · '+g.nome+' · '+tipoLabel(g.tipo)+' — clic per espandere',style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.add(g.id); render(); }},
+        rDev.append(el('th',{class:'devcol',rowspan:'2',title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo)+' — clic per espandere',style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.add(g.id); render(); }},
           el('div',{}, tipoDot(g.tipo),'▸ '+g.nome+(cc?(' ('+cc+')'):''))));
       }
     }
@@ -997,7 +1001,7 @@ function viewIncroci(c){
       const exp=xpUI.expOut.has(g.id); const outChans=exp?outChansVis(g):[];
       const trDev=el('tr',{class:'devrow'});
       const cc=g.canali.filter(oc=>DB.incroci[oc._id]).length;
-      trDev.append(el('th',{title:g.unitNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-top-color:'+tipoColor(g.tipo),onclick:()=>{ exp?xpUI.expOut.delete(g.id):xpUI.expOut.add(g.id); render(); }},
+      trDev.append(el('th',{title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-top-color:'+tipoColor(g.tipo),onclick:()=>{ exp?xpUI.expOut.delete(g.id):xpUI.expOut.add(g.id); render(); }},
         tipoDot(g.tipo),(exp?'▾ ':'▸ ')+g.nome+' ', cc?el('span',{class:'cc'},'('+cc+')'):null));
       const outAllIds=g.canali.map(oc=>oc._id);
       for(const col of cols){
@@ -1038,9 +1042,9 @@ function viewIncroci(c){
     if(on&&cell){ cell.classList.add('hl'); scroll.querySelectorAll('td.xp[data-in="'+cssq(inId)+'"]').forEach(td=>td.classList.add('chl')); } }
   function cssq(s){ return String(s).replace(/(["\\])/g,'\\$1'); }
   function exportIncroci(){
-    const rows=[['USCITA','Unità/Macchina uscita','CH','INGRESSO','Unità/Macchina ingresso','CH']];
+    const rows=[['USCITA','Unità/Macchina/Scheda uscita','CH','INGRESSO','Unità/Macchina/Scheda ingresso','CH']];
     for(const oid in DB.incroci){ const of=chFind(oid), inf=chFind(DB.incroci[oid]); if(!of)continue;
-      rows.push([of.c.macchina||of.c.canale, of.u.nome+' · '+of.m.nome, of.c.ch||'', inf?(inf.c.macchina||inf.c.canale):'', inf?inf.u.nome+' · '+inf.m.nome:'', inf?inf.c.ch||'':'']); }
+      rows.push([of.c.macchina||of.c.canale, of.u.nome+' · '+of.m.nome+' · '+of.s.nome, of.c.ch||'', inf?(inf.c.macchina||inf.c.canale):'', inf?inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome:'', inf?inf.c.ch||'':'']); }
     if(rows.length===1){ toast('Nessun incrocio attivo'); return; }
     downloadBytes('quadro_incroci_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build([{name:'Incroci',rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     toast('Incroci esportati ('+(rows.length-1)+')');
@@ -1049,7 +1053,7 @@ function viewIncroci(c){
 }
 
 /* ============================================================
-   UNITÀ OPERATIVE → MACCHINE → Ingressi/Uscite
+   UNITÀ → MACCHINE → SCHEDE (ingresso/uscita) → CANALI
    ============================================================ */
 function nuovaUnita(){
   const nome=prompt('Nome della nuova unità operativa:','Regia');
@@ -1060,20 +1064,18 @@ function nuovaUnita(){
 function viewUnita(c){
   DB.unita=DB.unita||[];
   c.append(el('div',{class:'help',html:
-    'Le <b>Unità operative</b> sono le regie/postazioni dell\'impianto. Ogni unità contiene delle <b>macchine</b>; '+
-    'ogni macchina ha i suoi <b>ingressi</b> e <b>uscite</b> che <b>popolano il Quadro Incroci</b>.'}));
+    'Le <b>Unità operative</b> sono le regie/postazioni dell\'impianto. Ogni unità contiene delle <b>macchine</b> '+
+    '(es. la <b>MATRICE CENTRALIZZATA</b> dentro l\'unità CCRF); ogni macchina ha delle <b>schede di ingresso</b> e '+
+    'di <b>uscita</b> che <b>popolano il Quadro Incroci</b>.'}));
   c.append(el('div',{class:'toolbar'}, el('button',{class:'btn primary',onclick:nuovaUnita},'➕ Nuova unità operativa')));
   if(!DB.unita.length){ c.append(el('div',{class:'empty',style:'padding:20px'},'Nessuna unità: premi «➕ Nuova unità operativa».')); return; }
   const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(280px,1fr))'});
   for(const u of DB.unita){
     const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='unita/'+u._id;
-    const tipi=[...new Set((u.macchine||[]).map(m=>m.tipo).filter(Boolean))];
     card.append(
       el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🏢 '+(u.nome||'Unità')), el('div',{class:'b'},(u.macchine||[]).length+' macchine')),
       u.descrizione?el('div',{class:'sub',style:'margin-top:6px'},u.descrizione):null,
-      el('div',{class:'chips',style:'margin-top:10px'},
-        el('span',{class:'tag'},unitChanCount(u)+' canali'),
-        ...tipi.map(t=>el('span',{class:'tag',style:'background:'+tipoColor(t)+'22;color:'+tipoColor(t)},tipoLabel(t)))));
+      el('div',{class:'chips',style:'margin-top:10px'}, el('span',{class:'tag'},unitChanCount(u)+' canali')));
     cards.append(card);
   }
   c.append(cards);
@@ -1087,129 +1089,151 @@ function viewUnitaDetail(c, id){
     onchange:e=>{ u.nome=e.target.value.trim()||'Unità'; markDirty(); buildNav(); $('#viewTitle').textContent='Unità · '+u.nome; }});
   c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:22px'},'🏢'), titleInp, el('div',{class:'sp',style:'flex:1'}),
     el('button',{class:'btn sm',onclick:()=>nuovaMacchina(u)},'➕ Nuova macchina'),
-    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare l\'unità «'+(u.nome||'')+'» e tutte le sue macchine?')){ // pulizia incroci
-      const ids=new Set(); for(const m of u.macchine) for(const io of ['ingressi','uscite']) for(const ch of (m[io]||[])) ids.add(ch._id);
-      for(const k in DB.incroci){ if(ids.has(k)||ids.has(DB.incroci[k])) delete DB.incroci[k]; }
-      DB.unita=DB.unita.filter(x=>x!==u); markDirty(); location.hash='unita'; } }},'🗑 Elimina unità')));
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare l\'unità «'+(u.nome||'')+'» e tutte le sue macchine?')){ purgeIncroci(collectChIds(u)); DB.unita=DB.unita.filter(x=>x!==u); markDirty(); location.hash='unita'; } }},'🗑 Elimina unità')));
   c.append(el('div',{class:'fld',style:'max-width:640px;margin-bottom:12px'}, el('label',{},'Descrizione'),
-    el('input',{value:u.descrizione||'',placeholder:'es. Regia radiofonica — piano 2',onchange:e=>{ u.descrizione=e.target.value; markDirty(); }})));
-
-  if(!u.macchine.length){ c.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna macchina: premi «➕ Nuova macchina» per aggiungerne una (mixer, codec, Dante, MADI, ecc.).')); return; }
+    el('input',{value:u.descrizione||'',placeholder:'es. Centro di coordinamento CCRF',onchange:e=>{ u.descrizione=e.target.value; markDirty(); }})));
+  if(!u.macchine.length){ c.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna macchina: premi «➕ Nuova macchina» (es. MATRICE CENTRALIZZATA, un mixer, un codec…).')); return; }
   c.append(el('div',{class:'section-h'},'Macchine dell\'unità'));
-  const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(260px,1fr))'});
+  const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(280px,1fr))'});
   for(const m of u.macchine){
-    const card=el('div',{class:'card',style:'cursor:pointer;border-left:3px solid '+tipoColor(m.tipo)}); card.onclick=()=>location.hash='macchina/'+u._id+'/'+m._id;
+    const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='macchina/'+u._id+'/'+m._id;
+    const ni=schedeOf(m,'in').length, no=schedeOf(m,'out').length;
     card.append(
-      el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛️ '+(m.nome||'Macchina')), el('div',{class:'b'},tipoDot(m.tipo))),
-      el('div',{style:'margin-top:6px'}, el('span',{class:'tag',style:'background:'+tipoColor(m.tipo)+'22;color:'+tipoColor(m.tipo)},tipoLabel(m.tipo))),
-      el('div',{class:'sub',style:'margin-top:8px'}, '🎙️ '+(m.ingressi||[]).length+' ingressi · 🔊 '+(m.uscite||[]).length+' uscite'));
+      el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛️ '+(m.nome||'Macchina')), el('div',{class:'b'},macCanali(m)+' canali')),
+      el('div',{class:'chips',style:'margin-top:8px'},
+        el('span',{class:'tag',style:'background:'+DIR_META.in.color+'22;color:'+DIR_META.in.color},'🎙️ '+ni+' schede ingresso'),
+        el('span',{class:'tag',style:'background:'+DIR_META.out.color+'22;color:'+DIR_META.out.color},'🔊 '+no+' schede uscita')));
     cards.append(card);
   }
   c.append(cards);
 }
 function nuovaMacchina(u){
-  const nome=prompt('Nome della nuova macchina (es. Mixer, Codec, Dante, MADI…):','Macchina');
+  const nome=prompt('Nome della nuova macchina (es. MATRICE CENTRALIZZATA, Mixer, Codec…):','MATRICE CENTRALIZZATA');
   if(nome===null) return;
-  const m={_id:uid('mac_'), nome:(nome.trim()||'Macchina'), tipo:'analogico', ingressi:[], uscite:[]};
+  const m={_id:uid('mac_'), nome:(nome.trim()||'Macchina'), schede:[]};
   u.macchine.push(m); markDirty(); location.hash='macchina/'+u._id+'/'+m._id;
 }
+function collectChIds(scope){ const ids=new Set(); const macs = scope.macchine?scope.macchine:(scope.schede?[scope]:[]);
+  for(const m of macs) for(const s of (m.schede||[])) for(const ch of (s.canali||[])) ids.add(ch._id);
+  if(scope.canali) for(const ch of scope.canali) ids.add(ch._id);
+  return ids; }
+function purgeIncroci(ids){ for(const k in DB.incroci){ if(ids.has(k)||ids.has(DB.incroci[k])) delete DB.incroci[k]; } }
 
-let macTab='ingressi';
+// dettaglio macchina: schede di ingresso (un colore) e di uscita (altro colore)
 function viewMacchina(c, uid_, mid){
   const {u,m}=findMacchina(uid_, mid); if(!u||!m){ location.hash='unita'; return; }
-  m.ingressi=m.ingressi||[]; m.uscite=m.uscite||[];
-  if(macTab!=='ingressi'&&macTab!=='uscite') macTab='ingressi';
+  m.schede=m.schede||[];
   $('#viewTitle').textContent='Macchina · '+(m.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
-  c.append(el('datalist',{id:'ccrfMS'}, ...['Mono','Stereo','Mono/Stereo'].map(v=>el('option',{value:v}))));
-  const titleInp=el('input',{value:m.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
+  const titleInp=el('input',{value:m.nome||'',style:'font-size:16px;font-weight:600;max-width:340px',
     onchange:e=>{ m.nome=e.target.value.trim()||'Macchina'; markDirty(); buildNav(); $('#viewTitle').textContent='Macchina · '+m.nome; }});
-  const tipoSel=el('select',{style:'width:auto;min-width:130px',title:'Tipologia di segnale',onchange:e=>{ m.tipo=e.target.value; markDirty(); }},
-    ...TIPOLOGIE.map(t=>el('option',{value:t.id,selected:(m.tipo||'analogico')===t.id?'selected':null},t.label)));
-  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px;display:flex;align-items:center'},tipoDot(m.tipo),'🎛️'), titleInp,
-    el('span',{class:'muted',style:'font-size:12px;margin-left:6px'},'Tipologia:'), tipoSel,
-    el('div',{class:'sp',style:'flex:1'}),
-    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la macchina «'+(m.nome||'')+'»?')){
-      const ids=new Set(); for(const io of ['ingressi','uscite']) for(const ch of (m[io]||[])) ids.add(ch._id);
-      for(const k in DB.incroci){ if(ids.has(k)||ids.has(DB.incroci[k])) delete DB.incroci[k]; }
-      u.macchine=u.macchine.filter(x=>x!==m); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina macchina')));
-  const tabs=el('div',{class:'toolbar'}); const area=el('div');
-  const reload=()=>{ area.innerHTML=''; area.append(chSheet(m, macTab, ()=>{ reload(); buildNav(); })); };
-  for(const k of ['ingressi','uscite']){
-    tabs.append(el('button',{class:'btn sm'+(macTab===k?' primary':''),onclick:()=>{ macTab=k; for(const b of tabs.children)b.classList.remove('primary'); tabs.children[k==='ingressi'?0:1].classList.add('primary'); reload(); }},
-      (k==='ingressi'?'🎙️ Ingressi (':'🔊 Uscite (')+ (m[k]||[]).length +')'));
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🎛️'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la macchina «'+(m.nome||'')+'»?')){ purgeIncroci(collectChIds(m)); u.macchine=u.macchine.filter(x=>x!==m); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina macchina')));
+  for(const dir of ['in','out']){
+    const meta=DIR_META[dir];
+    c.append(el('div',{class:'section-h',style:'color:'+meta.color+';border-color:'+meta.color+'55'}, meta.ico+' '+meta.plural));
+    c.append(el('div',{class:'toolbar'}, el('button',{class:'btn sm',onclick:()=>nuovaScheda(u,m,dir)},'➕ Nuova scheda '+(dir==='in'?'ingresso':'uscita'))));
+    const schede=schedeOf(m,dir);
+    if(!schede.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px 12px'},'Nessuna scheda di '+meta.label.toLowerCase()+'.')); continue; }
+    const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const s of schede){
+      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid '+meta.color}); card.onclick=()=>location.hash='scheda/'+u._id+'/'+m._id+'/'+s._id;
+      card.append(
+        el('div',{class:'ccrf-dev'}, el('div',{class:'n'},s.nome||meta.label), el('div',{class:'b'},tipoDot(s.tipo))),
+        el('div',{style:'margin-top:6px'}, el('span',{class:'tag',style:'background:'+tipoColor(s.tipo)+'22;color:'+tipoColor(s.tipo)},tipoLabel(s.tipo))),
+        el('div',{class:'sub',style:'margin-top:8px'}, (s.canali||[]).length+' canali'));
+      cards.append(card);
+    }
+    c.append(cards);
   }
-  c.append(tabs, area); reload();
 }
-// scheda canali (ingressi o uscite) con import/export/stampa
-function chSheet(m, io, reload){
-  m[io]=m[io]||[];
+function nuovaScheda(u,m,dir){
+  const nome=prompt('Nome della nuova scheda di '+DIR_META[dir].label.toLowerCase()+':', DIR_META[dir].label);
+  if(nome===null) return;
+  const s=newScheda(dir, nome.trim()||DIR_META[dir].label, 'analogico', []);
+  (m.schede=m.schede||[]).push(s); markDirty(); location.hash='scheda/'+u._id+'/'+m._id+'/'+s._id;
+}
+
+// dettaglio scheda: tabella canali con import/export/stampa
+function viewScheda(c, uid_, mid, sid){
+  const {u,m,s}=findScheda(uid_, mid, sid); if(!u||!m||!s){ location.hash=m?('macchina/'+uid_+'/'+mid):'unita'; return; }
+  s.canali=s.canali||[]; const meta=DIR_META[s.dir]||DIR_META.in;
+  $('#viewTitle').textContent='Scheda · '+(s.nome||'');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='macchina/'+u._id+'/'+m._id},'‹ '+(m.nome||'Macchina')));
+  c.append(el('datalist',{id:'ccrfMS'}, ...['Mono','Stereo','Mono/Stereo'].map(v=>el('option',{value:v}))));
+  const titleInp=el('input',{value:s.nome||'',style:'font-size:16px;font-weight:600;max-width:300px',
+    onchange:e=>{ s.nome=e.target.value.trim()||meta.label; markDirty(); $('#viewTitle').textContent='Scheda · '+s.nome; }});
+  const tipoSel=el('select',{style:'width:auto;min-width:130px',title:'Tipologia di segnale',onchange:e=>{ s.tipo=e.target.value; markDirty(); }},
+    ...TIPOLOGIE.map(t=>el('option',{value:t.id,selected:(s.tipo||'analogico')===t.id?'selected':null},t.label)));
+  c.append(el('div',{class:'toolbar'},
+    el('span',{class:'tag',style:'background:'+meta.color+'22;color:'+meta.color},meta.ico+' '+meta.label), titleInp,
+    el('span',{class:'muted',style:'font-size:12px;margin-left:6px'},'Tipologia:'), tipoSel, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la scheda «'+(s.nome||'')+'»?')){ purgeIncroci(collectChIds(s)); m.schede=m.schede.filter(x=>x!==s); markDirty(); location.hash='macchina/'+u._id+'/'+m._id; } }},'🗑 Elimina scheda')));
+  const area=el('div'); c.append(area);
+  const reload=()=>{ area.innerHTML=''; area.append(chTable(s, ()=>{ reload(); buildNav(); })); };
+  reload();
+}
+function chTable(s, reload){
+  s.canali=s.canali||[];
   const wrap=el('div');
-  const label=io==='ingressi'?'Ingressi':'Uscite';
   wrap.append(el('div',{class:'toolbar'},
-    el('button',{class:'btn sm',onclick:()=>{ m[io].push(newCh()); markDirty(); reload(); }},'➕ Aggiungi canale'),
-    el('button',{class:'btn sm',onclick:()=>importChSheet(m,io,reload)},'⤒ Importa'),
-    el('button',{class:'btn sm',onclick:()=>exportChSheet(m,io)},'⤓ Esporta'),
-    el('button',{class:'btn sm',onclick:()=>printChSheet(m,io)},'🖨 Stampa'),
-    el('span',{class:'muted',style:'font-size:12px;margin-left:auto'},(m[io].length)+' canali')));
+    el('button',{class:'btn sm',onclick:()=>{ s.canali.push(newCh()); markDirty(); reload(); }},'➕ Aggiungi canale'),
+    el('button',{class:'btn sm',onclick:()=>importCanali(s,reload)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportCanali(s)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printCanali(s)},'🖨 Stampa'),
+    el('span',{class:'muted',style:'font-size:12px;margin-left:auto'},(s.canali.length)+' canali')));
   const tw=el('div',{class:'tablewrap'}); const tbl=el('table');
-  tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...CH_COLS.map(col=>el('th',{},col.label)), el('th',{},io==='uscite'?'◂ Sorgente':'→ Instradato a'), el('th',{},''))));
+  tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...CH_COLS.map(col=>el('th',{},col.label)), el('th',{},s.dir==='out'?'◂ Sorgente':'→ Instradato a'), el('th',{},''))));
   const tb=el('tbody');
-  if(!m[io].length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(CH_COLS.length+3)},'Nessun canale — «➕ Aggiungi canale» o «⤒ Importa».')));
-  m[io].forEach((row,i)=>{
+  if(!s.canali.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(CH_COLS.length+3)},'Nessun canale — «➕ Aggiungi canale» o «⤒ Importa».')));
+  s.canali.forEach((row,i)=>{
     const tr=el('tr'); tr.append(el('td',{},String(i+1)));
     for(const col of CH_COLS){ const inp=el('input',{value:row[col.key]||'',list:col.list||null,style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
       tr.append(el('td',{style:col.w?'max-width:'+col.w:''},inp)); }
-    // instradamento
-    if(io==='uscite'){ const s=DB.incroci[row._id]; const f=s?chFind(s):null;
-      tr.append(el('td',{class:s?'':'empty',style:'white-space:normal;max-width:220px'}, s&&f?(f.u.nome+' · '+f.m.nome+' · '+chLabel(f.c)):'—')); }
+    if(s.dir==='out'){ const src=DB.incroci[row._id]; const f=src?chFind(src):null;
+      tr.append(el('td',{class:src?'':'empty',style:'white-space:normal;max-width:220px'}, src&&f?(f.u.nome+' · '+f.m.nome+' · '+chLabel(f.c)):'—')); }
     else { const outs=[]; for(const k in DB.incroci){ if(DB.incroci[k]===row._id){ const f=chFind(k); if(f)outs.push(f.m.nome+' · '+chLabel(f.c)); } }
       tr.append(el('td',{class:outs.length?'':'empty',style:'white-space:normal;max-width:220px'}, outs.length?outs.join(' ; '):'—')); }
     tr.append(el('td',{},el('button',{class:'btn sm danger rowbtn',title:'Elimina canale',onclick:()=>{
       delete DB.incroci[row._id]; for(const k in DB.incroci) if(DB.incroci[k]===row._id) delete DB.incroci[k];
-      m[io]=m[io].filter(x=>x!==row); markDirty(); reload(); }},'🗑')));
+      s.canali=s.canali.filter(x=>x!==row); markDirty(); reload(); }},'🗑')));
     tb.append(tr);
   });
   tbl.append(tb); tw.append(tbl); wrap.append(tw); return wrap;
 }
-function exportChSheet(m,io){
-  const rows=[CH_COLS.map(c=>c.label)]; for(const r of m[io]) rows.push(CH_COLS.map(c=>r[c.key]==null?'':r[c.key]));
-  const nm=(m.nome||'macchina').replace(/[^\w]+/g,'_')+'_'+io;
-  downloadBytes(nm+'.xlsx', XLSX.build([{name:(io==='ingressi'?'Ingressi':'Uscite'),rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+function exportCanali(s){
+  const rows=[CH_COLS.map(c=>c.label)]; for(const r of s.canali) rows.push(CH_COLS.map(c=>r[c.key]==null?'':r[c.key]));
+  const nm=(s.nome||'scheda').replace(/[^\w]+/g,'_');
+  downloadBytes(nm+'.xlsx', XLSX.build([{name:(s.nome||'Scheda').slice(0,31),rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Esportato: '+nm+'.xlsx');
 }
-function printChSheet(m,io){
+function printCanali(s){
   const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const meta=DIR_META[s.dir]||DIR_META.in;
   const th='<th>#</th>'+CH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
-  const trs=m[io].map((r,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esc(r[c.key]==null?'':r[c.key])+'</td>').join('')+'</tr>').join('');
-  w.document.write('<html><head><title>'+esc(m.nome+' — '+io)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>'+esc(m.nome)+' — '+(io==='ingressi'?'Ingressi':'Uscite')+'</h2><p>'+m[io].length+' canali · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
+  const trs=s.canali.map((r,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esc(r[c.key]==null?'':r[c.key])+'</td>').join('')+'</tr>').join('');
+  w.document.write('<html><head><title>'+esc(s.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:'+meta.color+'22}</style></head><body><h2>'+esc(s.nome)+' — '+meta.label+'</h2><p>'+s.canali.length+' canali · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
 }
-// import per scheda (Excel/CSV) — mappa le colonne per nome intestazione
-function importChSheet(m,io,reload){
+function importCanali(s,reload){
   const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
     const f=e.target.files[0]; if(!f)return;
-    try{
-      let rows; const nm=f.name.toLowerCase();
-      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows;
-      else rows=parseCSV(await f.text());
+    try{ let rows; const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
       if(!rows||rows.length<1){ toast('File vuoto'); return; }
       const headers=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
       const idxOf=(...names)=>{ for(let i=0;i<headers.length;i++){ if(names.some(n=>headers[i]===n||headers[i].includes(n))) return i; } return -1; };
-      const map={canale:idxOf('canale'),macchina:idxOf('macchina','segnale'),ch:idxOf('ch'),ms:idxOf('mono','stereo','mono/stereo'),note:idxOf('note'),slot:idxOf('slot')};
+      const map={canale:idxOf('canale'),macchina:idxOf('macchina','segnale'),ch:idxOf('ch'),ms:idxOf('mono','stereo'),note:idxOf('note'),slot:idxOf('slot')};
       const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
       const parsed=data.map(r=>newCh({canale:map.canale>=0?String(r[map.canale]||'').trim():'',macchina:map.macchina>=0?String(r[map.macchina]||'').trim():'',
         ch:map.ch>=0?String(r[map.ch]||'').trim():'',ms:map.ms>=0?String(r[map.ms]||'').trim():'',note:map.note>=0?String(r[map.note]||'').trim():'',slot:map.slot>=0?String(r[map.slot]||'').trim():''}));
       if(!parsed.length){ toast('Nessuna riga valida'); return; }
       const rep=confirm(parsed.length+' canali letti da «'+f.name+'».\n\nOK = SOSTITUISCI i canali attuali\nAnnulla = AGGIUNGI in coda');
-      if(rep){ // rimuovi incroci dei vecchi canali
-        for(const ch of m[io]){ delete DB.incroci[ch._id]; for(const k in DB.incroci) if(DB.incroci[k]===ch._id) delete DB.incroci[k]; }
-        m[io]=parsed;
-      } else m[io]=m[io].concat(parsed);
+      if(rep){ for(const ch of s.canali){ delete DB.incroci[ch._id]; for(const k in DB.incroci) if(DB.incroci[k]===ch._id) delete DB.incroci[k]; } s.canali=parsed; }
+      else s.canali=s.canali.concat(parsed);
       markDirty(); reload(); toast((rep?'Sostituiti ':'Aggiunti ')+parsed.length+' canali');
     }catch(err){ console.error(err); toast('Errore import: '+err.message); }
-  }});
-  document.body.append(inp); inp.click(); inp.remove();
+  }}); document.body.append(inp); inp.click(); inp.remove();
 }
 function parseCSV(text){
   text=text.replace(/^﻿/,''); const firstNl=text.indexOf('\n'); const head=firstNl<0?text:text.slice(0,firstNl);
@@ -1217,15 +1241,14 @@ function parseCSV(text){
   const rows=[]; let row=[],f='',q=false;
   for(let i=0;i<text.length;i++){ const ch=text[i];
     if(q){ if(ch==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=ch; }
-    else { if(ch==='"')q=true; else if(ch===sep){row.push(f);f='';} else if(ch==='\n'){row.push(f);rows.push(row);row=[];f='';} else if(ch==='\r'){} else f+=ch; }
-  }
+    else { if(ch==='"')q=true; else if(ch===sep){row.push(f);f='';} else if(ch==='\n'){row.push(f);rows.push(row);row=[];f='';} else if(ch==='\r'){} else f+=ch; } }
   if(f!==''||row.length){ row.push(f); rows.push(row); }
   return rows;
 }
 
 /* ============================================================
-   Import massivo dal foglio "MATRICE CCRF" (ricostruisce la
-   macchina/i dell'unità CCRF). In "Backup".
+   Import massivo dal foglio "MATRICE CCRF": crea/aggiorna l'unità
+   CCRF con la macchina "MATRICE CENTRALIZZATA" e le sue schede.
    ============================================================ */
 function cellAt(rows,r,ci){ const row=rows[r]; if(!row)return ''; const v=row[ci]; return v==null?'':String(v).trim(); }
 function findRowLabel(rows,label){ for(let r=0;r<rows.length;r++){ if(String((rows[r]||[])[0]||'').trim().toUpperCase()===label) return r; } return -1; }
@@ -1240,10 +1263,12 @@ function parseMatriceRows(rows){
     return byDev; };
   return { ingressi:read(rIn,rIn+2,rOut-1,0), uscite:read(rOut,rOut+2,rows.length-1,1) };
 }
-// costruisce le macchine CCRF (accostando in/out) da una struttura per-dispositivo
-function buildCcrfMachines(ing, usc){
-  return CCRF_MACHINES.map(def=>({ _id:uid('mac_'), nome:def.nome, tipo:def.tipo,
-    ingressi:(ing[def.inId]||[]).map(c=>newCh(c)), uscite:(usc[def.outId]||[]).map(c=>newCh(c)) }));
+// costruisce la macchina MATRICE CENTRALIZZATA (schede in poi schede out)
+function buildMatriceMachineFromDevs(ing, usc){
+  const schede=[];
+  for(const def of CCRF_MACHINES){ const canali=(ing[def.inId]||[]).map(c=>newCh(c)); if(canali.length) schede.push(newScheda('in',def.nome,def.tipo,canali)); }
+  for(const def of CCRF_MACHINES){ const canali=(usc[def.outId]||[]).map(c=>newCh(c)); if(canali.length) schede.push(newScheda('out',def.nome,def.tipo,canali)); }
+  return {_id:uid('mac_'), nome:'MATRICE CENTRALIZZATA', schede};
 }
 function importMatriceExcel(){
   const inp=el('input',{type:'file',accept:'.xlsx',style:'display:none',onchange:async e=>{
@@ -1257,28 +1282,25 @@ function importMatriceExcel(){
 async function showMatricePreview(bytes, names, target, fname){
   const body=el('div'); const sel=el('select',{},...names.map(n=>el('option',{value:n,selected:(n===target?'selected':null)},n)));
   const report=el('div');
-  body.append(el('div',{class:'help',style:'margin-bottom:12px'},'File: '+fname+'. Verrà (ri)creata/aggiornata l\'unità «CCRF» con 9 macchine (MADI 1-4, BEALINX, Dante 1/2, AES, Analogico).'),
+  body.append(el('div',{class:'help',style:'margin-bottom:12px'},'File: '+fname+'. Verrà creata/aggiornata l\'unità «CCRF» con la macchina «MATRICE CENTRALIZZATA» (9 schede di ingresso + 9 di uscita).'),
     el('div',{class:'fld',style:'margin-bottom:12px'}, el('label',{},'Foglio da importare'), sel), report);
   const applyBtn=el('button',{class:'btn primary'},'Crea / aggiorna unità CCRF');
   const foot=el('div',{class:'mf'}, el('button',{class:'btn',onclick:closeModal},'Annulla'), applyBtn);
   let parsed=null;
   async function preview(){ report.innerHTML=''; applyBtn.disabled=true;
     try{ const {rows}=await XLSX.readSheet(bytes, sel.value); parsed=parseMatriceRows(rows);
-      const tin=Object.values(parsed.ingressi).reduce((a,c)=>a+c.length,0), tout=Object.values(parsed.uscite).reduce((a,c)=>a+c.length,0);
-      const tbl=el('table'); tbl.append(el('thead',{},el('tr',{},...['Macchina','Ingressi','Uscite'].map(h=>el('th',{},h)))));
+      const tbl=el('table'); tbl.append(el('thead',{},el('tr',{},...['Scheda','Ingressi','Uscite'].map(h=>el('th',{},h)))));
       const tb=el('tbody'); for(const def of CCRF_MACHINES) tb.append(el('tr',{},el('td',{},def.nome),el('td',{},String((parsed.ingressi[def.inId]||[]).length)),el('td',{},String((parsed.uscite[def.outId]||[]).length)))); tbl.append(tb);
-      report.append(el('div',{class:'help',style:'margin-bottom:10px'},'Trovati '+tin+' canali di ingresso e '+tout+' di uscita su 9 macchine.'), el('div',{class:'tablewrap',style:'max-height:320px'},tbl));
+      const tin=Object.values(parsed.ingressi).reduce((a,c)=>a+c.length,0), tout=Object.values(parsed.uscite).reduce((a,c)=>a+c.length,0);
+      report.append(el('div',{class:'help',style:'margin-bottom:10px'},'Trovati '+tin+' canali di ingresso e '+tout+' di uscita.'), el('div',{class:'tablewrap',style:'max-height:320px'},tbl));
       applyBtn.disabled=false;
     }catch(err){ report.append(el('div',{class:'help',style:'border-left-color:var(--danger)'},'⚠ '+err.message)); parsed=null; } }
   sel.addEventListener('change',preview);
   applyBtn.onclick=()=>{ if(!parsed)return;
-    const machines=buildCcrfMachines(parsed.ingressi, parsed.uscite);
-    let u=(DB.unita||[]).find(x=>x._ccrf); if(!u){ u={_id:uid('unit_'),nome:'CCRF · Matrice centralizzata',descrizione:'Matrice audio centralizzata (foglio MATRICE CCRF)',_ccrf:true,macchine:[]}; (DB.unita=DB.unita||[]).unshift(u); }
-    // rimuovi incroci legati ai vecchi canali dell'unità CCRF
-    const old=new Set(); for(const mm of u.macchine) for(const io of ['ingressi','uscite']) for(const ch of (mm[io]||[])) old.add(ch._id);
-    for(const k in DB.incroci){ if(old.has(k)||old.has(DB.incroci[k])) delete DB.incroci[k]; }
-    u.macchine=machines; markDirty(); closeModal(); location.hash='unita/'+u._id;
-    toast('Unità CCRF aggiornata (incroci CCRF azzerati)');
+    const machine=buildMatriceMachineFromDevs(parsed.ingressi, parsed.uscite);
+    let u=(DB.unita||[]).find(x=>x._ccrf); if(!u){ u={_id:uid('unit_'),nome:'CCRF',descrizione:'Centro di coordinamento CCRF',_ccrf:true,macchine:[]}; (DB.unita=DB.unita||[]).unshift(u); }
+    purgeIncroci(collectChIds(u)); u.macchine=[machine]; markDirty(); closeModal(); location.hash='macchina/'+u._id+'/'+machine._id;
+    toast('Unità CCRF aggiornata (incroci azzerati)');
   };
   openModal(el('div',{}, el('div',{class:'mh'}, el('h3',{},'⤒ Importa MATRICE CCRF'), el('button',{class:'x',onclick:closeModal},'×')), el('div',{class:'mb'},body), foot));
   preview();
@@ -1289,35 +1311,52 @@ function ensureModel(){
   let changed=false;
   if(!DB.incroci){ DB.incroci={}; changed=true; }
   if(!DB.unita){ DB.unita=[]; changed=true; }
-  // 1) migra vecchio modello DB.ccrf -> unità CCRF con macchine
+  // 1) legacy DB.ccrf -> unità CCRF + MATRICE CENTRALIZZATA
   if(DB.ccrf){
-    const ing={}, usc={};
-    for(const g of (DB.ccrf.ingressi||[])) ing[g.id]=(g.canali||[]).map(c=>({canale:c.canale||'',macchina:c.macchina||'',ch:c.ch||'',ms:c.ms||'',note:c.note||'',slot:c.slot||'',_old:g.id+'#'+c.idx}));
-    for(const g of (DB.ccrf.uscite||[])) usc[g.id]=(g.canali||[]).map(c=>({canale:c.canale||'',macchina:c.macchina||'',ch:c.ch||'',ms:c.ms||'',note:c.note||'',slot:c.slot||'',_old:g.id+'#'+c.idx}));
-    // costruisci macchine mantenendo la mappa vecchio->nuovo id
-    const oldToNew={};
-    const machines=CCRF_MACHINES.map(def=>{ const mk=arr=>arr.map(c=>{ const nc=newCh(c); if(c._old) oldToNew[c._old]=nc._id; delete nc._old; return nc; });
-      return {_id:uid('mac_'),nome:def.nome,tipo:def.tipo,ingressi:mk(ing[def.inId]||[]),uscite:mk(usc[def.outId]||[])}; });
-    let u=(DB.unita).find(x=>x._ccrf); if(!u){ u={_id:uid('unit_'),nome:'CCRF · Matrice centralizzata',descrizione:'Matrice audio centralizzata (foglio MATRICE CCRF)',_ccrf:true,macchine:[]}; DB.unita.unshift(u); }
-    u.macchine=machines;
+    const ing={}, usc={}; const oldToNew={};
+    const conv=(groups,store)=>{ for(const g of (groups||[])) store[g.id]=(g.canali||[]).map(c=>{ const nc=newCh({canale:c.canale||'',macchina:c.macchina||'',ch:c.ch||'',ms:c.ms||'',note:c.note||'',slot:c.slot||''}); oldToNew[g.id+'#'+c.idx]=nc._id; return nc; }); };
+    conv(DB.ccrf.ingressi, ing); conv(DB.ccrf.uscite, usc);
+    const machine=buildMatriceMachineFromDevs(ing, usc);
+    // ripristina i canali già convertiti (buildMatrice ricrea _id: rimappa mantenendo i nostri)
+    machine.schede.forEach(sc=>{ const src=sc.dir==='in'?ing:usc; const def=CCRF_MACHINES.find(d=>d.nome===sc.nome); const arr=def?(src[sc.dir==='in'?def.inId:def.outId]||[]):[]; sc.canali=arr; });
+    let u=(DB.unita).find(x=>x._ccrf); if(!u){ u={_id:uid('unit_'),nome:'CCRF',descrizione:'Centro di coordinamento CCRF',_ccrf:true,macchine:[]}; DB.unita.unshift(u); }
+    u.macchine=[machine];
     for(const oldOut in (DB.ccrf.incroci||{})){ const oldIn=DB.ccrf.incroci[oldOut]; if(oldToNew[oldOut]&&oldToNew[oldIn]) DB.incroci[oldToNew[oldOut]]=oldToNew[oldIn]; }
     delete DB.ccrf; changed=true;
   }
-  // 2) fresh install: nessuna unità -> crea CCRF dal seed di riferimento
+  // 2) fresh install -> CCRF dal seed di riferimento
   if(!DB.unita.length && typeof SEED_CCRF!=='undefined'){
     const ing={}, usc={};
-    for(const g of SEED_CCRF.ingressi) ing[g.id]=g.canali; for(const g of SEED_CCRF.uscite) usc[g.id]=g.canali;
-    const u={_id:uid('unit_'),nome:'CCRF · Matrice centralizzata',descrizione:'Matrice audio centralizzata (foglio MATRICE CCRF)',_ccrf:true,macchine:buildCcrfMachines(ing,usc)};
-    DB.unita.unshift(u); changed=true;
+    for(const g of SEED_CCRF.ingressi) ing[g.id]=g.canali.map(c=>newCh(c));
+    for(const g of SEED_CCRF.uscite) usc[g.id]=g.canali.map(c=>newCh(c));
+    const machine=buildMatriceMachineFromDevs(ing, usc);
+    machine.schede.forEach(sc=>{ const def=CCRF_MACHINES.find(d=>d.nome===sc.nome); const src=sc.dir==='in'?ing:usc; sc.canali=def?(src[sc.dir==='in'?def.inId:def.outId]||[]):sc.canali; });
+    DB.unita.unshift({_id:uid('unit_'),nome:'CCRF',descrizione:'Centro di coordinamento CCRF',_ccrf:true,macchine:[machine]}); changed=true;
   }
-  // 3) normalizza: ogni macchina/canale ha _id; migra eventuale vecchio modello unità piatto
+  // 3) normalizza unità/macchine/schede/canali
   for(const u of DB.unita){
-    if(!u.macchine){ // vecchio modello: u.ingressi/uscite/patch a livello unità -> una macchina "Generale"
-      const m={_id:uid('mac_'),nome:'Generale',tipo:'analogico',ingressi:[],uscite:[]};
-      for(const io of ['ingressi','uscite']) for(const r of (u[io]||[])) m[io].push(newCh({canale:r.canale||'',macchina:r.macchina||r.nome||'',ch:r.ch||'',ms:r.ms||'',note:[r.note,r.connettore?('Conn: '+r.connettore):'',r.livello?('Liv: '+r.livello):''].filter(Boolean).join(' · '),slot:r.slot||''}));
-      u.macchine=(m.ingressi.length||m.uscite.length)?[m]:[]; delete u.ingressi; delete u.uscite; delete u.patch; changed=true;
+    // vecchissimo modello: ingressi/uscite a livello unità
+    if(!u.macchine && (u.ingressi||u.uscite)){ u.macchine=[{_id:uid('mac_'),nome:'Generale',schede:[]}];
+      const m=u.macchine[0];
+      if((u.ingressi||[]).length) m.schede.push(newScheda('in','Ingressi','analogico',u.ingressi.map(r=>newCh(r))));
+      if((u.uscite||[]).length) m.schede.push(newScheda('out','Uscite','analogico',u.uscite.map(r=>newCh(r))));
+      delete u.ingressi; delete u.uscite; delete u.patch; changed=true; }
+    u.macchine=u.macchine||[];
+    // CCRF con macchine appaiate (modello precedente) -> una MATRICE CENTRALIZZATA con schede
+    if(u._ccrf && u.macchine.length && u.macchine.every(m=>!m.schede) && u.macchine.some(m=>m.ingressi||m.uscite)){
+      const schede=[];
+      for(const m of u.macchine){ if((m.ingressi||[]).length) schede.push(newScheda('in',m.nome,m.tipo||'analogico',m.ingressi.map(ensureChId))); }
+      for(const m of u.macchine){ if((m.uscite||[]).length) schede.push(newScheda('out',m.nome,m.tipo||'analogico',m.uscite.map(ensureChId))); }
+      u.macchine=[{_id:uid('mac_'),nome:'MATRICE CENTRALIZZATA',schede}]; changed=true;
     }
-    for(const m of u.macchine){ for(const io of ['ingressi','uscite']){ m[io]=m[io]||[]; for(const ch of m[io]) if(!ch._id){ ch._id=uid('ch_'); changed=true; } } if(!m.tipo){ m.tipo='analogico'; changed=true; } }
+    for(const m of u.macchine){
+      // macchina generica modello precedente (ingressi/uscite senza schede)
+      if(!m.schede){ m.schede=[];
+        if((m.ingressi||[]).length) m.schede.push(newScheda('in','Ingressi',m.tipo||'analogico',m.ingressi.map(ensureChId)));
+        if((m.uscite||[]).length) m.schede.push(newScheda('out','Uscite',m.tipo||'analogico',m.uscite.map(ensureChId)));
+        delete m.ingressi; delete m.uscite; delete m.tipo; changed=true; }
+      for(const s of m.schede){ s.canali=s.canali||[]; if(!s.dir){ s.dir='in'; changed=true; } if(!s.tipo){ s.tipo='analogico'; changed=true; } for(const ch of s.canali) if(!ch._id){ ch._id=uid('ch_'); changed=true; } }
+    }
   }
   return changed;
 }
@@ -1335,13 +1374,13 @@ function importJSON(){
 }
 function exportTuttoXLSX(){
   const sheets=[];
-  const chRows=io=>{ const rows=[['Unità','Macchina','Tipologia','Canale','Macchina/Segnale','CH','Mono/Stereo','Note','Slot']];
-    for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const ch of (m[io]||[]))
-      rows.push([u.nome,m.nome,tipoLabel(m.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot]); return rows; };
-  sheets.push({name:'Ingressi',rows:chRows('ingressi')},{name:'Uscite',rows:chRows('uscite')});
-  const inc=[['USCITA','Unità/Macchina uscita','CH','INGRESSO','Unità/Macchina ingresso','CH']];
+  const chRows=dir=>{ const rows=[['Unità','Macchina','Scheda','Tipologia','Canale','Macchina/Segnale','CH','Mono/Stereo','Note','Slot']];
+    for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir) continue;
+      for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot]); } return rows; };
+  sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
+  const inc=[['USCITA','Unità/Macchina/Scheda uscita','CH','INGRESSO','Unità/Macchina/Scheda ingresso','CH']];
   for(const oid in (DB.incroci||{})){ const of=chFind(oid), inf=chFind(DB.incroci[oid]); if(!of)continue;
-    inc.push([of.c.macchina||of.c.canale,of.u.nome+' · '+of.m.nome,of.c.ch||'',inf?(inf.c.macchina||inf.c.canale):'',inf?inf.u.nome+' · '+inf.m.nome:'',inf?inf.c.ch||'':'']); }
+    inc.push([of.c.macchina||of.c.canale,of.u.nome+' · '+of.m.nome+' · '+of.s.nome,of.c.ch||'',inf?(inf.c.macchina||inf.c.canale):'',inf?inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome:'',inf?inf.c.ch||'':'']); }
   sheets.push({name:'Incroci',rows:inc});
   downloadBytes('gestione_audio_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Database esportato in Excel');

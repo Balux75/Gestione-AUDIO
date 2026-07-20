@@ -28,47 +28,51 @@ dentro una cartella a tua scelta: puoi copiare la cartella su una chiavetta e po
 4. Da qui in poi le modifiche vengono salvate direttamente sul file (autosalvataggio attivo).
    Puoi salvare anche a mano con **💾 Salva** o con <kbd>Ctrl</kbd>+<kbd>S</kbd>.
 
-> **Nota:** al primo avvio (database vuoto) l'app crea automaticamente l'unità **CCRF** con le
-> 9 macchine di riferimento (MADI 1–4, BEALINX, Dante 1/2, AES, Analogico) dai dati del foglio
-> di cablaggio *MATRICE CCRF*.
+> **Nota:** al primo avvio (database vuoto) l'app crea automaticamente la stanza **CCRF** con la
+> macchina **MATRICE CENTRALIZZATA** e le sue **9 schede di ingresso + 9 di uscita** (MADI 1–4,
+> BEALINX, Dante 1/2, AES, Analogico) dai dati del foglio di cablaggio *MATRICE CCRF*.
 
 ---
 
 ## Struttura dei dati
 
 ```
-Unità operativa  (es. «CCRF · Matrice centralizzata», «Regia A», …)
- └─ Macchina     (es. «MADI 1 · FUTURO RAIWAY», «DANTE 1 · Core», un mixer, un codec…)  → tipologia
-     ├─ Ingressi (canali sorgente)     → colonne del Quadro Incroci
-     └─ Uscite   (canali destinazione) → righe del Quadro Incroci
+Unità operativa   (la STANZA — es. «CCRF», «Regia A», …)
+ └─ Macchina      (es. «MATRICE CENTRALIZZATA», un mixer, un codec…)
+     ├─ Schede di INGRESSO   (una scheda per dispositivo: MADI 1, MADI 2, … Dante 1, Dante 2, …)
+     │    └─ Canali sorgente        → colonne del Quadro Incroci
+     └─ Schede di USCITA     (MADI 1, MADI 2, … Dante 1, Dante 2, …)
+          └─ Canali destinazione    → righe del Quadro Incroci
 ```
 
-Ogni **macchina** ha una **tipologia** di segnale (Analogici / Dante / Digitali / MADI /
-Bealinx) usata per colorare e filtrare il Quadro Incroci. Ogni **canale** ha: **canale**,
-**macchina/segnale**, **CH** (L/R/M), **mono/stereo**, **note** e **slot**.
+Le **schede di ingresso** e di **uscita** sono tenute **separate** e distinte da un **colore**
+(azzurro gli ingressi, arancio le uscite). Ogni scheda ha una **tipologia** di segnale
+(Analogici / Dante / Digitali / MADI / Bealinx) usata per colorare e filtrare il Quadro Incroci.
+Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/stereo**, **note** e **slot**.
 
 ---
 
 ## Funzioni principali
 
-- **🎛️ Quadro Incroci (tipo Dante Controller)** — subito dopo la Dashboard. Le **colonne** sono
-  gli **ingressi** delle macchine, le **righe** le **uscite**. Ogni macchina è
+- **🎛️ Quadro Incroci (tipo Dante Controller)** — subito dopo la Dashboard, da solo. Le **colonne**
+  sono le **schede di ingresso**, le **righe** le **schede di uscita**. Ogni scheda è
   **comprimibile/espandibile**: da compressa occupa una sola colonna/riga verticale con il
   conteggio degli incroci, da espansa mostra i singoli canali. Con **entrambi i lati espansi**
   clicchi la casella all'incrocio per **instradare** (pallino verde ●); ogni uscita riceve
   **una sola** sorgente (riclicca per staccare). Filtri per **tipologia** (Analogici / Dante /
   Digitali / MADI / Bealinx) su ingressi e uscite, ricerca, «solo uscite instradate»,
   espandi/comprimi tutto, evidenziazione riga/colonna, **export Excel** e **azzeramento**.
-  Tutto ciò che modifichi nelle macchine si riflette qui automaticamente.
-- **🏢 Unità operative** — elenco delle unità (regie/postazioni). Con **➕ Nuova unità operativa**
-  crei un'unità; aprendola vedi le sue **macchine** (schede colorate per tipologia) e con
-  **➕ Nuova macchina** ne aggiungi (mixer, codec, Dante, MADI…). Rinomina/elimina unità e
-  macchine (con pulizia automatica degli incroci collegati).
-- **🎚️ Dettaglio macchina** — nome e **tipologia** modificabili, e due schede: **🎙️ Ingressi**
-  e **🔊 Uscite**. Ogni scheda è una tabella editabile in linea (canale, macchina/segnale, CH,
-  mono/stereo, note, slot) con l'indicazione dell'**instradamento** sul Quadro Incroci, e per
-  ciascuna scheda i pulsanti **➕ Aggiungi canale**, **⤒ Importa** (Excel/CSV), **⤓ Esporta**
-  (Excel) e **🖨 Stampa**.
+  Tutto ciò che modifichi nelle schede si riflette qui automaticamente.
+- **🏢 Unità operative** — elenco delle stanze. Con **➕ Nuova unità operativa** crei una stanza;
+  aprendola vedi le sue **macchine** e con **➕ Nuova macchina** ne aggiungi. Rinomina/elimina
+  unità e macchine (con pulizia automatica degli incroci collegati).
+- **🎛️ Dettaglio macchina** — nome modificabile e due sezioni distinte per colore: **🎙️ Schede di
+  ingresso** e **🔊 Schede di uscita**. Con **➕ Nuova scheda ingresso/uscita** aggiungi le schede
+  (una per dispositivo: MADI 1, MADI 2, Dante 1…).
+- **🎚️ Dettaglio scheda** — nome e **tipologia** modificabili; tabella dei **canali** editabile in
+  linea (canale, macchina/segnale, CH, mono/stereo, note, slot) con l'indicazione
+  dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
+  (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**.
 - **📊 Dashboard** — riepilogo di incroci attivi, unità, macchine e canali.
 - **💽 Backup / Ripristino** — esporta/importa l'intero database in **JSON**, esporta tutto in
   **Excel** (Ingressi, Uscite, Incroci), **azzera** gli incroci, oppure **⤒ Importa MATRICE
