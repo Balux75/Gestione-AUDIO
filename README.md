@@ -58,8 +58,9 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   sono le **schede di ingresso**, le **righe** le **schede di uscita**. Ogni scheda è
   **comprimibile/espandibile**: da compressa occupa una sola colonna/riga verticale con il
   conteggio degli incroci, da espansa mostra i singoli canali. Con **entrambi i lati espansi**
-  clicchi la casella all'incrocio per **instradare** (pallino verde ●); ogni uscita riceve
-  **una sola** sorgente (riclicca per staccare). Filtri per **tipologia** (Analogici / Dante /
+  clicchi la casella all'incrocio per **instradare** (pallino verde ●). Un'**uscita** può essere
+  inviata a **più ingressi**; ogni **ingresso** riceve **una sola** uscita (riclicca per
+  staccare). Filtri per **tipologia** (Analogici / Dante /
   Digitali / MADI / Bealinx) su ingressi e uscite, ricerca, «solo uscite instradate»,
   espandi/comprimi tutto, evidenziazione riga/colonna, **export Excel** e **azzeramento**.
   Tutto ciò che modifichi nelle schede si riflette qui automaticamente.

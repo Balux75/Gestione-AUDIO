@@ -931,7 +931,8 @@ function viewIncroci(c){
     '<b>Quadro Incroci</b> — matrice di smistamento audio in stile <i>Dante Controller</i>. '+
     'Le <b>colonne</b> sono le <b>schede di ingresso</b>, le <b>righe</b> le <b>schede di uscita</b> delle macchine. '+
     'Clicca l\'intestazione di una scheda per <b>espanderla/comprimerla</b>; con entrambi i lati espansi '+
-    'clicca la casella all\'incrocio per <b>instradare</b>. Ogni uscita riceve <b>una sola</b> sorgente (riclicca per staccare).'
+    'clicca la casella all\'incrocio per <b>instradare</b>. Un\'<b>uscita</b> può essere inviata a <b>più ingressi</b>; '+
+    'ogni <b>ingresso</b> riceve <b>una sola</b> uscita (riclicca per staccare).'
   }));
   const bar=el('div',{class:'xp-toolbar'});
   const stat=el('span',{class:'xp-stat'});
@@ -970,26 +971,30 @@ function viewIncroci(c){
   function outGroupsVis(){ return schedeGroups('out').filter(g=>grpMatch(g,xpUI.qOut) && (!xpUI.tipoOut||g.tipo===xpUI.tipoOut)); }
   function inChansVis(g){ return g.canali.filter(c=>!xpUI.qIn || chMatch(c,xpUI.qIn) || g.nome.toLowerCase().includes(xpUI.qIn.toLowerCase())); }
   function outChansVis(g){ let cs=g.canali.filter(c=>!xpUI.qOut || chMatch(c,xpUI.qOut) || g.nome.toLowerCase().includes(xpUI.qOut.toLowerCase()));
-    if(xpUI.onlyActive) cs=cs.filter(c=>DB.incroci[c._id]); return cs; }
-  function countBetween(outIds, inIdSet){ let n=0; for(const oid of outIds){ const s=DB.incroci[oid]; if(s&&inIdSet.has(s)) n++; } return n; }
+    if(xpUI.onlyActive){ const used=new Set(Object.values(DB.incroci)); cs=cs.filter(c=>used.has(c._id)); } return cs; }
+  // incroci = { idIngresso: idUscita } → un'uscita può alimentare più ingressi;
+  // ogni ingresso riceve una sola uscita. Conta gli ingressi (di inIds) instradati verso outIdSet.
+  function countBetween(outIdSet, inIds){ let n=0; for(const iid of inIds){ const o=DB.incroci[iid]; if(o&&outIdSet.has(o)) n++; } return n; }
 
   function buildMatrix(){
     const inGroups=inGroupsVis(), outGroups=outGroupsVis();
+    // mappa uscita -> ingressi che la ricevono (per conteggi ed etichette)
+    const srcByOut={}; for(const iid in DB.incroci){ const o=DB.incroci[iid]; if(!o)continue; (srcByOut[o]=srcByOut[o]||[]).push(iid); }
     const cols=[];
     for(const g of inGroups){ if(xpUI.expIn.has(g.id)){ for(const ch of inChansVis(g)) cols.push({type:'ch',g,ch,id:ch._id}); } else cols.push({type:'agg',g}); }
     const table=el('table',{class:'xp'});
     const thead=el('thead'); const rDev=el('tr'); const rCh=el('tr');
-    rDev.append(el('th',{class:'corner',rowspan:'2',html:'<b>USCITE \\ INGRESSI</b><small>clic scheda = espandi/comprimi · clic incrocio = instrada</small>'}));
+    rDev.append(el('th',{class:'corner',rowspan:'2',html:'<b>USCITE \\ INGRESSI</b><small>un\'uscita → più ingressi · clic incrocio = instrada</small>'}));
     for(const g of inGroups){
       const exp=xpUI.expIn.has(g.id);
-      const inIds=new Set(g.canali.map(c=>c._id));
-      const cc=Object.values(DB.incroci).filter(s=>inIds.has(s)).length;
+      const cc=g.canali.filter(c=>DB.incroci[c._id]).length; // ingressi instradati (max 1 uscita cad.)
       if(exp){
         const chans=inChansVis(g); const span=Math.max(chans.length,1);
         rDev.append(el('th',{class:'dev',colspan:String(span),title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.delete(g.id); render(); }},
           tipoDot(g.tipo),'▾ '+g.nome+(cc?' ':''), cc?el('span',{class:'cc'},'('+cc+')'):null));
         if(!chans.length) rCh.append(el('th',{class:'ch'}));
-        for(const ch of chans) rCh.append(el('th',{class:'ch','data-in':ch._id,title:chLabelFull(ch._id),onclick:()=>highlightCol(ch._id)}, el('div',{},chLabel(ch)||'—')));
+        for(const ch of chans){ const dst=DB.incroci[ch._id]; const df=dst?chFind(dst):null;
+          rCh.append(el('th',{class:'ch','data-in':ch._id,title:chLabelFull(ch._id)+(df?('  →  '+chLabelFull(dst)):''),onclick:()=>highlightCol(ch._id)}, el('div',{},chLabel(ch)||'—'))); }
       } else {
         rDev.append(el('th',{class:'devcol',rowspan:'2',title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo)+' — clic per espandere',style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.add(g.id); render(); }},
           el('div',{}, tipoDot(g.tipo),'▸ '+g.nome+(cc?(' ('+cc+')'):''))));
@@ -1000,24 +1005,24 @@ function viewIncroci(c){
     for(const g of outGroups){
       const exp=xpUI.expOut.has(g.id); const outChans=exp?outChansVis(g):[];
       const trDev=el('tr',{class:'devrow'});
-      const cc=g.canali.filter(oc=>DB.incroci[oc._id]).length;
+      const cc=g.canali.reduce((a,oc)=>a+((srcByOut[oc._id]||[]).length),0); // ingressi alimentati da questa scheda
       trDev.append(el('th',{title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-top-color:'+tipoColor(g.tipo),onclick:()=>{ exp?xpUI.expOut.delete(g.id):xpUI.expOut.add(g.id); render(); }},
         tipoDot(g.tipo),(exp?'▾ ':'▸ ')+g.nome+' ', cc?el('span',{class:'cc'},'('+cc+')'):null));
-      const outAllIds=g.canali.map(oc=>oc._id);
+      const outSet=new Set(g.canali.map(oc=>oc._id));
       for(const col of cols){
-        if(col.type==='ch'){ const n=countBetween(outAllIds,new Set([col.id])); trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); render(); })); }
-        else { const inIds=new Set(col.g.canali.map(ic=>ic._id)); const n=countBetween(outAllIds,inIds); trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); xpUI.expIn.add(col.g.id); render(); })); }
+        if(col.type==='ch'){ const n=countBetween(outSet,[col.id]); trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); render(); })); }
+        else { const n=countBetween(outSet,col.g.canali.map(ic=>ic._id)); trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); xpUI.expIn.add(col.g.id); render(); })); }
       }
       tbody.append(trDev);
       for(const oc of outChans){
-        const oid=oc._id; const src=DB.incroci[oid]; const tr=el('tr');
+        const oid=oc._id; const nSrc=(srcByOut[oid]||[]).length; const tr=el('tr');
         tr.append(el('td',{class:'rowlab','data-out':oid,title:chLabelFull(oid),onclick:()=>highlightRow(oid)},
           el('span',{class:'lr'},oc.ch||''), (oc.macchina||oc.canale||'—'),
-          src?el('span',{class:'src'},' ◂ '+chLabel(chFind(src)&&chFind(src).c)):null));
+          nSrc?el('span',{class:'src'},' ▸ '+nSrc+' ing.'):null));
         for(const col of cols){
-          if(col.type==='ch'){ const on=(src===col.id);
-            tr.append(el('td',{class:'xp'+(on?' on':''),'data-out':oid,'data-in':col.id,title:'IN: '+chLabelFull(col.id)+'  →  OUT: '+chLabelFull(oid),onclick:()=>toggleXP(oid,col.id)})); }
-          else { const inIds=new Set(col.g.canali.map(ic=>ic._id)); const n=(src&&inIds.has(src))?1:0; tr.append(aggCell(n,()=>{ xpUI.expIn.add(col.g.id); render(); })); }
+          if(col.type==='ch'){ const on=(DB.incroci[col.id]===oid);
+            tr.append(el('td',{class:'xp'+(on?' on':''),'data-out':oid,'data-in':col.id,title:'OUT: '+chLabelFull(oid)+'  →  IN: '+chLabelFull(col.id),onclick:()=>toggleXP(oid,col.id)})); }
+          else { const n=countBetween(new Set([oid]),col.g.canali.map(ic=>ic._id)); tr.append(aggCell(n,()=>{ xpUI.expIn.add(col.g.id); render(); })); }
         }
         tbody.append(tr);
       }
@@ -1025,14 +1030,11 @@ function viewIncroci(c){
     table.append(tbody); return table;
   }
   function aggCell(n,onclick){ return el('td',{class:'agg'+(n?' has':''),onclick},n?String(n):'·'); }
+  // instrada l'uscita oid verso l'ingresso inId (ogni ingresso ha una sola uscita)
   function toggleXP(oid,inId){
-    if(DB.incroci[oid]===inId) delete DB.incroci[oid]; else DB.incroci[oid]=inId;
+    if(DB.incroci[inId]===oid) delete DB.incroci[inId]; else DB.incroci[inId]=oid;
     markDirty();
-    scroll.querySelectorAll('td.xp[data-out="'+cssq(oid)+'"]').forEach(td=>td.classList.remove('on'));
-    if(DB.incroci[oid]){ const t=scroll.querySelector('td.xp[data-out="'+cssq(oid)+'"][data-in="'+cssq(inId)+'"]'); if(t)t.classList.add('on'); }
-    const lab=scroll.querySelector('td.rowlab[data-out="'+cssq(oid)+'"]');
-    if(lab){ const old=lab.querySelector('.src'); if(old)old.remove(); const s=DB.incroci[oid]; if(s){ const f=chFind(s); lab.append(el('span',{class:'src'},' ◂ '+chLabel(f&&f.c))); } }
-    upStat(); buildNav();
+    const st=scroll.scrollTop, sl=scroll.scrollLeft; render(); scroll.scrollTop=st; scroll.scrollLeft=sl;
   }
   function highlightRow(oid){ const cell=scroll.querySelector('td.rowlab[data-out="'+cssq(oid)+'"]'); const on=!(cell&&cell.classList.contains('hl'));
     scroll.querySelectorAll('.hl').forEach(x=>x.classList.remove('hl')); scroll.querySelectorAll('.rhl').forEach(x=>x.classList.remove('rhl'));
@@ -1042,9 +1044,9 @@ function viewIncroci(c){
     if(on&&cell){ cell.classList.add('hl'); scroll.querySelectorAll('td.xp[data-in="'+cssq(inId)+'"]').forEach(td=>td.classList.add('chl')); } }
   function cssq(s){ return String(s).replace(/(["\\])/g,'\\$1'); }
   function exportIncroci(){
-    const rows=[['USCITA','Unità/Macchina/Scheda uscita','CH','INGRESSO','Unità/Macchina/Scheda ingresso','CH']];
-    for(const oid in DB.incroci){ const of=chFind(oid), inf=chFind(DB.incroci[oid]); if(!of)continue;
-      rows.push([of.c.macchina||of.c.canale, of.u.nome+' · '+of.m.nome+' · '+of.s.nome, of.c.ch||'', inf?(inf.c.macchina||inf.c.canale):'', inf?inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome:'', inf?inf.c.ch||'':'']); }
+    const rows=[['INGRESSO','Unità/Macchina/Scheda ingresso','CH','USCITA','Unità/Macchina/Scheda uscita','CH']];
+    for(const iid in DB.incroci){ const inf=chFind(iid), of=chFind(DB.incroci[iid]); if(!inf)continue;
+      rows.push([inf.c.macchina||inf.c.canale, inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome, inf.c.ch||'', of?(of.c.macchina||of.c.canale):'', of?of.u.nome+' · '+of.m.nome+' · '+of.s.nome:'', of?of.c.ch||'':'']); }
     if(rows.length===1){ toast('Nessun incrocio attivo'); return; }
     downloadBytes('quadro_incroci_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build([{name:'Incroci',rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     toast('Incroci esportati ('+(rows.length-1)+')');
@@ -1183,17 +1185,17 @@ function chTable(s, reload){
     el('button',{class:'btn sm',onclick:()=>printCanali(s)},'🖨 Stampa'),
     el('span',{class:'muted',style:'font-size:12px;margin-left:auto'},(s.canali.length)+' canali')));
   const tw=el('div',{class:'tablewrap'}); const tbl=el('table');
-  tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...CH_COLS.map(col=>el('th',{},col.label)), el('th',{},s.dir==='out'?'◂ Sorgente':'→ Instradato a'), el('th',{},''))));
+  tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...CH_COLS.map(col=>el('th',{},col.label)), el('th',{},s.dir==='out'?'◂ Ingressi alimentati':'→ Uscita'), el('th',{},''))));
   const tb=el('tbody');
   if(!s.canali.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(CH_COLS.length+3)},'Nessun canale — «➕ Aggiungi canale» o «⤒ Importa».')));
   s.canali.forEach((row,i)=>{
     const tr=el('tr'); tr.append(el('td',{},String(i+1)));
     for(const col of CH_COLS){ const inp=el('input',{value:row[col.key]||'',list:col.list||null,style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
       tr.append(el('td',{style:col.w?'max-width:'+col.w:''},inp)); }
-    if(s.dir==='out'){ const src=DB.incroci[row._id]; const f=src?chFind(src):null;
-      tr.append(el('td',{class:src?'':'empty',style:'white-space:normal;max-width:220px'}, src&&f?(f.u.nome+' · '+f.m.nome+' · '+chLabel(f.c)):'—')); }
-    else { const outs=[]; for(const k in DB.incroci){ if(DB.incroci[k]===row._id){ const f=chFind(k); if(f)outs.push(f.m.nome+' · '+chLabel(f.c)); } }
-      tr.append(el('td',{class:outs.length?'':'empty',style:'white-space:normal;max-width:220px'}, outs.length?outs.join(' ; '):'—')); }
+    if(s.dir==='in'){ const dst=DB.incroci[row._id]; const f=dst?chFind(dst):null;
+      tr.append(el('td',{class:dst?'':'empty',style:'white-space:normal;max-width:220px'}, dst&&f?(f.u.nome+' · '+f.m.nome+' · '+chLabel(f.c)):'—')); }
+    else { const ins=[]; for(const k in DB.incroci){ if(DB.incroci[k]===row._id){ const f=chFind(k); if(f)ins.push(f.m.nome+' · '+chLabel(f.c)); } }
+      tr.append(el('td',{class:ins.length?'':'empty',style:'white-space:normal;max-width:260px'}, ins.length?(ins.length+': '+ins.join(' ; ')):'—')); }
     tr.append(el('td',{},el('button',{class:'btn sm danger rowbtn',title:'Elimina canale',onclick:()=>{
       delete DB.incroci[row._id]; for(const k in DB.incroci) if(DB.incroci[k]===row._id) delete DB.incroci[k];
       s.canali=s.canali.filter(x=>x!==row); markDirty(); reload(); }},'🗑')));
@@ -1378,9 +1380,9 @@ function exportTuttoXLSX(){
     for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir) continue;
       for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot]); } return rows; };
   sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
-  const inc=[['USCITA','Unità/Macchina/Scheda uscita','CH','INGRESSO','Unità/Macchina/Scheda ingresso','CH']];
-  for(const oid in (DB.incroci||{})){ const of=chFind(oid), inf=chFind(DB.incroci[oid]); if(!of)continue;
-    inc.push([of.c.macchina||of.c.canale,of.u.nome+' · '+of.m.nome+' · '+of.s.nome,of.c.ch||'',inf?(inf.c.macchina||inf.c.canale):'',inf?inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome:'',inf?inf.c.ch||'':'']); }
+  const inc=[['INGRESSO','Unità/Macchina/Scheda ingresso','CH','USCITA','Unità/Macchina/Scheda uscita','CH']];
+  for(const iid in (DB.incroci||{})){ const inf=chFind(iid), of=chFind(DB.incroci[iid]); if(!inf)continue;
+    inc.push([inf.c.macchina||inf.c.canale,inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome,inf.c.ch||'',of?(of.c.macchina||of.c.canale):'',of?of.u.nome+' · '+of.m.nome+' · '+of.s.nome:'',of?of.c.ch||'':'']); }
   sheets.push({name:'Incroci',rows:inc});
   downloadBytes('gestione_audio_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Database esportato in Excel');
