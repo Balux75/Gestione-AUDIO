@@ -830,8 +830,8 @@ function schedeGroups(dir){ const out=[];
     if(s.dir!==dir) continue; const canali=s.canali||[]; if(!canali.length) continue;
     out.push({id:s._id, nome:s.nome, unitNome:u.nome, macNome:m.nome, tipo:s.tipo||'', canali}); }
   return out; }
-// etichetta del raggruppamento nel Quadro Incroci: NOME MACCHINA anteposto al nome scheda
-function grpLabel(g){ return (g.macNome? (g.macNome+' · '):'')+g.nome; }
+// etichetta del raggruppamento nel Quadro Incroci: STANZA · MACCHINA · scheda
+function grpLabel(g){ return (g.unitNome? (g.unitNome+' · '):'')+(g.macNome? (g.macNome+' · '):'')+g.nome; }
 function schedeOf(m,dir){ return (m.schede||[]).filter(s=>s.dir===dir); }
 function macCanali(m){ return (m.schede||[]).reduce((a,s)=>a+(s.canali||[]).length,0); }
 function unitChanCount(u){ return (u.macchine||[]).reduce((a,m)=>a+macCanali(m),0); }
@@ -922,6 +922,31 @@ function grpMatch(g,q){ if(!q)return true; q=q.toLowerCase();
   return g.canali.some(c=>chMatch(c,q)); }
 function chMatch(c,q){ return [c.canale,c.macchina,c.ch,c.note,c.slot].some(v=>String(v||'').toLowerCase().includes(q)); }
 
+/* Instradamenti per export/stampa: PRIMA le uscite, poi gli ingressi incrociati,
+   con il numero # di canale per uscita e ingresso. */
+const INCROCI_HEAD=['# Uscita','Uscita','Stanza · Macchina · Scheda (uscita)','CH','# Ingresso','Ingresso','Stanza · Macchina · Scheda (ingresso)','CH'];
+function incrociRows(){
+  const srcByOut={}; for(const iid in (DB.incroci||{})){ const o=DB.incroci[iid]; if(!o)continue; (srcByOut[o]=srcByOut[o]||[]).push(iid); }
+  const rows=[];
+  for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!=='out')continue;
+    (s.canali||[]).forEach((oc,oi)=>{ const ins=srcByOut[oc._id]; if(!ins||!ins.length)return;
+      for(const iid of ins){ const f=chFind(iid);
+        rows.push([ oi+1, (oc.macchina||oc.canale||''), u.nome+' · '+m.nome+' · '+s.nome, oc.ch||'',
+          f?(f.s.canali.indexOf(f.c)+1):'', f?(f.c.macchina||f.c.canale||''):'', f?(f.u.nome+' · '+f.m.nome+' · '+f.s.nome):'', f?(f.c.ch||''):'' ]); } }); }
+  return rows;
+}
+function buildIncrociHTML(){
+  const rows=incrociRows();
+  const th=INCROCI_HEAD.map(h=>'<th>'+esc(h)+'</th>').join('');
+  const trs=rows.map(r=>'<tr>'+r.map(v=>'<td>'+esc(v==null?'':v)+'</td>').join('')+'</tr>').join('');
+  return '<!doctype html><html><head><meta charset="utf-8"><title>Quadro Incroci</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>Quadro Incroci — instradamenti (uscite → ingressi)</h2><p>'+rows.length+' incroci · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>';
+}
+function exportIncroci(){ const rows=incrociRows(); if(!rows.length){ toast('Nessun incrocio attivo'); return; }
+  downloadBytes('quadro_incroci_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build([{name:'Incroci',rows:[INCROCI_HEAD,...rows]}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Incroci esportati ('+rows.length+')'); }
+function printIncroci(){ if(!incrociRows().length){ toast('Nessun incrocio attivo'); return; } const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  w.document.write(buildIncrociHTML()); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350); }
+
 function viewIncroci(c){
   const nCross=()=>Object.keys(DB.incroci||{}).length;
   if(!schedeGroups('in').length && !schedeGroups('out').length){
@@ -958,6 +983,7 @@ function viewIncroci(c){
     qOut, onlyA,
     el('div',{class:'sp',style:'flex:1'}),
     el('button',{class:'btn sm',onclick:exportIncroci},'⤓ Excel'),
+    el('button',{class:'btn sm',onclick:printIncroci},'🖨 Stampa'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Azzerare TUTTI gli incroci attivi?')){ DB.incroci={}; markDirty(); render(); toast('Incroci azzerati'); } }},'✕ Azzera')
   );
   c.append(bar);
@@ -995,8 +1021,8 @@ function viewIncroci(c){
         rDev.append(el('th',{class:'dev',colspan:String(span),title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo),style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.delete(g.id); render(); }},
           tipoDot(g.tipo),'▾ '+grpLabel(g)+(cc?' ':''), cc?el('span',{class:'cc'},'('+cc+')'):null));
         if(!chans.length) rCh.append(el('th',{class:'ch'}));
-        for(const ch of chans){ const dst=DB.incroci[ch._id]; const df=dst?chFind(dst):null;
-          rCh.append(el('th',{class:'ch','data-in':ch._id,title:chLabelFull(ch._id)+(df?('  →  '+chLabelFull(dst)):''),onclick:()=>highlightCol(ch._id)}, el('div',{},chLabel(ch)||'—'))); }
+        for(const ch of chans){ const dst=DB.incroci[ch._id]; const df=dst?chFind(dst):null; const num=g.canali.indexOf(ch)+1;
+          rCh.append(el('th',{class:'ch','data-in':ch._id,title:'#'+num+' · '+chLabelFull(ch._id)+(df?('  →  '+chLabelFull(dst)):''),onclick:()=>highlightCol(ch._id)}, el('div',{},'#'+num+' '+(chLabel(ch)||'—')))); }
       } else {
         rDev.append(el('th',{class:'devcol',rowspan:'2',title:g.unitNome+' · '+g.macNome+' · '+g.nome+' · '+tipoLabel(g.tipo)+' — clic per espandere',style:'border-bottom-color:'+tipoColor(g.tipo),onclick:()=>{ xpUI.expIn.add(g.id); render(); }},
           el('div',{}, tipoDot(g.tipo),'▸ '+grpLabel(g)+(cc?(' ('+cc+')'):''))));
@@ -1017,9 +1043,9 @@ function viewIncroci(c){
       }
       tbody.append(trDev);
       for(const oc of outChans){
-        const oid=oc._id; const nSrc=(srcByOut[oid]||[]).length; const tr=el('tr');
-        tr.append(el('td',{class:'rowlab','data-out':oid,title:chLabelFull(oid),onclick:()=>highlightRow(oid)},
-          el('span',{class:'lr'},oc.ch||''), (oc.macchina||oc.canale||'—'),
+        const oid=oc._id; const nSrc=(srcByOut[oid]||[]).length; const onum=g.canali.indexOf(oc)+1; const tr=el('tr');
+        tr.append(el('td',{class:'rowlab','data-out':oid,title:'#'+onum+' · '+chLabelFull(oid),onclick:()=>highlightRow(oid)},
+          el('span',{style:'color:var(--muted);font-weight:700;margin-right:4px'},'#'+onum), el('span',{class:'lr'},oc.ch||''), (oc.macchina||oc.canale||'—'),
           nSrc?el('span',{class:'src'},' ▸ '+nSrc+' ing.'):null));
         for(const col of cols){
           if(col.type==='ch'){ const on=(DB.incroci[col.id]===oid);
@@ -1045,14 +1071,6 @@ function viewIncroci(c){
     scroll.querySelectorAll('th.ch.hl').forEach(x=>x.classList.remove('hl')); scroll.querySelectorAll('.chl').forEach(x=>x.classList.remove('chl'));
     if(on&&cell){ cell.classList.add('hl'); scroll.querySelectorAll('td.xp[data-in="'+cssq(inId)+'"]').forEach(td=>td.classList.add('chl')); } }
   function cssq(s){ return String(s).replace(/(["\\])/g,'\\$1'); }
-  function exportIncroci(){
-    const rows=[['INGRESSO','Unità/Macchina/Scheda ingresso','CH','USCITA','Unità/Macchina/Scheda uscita','CH']];
-    for(const iid in DB.incroci){ const inf=chFind(iid), of=chFind(DB.incroci[iid]); if(!inf)continue;
-      rows.push([inf.c.macchina||inf.c.canale, inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome, inf.c.ch||'', of?(of.c.macchina||of.c.canale):'', of?of.u.nome+' · '+of.m.nome+' · '+of.s.nome:'', of?of.c.ch||'':'']); }
-    if(rows.length===1){ toast('Nessun incrocio attivo'); return; }
-    downloadBytes('quadro_incroci_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build([{name:'Incroci',rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    toast('Incroci esportati ('+(rows.length-1)+')');
-  }
   render();
 }
 
@@ -1382,12 +1400,20 @@ function exportTuttoXLSX(){
     for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir) continue;
       for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot]); } return rows; };
   sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
-  const inc=[['INGRESSO','Unità/Macchina/Scheda ingresso','CH','USCITA','Unità/Macchina/Scheda uscita','CH']];
-  for(const iid in (DB.incroci||{})){ const inf=chFind(iid), of=chFind(DB.incroci[iid]); if(!inf)continue;
-    inc.push([inf.c.macchina||inf.c.canale,inf.u.nome+' · '+inf.m.nome+' · '+inf.s.nome,inf.c.ch||'',of?(of.c.macchina||of.c.canale):'',of?of.u.nome+' · '+of.m.nome+' · '+of.s.nome:'',of?of.c.ch||'':'']); }
-  sheets.push({name:'Incroci',rows:inc});
+  sheets.push({name:'Incroci',rows:[INCROCI_HEAD,...incrociRows()]});
   downloadBytes('gestione_audio_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Database esportato in Excel');
+}
+// scarica una copia autonoma dell'applicazione (il file HTML del progetto)
+function downloadAppHTML(){
+  const doc=document.documentElement.cloneNode(true);
+  const q=sel=>doc.querySelector(sel);
+  ['#content','#nav','#modal'].forEach(s=>{ const n=q(s); if(n)n.innerHTML=''; });
+  const ov=q('#overlay'); if(ov)ov.classList.remove('show');
+  const ts=q('#toast'); if(ts){ ts.classList.remove('show'); ts.textContent=''; }
+  const vt=q('#viewTitle'); if(vt)vt.textContent='Dashboard';
+  download('GestioneAudio.html', '<!doctype html>\n'+doc.outerHTML, 'text/html;charset=utf-8');
+  toast('Applicazione HTML scaricata');
 }
 function viewBackup(c){
   c.append(el('div',{class:'help',html:'Esporta o reimporta l\'intero database (unità, macchine, canali e incroci) come file JSON, oppure esporta tutto in Excel. '+
@@ -1400,6 +1426,7 @@ function viewBackup(c){
     act('⤒ Importa JSON','Ripristina da un file di backup',importJSON),
     act('⤒ Importa MATRICE CCRF','Crea/aggiorna l\'unità CCRF dal foglio Excel di cablaggio',importMatriceExcel,'#3b82f6'),
     act('📊 Esporta Excel','Ingressi, Uscite e Incroci in .xlsx',exportTuttoXLSX,'#22c55e'),
+    act('⤓ Scarica app (HTML)','Salva una copia autonoma dell\'applicazione (GestioneAudio.html)',downloadAppHTML,'#a855f7'),
     act('✕ Azzera incroci','Rimuove tutti gli instradamenti attivi',()=>{ if(confirm('Azzerare TUTTI gli incroci attivi?')){ DB.incroci={}; markDirty(); toast('Incroci azzerati'); } },'#f59e0b'),
   );
   c.append(wrap);

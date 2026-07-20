@@ -60,10 +60,12 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   conteggio degli incroci, da espansa mostra i singoli canali. Con **entrambi i lati espansi**
   clicchi la casella all'incrocio per **instradare** (pallino verde ●). Un'**uscita** può essere
   inviata a **più ingressi**; ogni **ingresso** riceve **una sola** uscita (riclicca per
-  staccare). Filtri per **tipologia** (Analogici / Dante /
+  staccare). Ogni ingresso e uscita mostra il proprio **numero # di canale**; le intestazioni
+  riportano **stanza · macchina · scheda**. Filtri per **tipologia** (Analogici / Dante /
   Digitali / MADI / Bealinx) su ingressi e uscite, ricerca, «solo uscite instradate»,
-  espandi/comprimi tutto, evidenziazione riga/colonna, **export Excel** e **azzeramento**.
-  Tutto ciò che modifichi nelle schede si riflette qui automaticamente.
+  espandi/comprimi tutto, evidenziazione riga/colonna, **export Excel**, **stampa** e
+  **azzeramento**. Export ed stampa elencano **prima le uscite** e poi gli **ingressi**
+  incrociati (con i rispettivi #). Tutto ciò che modifichi nelle schede si riflette qui automaticamente.
 - **🏢 Unità operative** — elenco delle stanze. Con **➕ Nuova unità operativa** crei una stanza;
   aprendola vedi le sue **macchine** e con **➕ Nuova macchina** ne aggiungi. Rinomina/elimina
   unità e macchine (con pulizia automatica degli incroci collegati).
@@ -76,8 +78,9 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**.
 - **📊 Dashboard** — riepilogo di incroci attivi, unità, macchine e canali.
 - **💽 Backup / Ripristino** — esporta/importa l'intero database in **JSON**, esporta tutto in
-  **Excel** (Ingressi, Uscite, Incroci), **azzera** gli incroci, oppure **⤒ Importa MATRICE
-  CCRF** per (ri)creare l'unità «CCRF» e le sue 9 macchine dal foglio Excel di cablaggio.
+  **Excel** (Ingressi, Uscite, Incroci), **⤓ Scarica app (HTML)** per salvare una copia autonoma
+  dell'applicazione, **azzera** gli incroci, oppure **⤒ Importa MATRICE CCRF** per (ri)creare
+  l'unità «CCRF» e le sue macchine dal foglio Excel di cablaggio.
 
 Tutto l'import/export Excel avviene **offline**, senza librerie né server.
 
