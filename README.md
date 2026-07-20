@@ -35,12 +35,18 @@ dentro una cartella a tua scelta: puoi copiare la cartella su una chiavetta e po
 
 Importata dal file di cablaggio (foglio *MATRICE CCRF*):
 
-| | Dispositivi | Canali |
-|---|---|---|
-| **Ingressi** (sorgenti) | MADI 1 (FUTURO RAIWAY), MADI 2 (da Regia B), MADI 3 (da Regia TV), MADI 4 (da Tiepolo), BEALINX (da Regia C), IN DANTE CORE, IN DANTE 2, LOCAL AES IN, LOCAL IN ANALOG | **468** |
-| **Uscite** (destinazioni) | MADI 1–4, BEALINX, OUT DANTE 1, OUT DANTE 2, LOCAL AES OUT, LOCAL ANALOG OUT | **496** |
+| | Dispositivi | Tipologia | Canali |
+|---|---|---|---|
+| **Ingressi** (sorgenti) | MADI 1 (FUTURO RAIWAY), MADI 2 (da Regia B), MADI 3 (da Regia TV), MADI 4 (da Tiepolo) | MADI | **256** |
+| | BEALINX (da Regia C) | Bealinx | 64 |
+| | IN DANTE CORE, IN DANTE 2 | Dante | 128 |
+| | LOCAL AES IN | Digitali | 32 |
+| | LOCAL IN ANALOG | Analogici | 16 |
+| **Uscite** (destinazioni) | MADI 1–4, BEALINX, OUT DANTE 1/2, LOCAL AES OUT, LOCAL ANALOG OUT | MADI/Bealinx/Dante/Digitali/Analogici | **496** |
 
-Ogni canale ha: **canale**, **macchina** (segnale), **CH** (L/R/M), **mono/stereo**, **note** e **slot**.
+Ogni **dispositivo** ha una **tipologia** (Analogici / Dante / Digitali / MADI / Bealinx) usata
+per suddividere e filtrare il Quadro Incroci. Ogni **canale** ha: **canale**, **macchina**
+(segnale), **CH** (L/R/M), **mono/stereo**, **note** e **slot**.
 
 ---
 
@@ -66,6 +72,12 @@ Ogni canale ha: **canale**, **macchina** (segnale), **CH** (L/R/M), **mono/stere
   (clic = espandi). Sono disponibili: filtri di ricerca su ingressi e uscite, «**solo uscite
   instradate**», **espandi/comprimi tutto**, evidenziazione riga/colonna, **export Excel**
   degli instradamenti e **azzeramento** rapido.
+  I dispositivi sono **suddivisi per tipologia** di segnale — **Analogici / Dante / Digitali
+  (AES) / MADI / Bealinx** — con codifica a colori (pallino e bordo sull'intestazione di ogni
+  dispositivo) e due filtri a tendina («Ingressi» e «Uscite») per mostrare solo una tipologia
+  per asse. Gli ingressi/uscite provengono direttamente dalla matrice CCRF: **ogni modifica
+  fatta in «Regie & Matrice»** (rinomina, aggiunta/eliminazione canale, cambio tipologia) **si
+  riflette immediatamente sul Quadro Incroci**.
   > Suggerimento: la matrice parte tutta compressa (veloce). Espandi solo i dispositivi che
   > ti servono; l'espansione totale di tutti i 9+9 dispositivi genera decine di migliaia di
   > incroci ed è pesante da disegnare.

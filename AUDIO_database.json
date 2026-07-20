@@ -11,6 +11,7 @@
    {
     "id": "in_madi1",
     "nome": "MADI 1 - FUTURO RAIWAY",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 1 IN 1",
@@ -593,6 +594,7 @@
    {
     "id": "in_madi2",
     "nome": "DA REGIA B - MADI 2",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 2 IN 1",
@@ -1175,6 +1177,7 @@
    {
     "id": "in_madi3",
     "nome": "DA REGIA TV - MADI 3",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 3 IN 1",
@@ -1757,6 +1760,7 @@
    {
     "id": "in_madi4",
     "nome": "DA TIEPOLO - MADI 4",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 4 IN 1",
@@ -2339,6 +2343,7 @@
    {
     "id": "in_bealinx",
     "nome": "DA REGIA C - BEALINX",
+    "tipo": "bealinx",
     "canali": [
      {
       "canale": "BEA IN 1",
@@ -2921,6 +2926,7 @@
    {
     "id": "in_dante_core",
     "nome": "IN DANTE CORE",
+    "tipo": "dante",
     "canali": [
      {
       "canale": "Dante IN 01",
@@ -3503,6 +3509,7 @@
    {
     "id": "in_dante2",
     "nome": "IN DANTE 2",
+    "tipo": "dante",
     "canali": [
      {
       "canale": "Dante IN 01",
@@ -4085,6 +4092,7 @@
    {
     "id": "in_aes",
     "nome": "LOCAL AES IN",
+    "tipo": "digitale",
     "canali": [
      {
       "canale": "1",
@@ -4379,6 +4387,7 @@
    {
     "id": "in_analog",
     "nome": "LOCAL IN ANALOG",
+    "tipo": "analogico",
     "canali": [
      {
       "canale": "1",
@@ -4531,6 +4540,7 @@
    {
     "id": "out_madi1",
     "nome": "MADI 1 - A FUTURO RAIWAY",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 1 OUT 1",
@@ -5113,6 +5123,7 @@
    {
     "id": "out_madi2",
     "nome": "A REGIA B - MADI 2",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 2 OUT 1",
@@ -5695,6 +5706,7 @@
    {
     "id": "out_madi3",
     "nome": "A REGIA TV - MADI 3",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 3 OUT 1",
@@ -6277,6 +6289,7 @@
    {
     "id": "out_madi4",
     "nome": "A TIEPOLO - MADI 4",
+    "tipo": "madi",
     "canali": [
      {
       "canale": "MADI 4 OUT 1",
@@ -6859,6 +6872,7 @@
    {
     "id": "out_bealinx",
     "nome": "A REGIA C - BEALINX",
+    "tipo": "bealinx",
     "canali": [
      {
       "canale": "BEA OUT 1",
@@ -7441,6 +7455,7 @@
    {
     "id": "out_dante1",
     "nome": "OUT DANTE 1",
+    "tipo": "dante",
     "canali": [
      {
       "canale": "DANTE OUT 1",
@@ -8023,6 +8038,7 @@
    {
     "id": "out_dante2",
     "nome": "OUT DANTE 2",
+    "tipo": "dante",
     "canali": [
      {
       "canale": "DANTE OUT 1",
@@ -8605,6 +8621,7 @@
    {
     "id": "out_aes",
     "nome": "LOCAL AES OUT",
+    "tipo": "digitale",
     "canali": [
      {
       "canale": "1",
@@ -8899,6 +8916,7 @@
    {
     "id": "out_analog",
     "nome": "LOCAL ANALOG OUT",
+    "tipo": "analogico",
     "canali": [
      {
       "canale": "1",
