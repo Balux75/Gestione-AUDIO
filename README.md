@@ -69,6 +69,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
 - **🏢 Unità operative** — elenco delle stanze. Con **➕ Nuova unità operativa** crei una stanza;
   aprendola vedi le sue **macchine** e con **➕ Nuova macchina** ne aggiungi. Rinomina/elimina
   unità e macchine (con pulizia automatica degli incroci collegati).
+- **🔌 Patch audio** — dentro ogni stanza puoi creare dei **pannelli patch** a **sviluppo
+  orizzontale** (le porte sono le colonne, gli attributi le righe: **Provenienza**, **n° cavo e
+  coppia**, **N°**, **Tipologia**, **Segnale**). Aggiungi/elimina porte (o **+8** in blocco),
+  con **Importa** (Excel/CSV), **Esporta** e **Stampa** (layout orizzontale). Le patch
+  **non entrano** nel Quadro Incroci: servono a documentare i pannelli/cablaggi della stanza.
 - **🎛️ Dettaglio macchina** — nome modificabile e due sezioni distinte per colore: **🎙️ Schede di
   ingresso** e **🔊 Schede di uscita**. Con **➕ Nuova scheda ingresso/uscita** aggiungi le schede
   (una per dispositivo: MADI 1, MADI 2, Dante 1…).

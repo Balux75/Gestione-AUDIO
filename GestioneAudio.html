@@ -177,6 +177,22 @@ table.xp td.agg.mixed{cursor:default}
 .ccrf-dev{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .ccrf-dev .n{font-weight:600}
 .ccrf-dev .b{font-size:11px;color:var(--muted)}
+
+/* Patch audio (sviluppo orizzontale) */
+.patchwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);max-width:100%}
+table.patch{border-collapse:separate;border-spacing:0;font-size:12px;white-space:nowrap}
+table.patch th,table.patch td{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+table.patch th.rl{position:sticky;left:0;z-index:2;background:var(--panel2);text-align:left;padding:6px 10px;min-width:160px;color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.4px}
+table.patch th.porthead{background:var(--panel2);text-align:center;padding:4px 6px;min-width:96px}
+table.patch th.porthead .pn{font-weight:700}
+table.patch td{padding:0}
+table.patch td input{border:none;background:transparent;text-align:center;width:100%;min-width:96px;padding:6px 6px;border-radius:0}
+table.patch td input:focus{background:var(--bg2);outline:1px solid var(--accent)}
+table.patch tr.hl-row th.rl{color:#e9d27a}
+table.patch tr.hl-row td{background:#39320f}
+table.patch tr.hl-row td input{color:#f2e39a;font-weight:600}
+table.patch tr.prov td{background:#122033}
+table.patch tr.prov td input{font-weight:600}
 </style>
 </head>
 <body>
@@ -850,7 +866,7 @@ function buildNav(){
   const nav=$('#nav'); nav.innerHTML='';
   const cur=location.hash.slice(1)||'dashboard';
   const mkLink=(id,ico,label,extra,pad)=>{ const cnt=extra?null:navCount(id);
-    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')));
+    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')));
     return el('a',{href:'#'+id, class:(active?'active':''), style:pad?'padding-left:'+pad:''},
       el('span',{class:'ico'},ico), el('span',{},label), cnt!=null?el('span',{class:'cnt'},String(cnt)):null); };
   for(const it of VIEWS){
@@ -858,7 +874,7 @@ function buildNav(){
     nav.append(mkLink(it.id,it.ico,it.label));
     if(it.id==='unita'){
       for(const u of (DB.unita||[])){
-        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/');
+        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/');
         nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
           el('span',{class:'ico'},'🏢'), el('span',{},u.nome||'Unità'),
           el('span',{class:'cnt'},String((u.macchine||[]).length))));
@@ -883,6 +899,7 @@ function route(){
   else if(hash==='unita'){ $('#viewTitle').textContent='Unità operative'; viewUnita(c); }
   else if(hash==='nuova-unita'){ nuovaUnita(); }
   else if(hash.startsWith('scheda/')){ const [,uid_,mid,sid]=hash.split('/'); viewScheda(c, uid_, mid, sid); }
+  else if(hash.startsWith('patch/')){ const [,uid_,pid]=hash.split('/'); viewPatch(c, uid_, pid); }
   else if(hash.startsWith('macchina/')){ const [,uid_,mid]=hash.split('/'); viewMacchina(c, uid_, mid); }
   else if(hash.startsWith('unita/')){ viewUnitaDetail(c, hash.slice(6)); }
   else if(hash==='backup'){ $('#viewTitle').textContent='Backup / Ripristino'; viewBackup(c); }
@@ -1114,20 +1131,44 @@ function viewUnitaDetail(c, id){
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare l\'unità «'+(u.nome||'')+'» e tutte le sue macchine?')){ purgeIncroci(collectChIds(u)); DB.unita=DB.unita.filter(x=>x!==u); markDirty(); location.hash='unita'; } }},'🗑 Elimina unità')));
   c.append(el('div',{class:'fld',style:'max-width:640px;margin-bottom:12px'}, el('label',{},'Descrizione'),
     el('input',{value:u.descrizione||'',placeholder:'es. Centro di coordinamento CCRF',onchange:e=>{ u.descrizione=e.target.value; markDirty(); }})));
-  if(!u.macchine.length){ c.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna macchina: premi «➕ Nuova macchina» (es. MATRICE CENTRALIZZATA, un mixer, un codec…).')); return; }
+  // ---- Macchine ----
   c.append(el('div',{class:'section-h'},'Macchine dell\'unità'));
-  const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(280px,1fr))'});
-  for(const m of u.macchine){
-    const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='macchina/'+u._id+'/'+m._id;
-    const ni=schedeOf(m,'in').length, no=schedeOf(m,'out').length;
-    card.append(
-      el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛️ '+(m.nome||'Macchina')), el('div',{class:'b'},macCanali(m)+' canali')),
-      el('div',{class:'chips',style:'margin-top:8px'},
-        el('span',{class:'tag',style:'background:'+DIR_META.in.color+'22;color:'+DIR_META.in.color},'🎙️ '+ni+' schede ingresso'),
-        el('span',{class:'tag',style:'background:'+DIR_META.out.color+'22;color:'+DIR_META.out.color},'🔊 '+no+' schede uscita')));
-    cards.append(card);
+  if(!u.macchine.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px 12px'},'Nessuna macchina: premi «➕ Nuova macchina» (es. MATRICE CENTRALIZZATA, un mixer, un codec…).')); }
+  else {
+    const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(280px,1fr))'});
+    for(const m of u.macchine){
+      const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='macchina/'+u._id+'/'+m._id;
+      const ni=schedeOf(m,'in').length, no=schedeOf(m,'out').length;
+      card.append(
+        el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛️ '+(m.nome||'Macchina')), el('div',{class:'b'},macCanali(m)+' canali')),
+        el('div',{class:'chips',style:'margin-top:8px'},
+          el('span',{class:'tag',style:'background:'+DIR_META.in.color+'22;color:'+DIR_META.in.color},'🎙️ '+ni+' schede ingresso'),
+          el('span',{class:'tag',style:'background:'+DIR_META.out.color+'22;color:'+DIR_META.out.color},'🔊 '+no+' schede uscita')));
+      cards.append(card);
+    }
+    c.append(cards);
   }
-  c.append(cards);
+  // ---- Patch audio (non entrano nel Quadro Incroci) ----
+  u.patch=u.patch||[];
+  c.append(el('div',{class:'section-h',style:'margin-top:22px'},'🔌 Patch audio'));
+  c.append(el('div',{class:'toolbar'}, el('button',{class:'btn sm',onclick:()=>nuovaPatch(u)},'➕ Nuova patch'),
+    el('span',{class:'muted',style:'font-size:12px'},'pannelli patch della stanza (non entrano nel Quadro Incroci)')));
+  if(!u.patch.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessuna patch.')); }
+  else {
+    const pc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const pp of u.patch){
+      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #eab308'}); card.onclick=()=>location.hash='patch/'+u._id+'/'+pp._id;
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔌 '+(pp.nome||'Patch')), el('div',{class:'b'},(pp.porte||[]).length+' porte')));
+      pc.append(card);
+    }
+    c.append(pc);
+  }
+}
+function nuovaPatch(u){
+  const nome=prompt('Nome del pannello patch (es. C11 PNL, Patch MIC…):','Patch');
+  if(nome===null) return;
+  const pp={_id:uid('pat_'), nome:(nome.trim()||'Patch'), porte:[]};
+  (u.patch=u.patch||[]).push(pp); markDirty(); location.hash='patch/'+u._id+'/'+pp._id;
 }
 function nuovaMacchina(u){
   const nome=prompt('Nome della nuova macchina (es. MATRICE CENTRALIZZATA, Mixer, Codec…):','MATRICE CENTRALIZZATA');
@@ -1269,6 +1310,87 @@ function parseCSV(text){
 }
 
 /* ============================================================
+   PATCH AUDIO — pannello patch a sviluppo ORIZZONTALE.
+   Porte = colonne; attributi = righe (Provenienza, n° cavo e coppia,
+   N°, Tipologia, Segnale). Non entra nel Quadro Incroci.
+   ============================================================ */
+const PATCH_ROWS=[
+  {key:'provenienza',label:'Provenienza', cls:'prov'},
+  {key:'cavo',label:'n° cavo e coppia', cls:'hl-row'},
+  {key:'numero',label:'N°'},
+  {key:'tipologia',label:'Tipologia', list:'patchTipi'},
+  {key:'segnale',label:'Segnale'},
+];
+function newPorta(o){ return Object.assign({_id:uid('po_'),provenienza:'',cavo:'',numero:'',tipologia:'',segnale:''}, o||{}); }
+function viewPatch(c, uid_, pid){
+  const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
+  u.patch=u.patch||[]; const pp=u.patch.find(x=>x._id===pid); if(!pp){ location.hash='unita/'+uid_; return; }
+  pp.porte=pp.porte||[];
+  $('#viewTitle').textContent='Patch · '+(pp.nome||'');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
+  c.append(el('datalist',{id:'patchTipi'}, ...['XLR M','XLR F','Jack M','Jack F','RCA','BNC','Bantam','Speakon','RJ45'].map(v=>el('option',{value:v}))));
+  const titleInp=el('input',{value:pp.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
+    onchange:e=>{ pp.nome=e.target.value.trim()||'Patch'; markDirty(); buildNav(); $('#viewTitle').textContent='Patch · '+pp.nome; }});
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🔌'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>{ pp.porte.push(newPorta()); markDirty(); render(); }},'➕ Aggiungi porta'),
+    el('button',{class:'btn sm',onclick:()=>{ for(let k=0;k<8;k++) pp.porte.push(newPorta()); markDirty(); render(); }},'➕ +8'),
+    el('button',{class:'btn sm',onclick:()=>importPatch(pp,render)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportPatch(pp)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printPatch(pp)},'🖨 Stampa'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la patch «'+(pp.nome||'')+'»?')){ u.patch=u.patch.filter(x=>x!==pp); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina patch')));
+  const area=el('div'); c.append(area);
+  function render(){
+    area.innerHTML='';
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pp.porte.length)+' porte · sviluppo orizzontale'));
+    if(!pp.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna porta — «➕ Aggiungi porta».')); return; }
+    const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
+    const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Porta'));
+    pp.porte.forEach((po,i)=>{ hr.append(el('th',{class:'porthead'},
+      el('div',{class:'pn'},String(i+1)),
+      el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina porta',onclick:()=>{ pp.porte.splice(i,1); markDirty(); render(); }},'🗑'))); });
+    thead.append(hr); tbl.append(thead);
+    const tb=el('tbody');
+    for(const r of PATCH_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
+      pp.porte.forEach(po=>{ tr.append(el('td',{}, el('input',{value:po[r.key]||'',list:r.list||null,onchange:e=>{ po[r.key]=e.target.value; markDirty(); }}))); });
+      tb.append(tr); }
+    tbl.append(tb); wrap.append(tbl); area.append(wrap);
+  }
+  render();
+}
+function exportPatch(pp){
+  const keys=PATCH_ROWS.map(r=>r.key), labels=PATCH_ROWS.map(r=>r.label);
+  const rows=[['Porta',...labels]]; (pp.porte||[]).forEach((po,i)=>rows.push([i+1,...keys.map(k=>po[k]||'')]));
+  downloadBytes((pp.nome||'patch').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build([{name:(pp.nome||'Patch').slice(0,31),rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Patch esportata');
+}
+function importPatch(pp,reload){
+  const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{ let rows; const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
+      if(!rows||rows.length<1){ toast('File vuoto'); return; }
+      const headers=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
+      const idxOf=(...names)=>{ for(let i=0;i<headers.length;i++){ if(names.some(n=>headers[i]===n||headers[i].includes(n))) return i; } return -1; };
+      const map={provenienza:idxOf('provenienza','pnl','pannello'),cavo:idxOf('cavo','coppia'),numero:idxOf('n°','numero','num'),tipologia:idxOf('tipologia','tipo','connettore'),segnale:idxOf('segnale','signal')};
+      const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
+      const parsed=data.map(r=>newPorta({provenienza:map.provenienza>=0?String(r[map.provenienza]||'').trim():'',cavo:map.cavo>=0?String(r[map.cavo]||'').trim():'',
+        numero:map.numero>=0?String(r[map.numero]||'').trim():'',tipologia:map.tipologia>=0?String(r[map.tipologia]||'').trim():'',segnale:map.segnale>=0?String(r[map.segnale]||'').trim():''}));
+      if(!parsed.length){ toast('Nessuna riga valida'); return; }
+      const rep=confirm(parsed.length+' porte lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
+      pp.porte=rep?parsed:(pp.porte||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' porte');
+    }catch(err){ console.error(err); toast('Errore import: '+err.message); }
+  }}); document.body.append(inp); inp.click(); inp.remove();
+}
+function printPatch(pp){
+  const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const porte=pp.porte||[];
+  const head='<th>Porta</th>'+porte.map((po,i)=>'<th>'+(i+1)+'</th>').join('');
+  const body=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esc(po[r.key]==null?'':po[r.key])+'</td>').join('')+'</tr>').join('');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pp.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pp.nome)+' — patch audio</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
+  w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
+}
+
+/* ============================================================
    Import massivo dal foglio "MATRICE CCRF": crea/aggiorna l'unità
    CCRF con la macchina "MATRICE CENTRALIZZATA" e le sue schede.
    ============================================================ */
@@ -1364,6 +1486,9 @@ function ensureModel(){
       if((u.uscite||[]).length) m.schede.push(newScheda('out','Uscite','analogico',u.uscite.map(r=>newCh(r))));
       delete u.ingressi; delete u.uscite; delete u.patch; changed=true; }
     u.macchine=u.macchine||[];
+    // patch audio della stanza (pannelli a sviluppo orizzontale)
+    if(!Array.isArray(u.patch)){ u.patch=[]; changed=true; }
+    for(const pp of u.patch){ pp.porte=pp.porte||[]; for(const po of pp.porte) if(!po._id){ po._id=uid('po_'); changed=true; } }
     // CCRF con macchine appaiate (modello precedente) -> una MATRICE CENTRALIZZATA con schede
     if(u._ccrf && u.macchine.length && u.macchine.every(m=>!m.schede) && u.macchine.some(m=>m.ingressi||m.uscite)){
       const schede=[];
