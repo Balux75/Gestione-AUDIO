@@ -5,7 +5,7 @@ l'**interconnessione audio** delle **3 regie radiofoniche** (Regia B, Regia TV/A
 Regia C) e della **matrice centralizzata** CCRF, con un **Quadro Incroci** in stile
 *Dante Controller*.
 
-Tutti i dati — **compresi gli incroci** — risiedono in un unico file `database.json`
+Tutti i dati — **compresi gli incroci** — risiedono in un unico file `AUDIO_database.json`
 dentro una cartella a tua scelta: puoi copiare la cartella su una chiavetta e portartela ovunque.
 
 > Nasce come modulo audio del progetto [Gestione-LAN-e-VOIP](https://github.com/Balux75/Gestione-LAN-e-VOIP),
@@ -17,17 +17,17 @@ dentro una cartella a tua scelta: puoi copiare la cartella su una chiavetta e po
 
 1. Copia in una cartella i file:
    - `GestioneAudio.html` (l'applicazione)
-   - `database-esempio.json` (matrice già popolata con ingressi/uscite)
+   - `AUDIO_database.json` (matrice già popolata con ingressi/uscite)
 2. Fai **doppio clic** su `GestioneAudio.html` → si apre nel browser (consigliati **Microsoft Edge** o **Google Chrome**).
 3. In alto premi **📂 Cartella database**:
-   - **Annulla** → *Apri* un database esistente: seleziona `database-esempio.json`.
-   - **OK** → *Crea* un nuovo `database.json` nella cartella.
+   - **Annulla** → *Apri* un database esistente: seleziona `AUDIO_database.json`.
+   - **OK** → *Crea* un nuovo `AUDIO_database.json` nella cartella.
 4. Da qui in poi le modifiche vengono salvate direttamente sul file (autosalvataggio attivo).
    Puoi salvare anche a mano con **💾 Salva** o con <kbd>Ctrl</kbd>+<kbd>S</kbd>.
 
 > **Importante:** il file HTML contiene **solo l'applicazione** e la **struttura di
 > riferimento** della matrice (dispositivi e canali). Gli **incroci** che imposti stanno
-> nel file esterno `database.json`. Tieni i due file nella stessa cartella e fai backup del `.json`.
+> nel file esterno `AUDIO_database.json`. Tieni i due file nella stessa cartella e fai backup del `.json`.
 
 ---
 
@@ -75,7 +75,7 @@ Tutto l'import/export Excel avviene **offline**, senza librerie né server.
 
 ## Persistenza dei dati
 
-- **Con Edge/Chrome**: dopo aver collegato la cartella, tutto viene scritto in `database.json`. È il metodo consigliato.
+- **Con Edge/Chrome**: dopo aver collegato la cartella, tutto viene scritto in `AUDIO_database.json`. È il metodo consigliato.
 - **Con altri browser (es. Firefox)**: il salvataggio diretto su file non è supportato; i dati
   restano nella memoria del browser. Usa periodicamente **Backup → Esporta JSON** per conservare
   una copia e **Importa JSON** per ricaricarla.
