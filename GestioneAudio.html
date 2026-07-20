@@ -1,0 +1,1205 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48dGV4dCB5PSIuOWVtIiBmb250LXNpemU9IjkwIj7wn46b77iPPC90ZXh0Pjwvc3ZnPg==">
+<title>Gestione Audio Regie — CCRF</title>
+<style>
+:root{
+  --bg:#0f172a; --bg2:#111c34; --panel:#152238; --panel2:#1b2b47; --line:#26385a;
+  --txt:#e6edf7; --muted:#94a6c4; --accent:#3b82f6; --accent2:#22c55e; --warn:#f59e0b;
+  --danger:#ef4444; --chip:#1e3a5f; --radius:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--accent)}
+input,select,textarea{font-family:inherit;font-size:13px;background:var(--bg2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:64px}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* Sidebar */
+.side{width:250px;background:linear-gradient(180deg,#0d1728,#0f1e38);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.brand{padding:18px 18px 12px;border-bottom:1px solid var(--line)}
+.brand h1{font-size:15px;margin:0;letter-spacing:.3px}
+.brand small{color:var(--muted);font-size:11px}
+.nav{padding:10px;overflow:auto;flex:1}
+.nav .grp{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:14px 10px 6px}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--txt);text-decoration:none;font-size:13.5px;margin-bottom:2px}
+.nav a:hover{background:var(--panel)}
+.nav a.active{background:var(--accent);color:#fff;font-weight:600}
+.nav a .ico{width:18px;text-align:center}
+.nav a .cnt{margin-left:auto;background:rgba(255,255,255,.12);border-radius:20px;padding:1px 8px;font-size:11px}
+.dbstat{padding:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+.dbstat .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--danger);margin-right:6px}
+.dbstat.ok .dot{background:var(--accent2)}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.top{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--bg2);flex-shrink:0}
+.top .title{font-size:16px;font-weight:600}
+.top .sp{flex:1}
+.content{flex:1;overflow:auto;padding:20px}
+
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:8px 14px;border-radius:8px;font-size:13px;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.green{background:var(--accent2);border-color:var(--accent2);color:#04240f}
+.btn.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn.danger:hover{background:var(--danger);color:#fff}
+.btn.sm{padding:5px 9px;font-size:12px}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.card .k{color:var(--muted);font-size:12px}
+.card .v{font-size:28px;font-weight:700;margin-top:6px}
+.card .sub{color:var(--muted);font-size:11px;margin-top:4px}
+
+/* Table */
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.toolbar input.search{max-width:280px}
+.toolbar select{width:auto;min-width:130px}
+.tablewrap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:auto;max-height:calc(100vh - 210px)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;white-space:nowrap}
+th,td{padding:8px 11px;border-bottom:1px solid var(--line);text-align:left}
+th{position:sticky;top:0;background:var(--panel2);z-index:2;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);cursor:pointer;white-space:nowrap}
+tbody tr:hover{background:var(--panel2)}
+td .rowbtn{opacity:0;transition:.1s}
+tr:hover td .rowbtn{opacity:1}
+.tag{display:inline-block;background:var(--chip);color:#bcd4f5;border-radius:20px;padding:2px 9px;font-size:11px}
+.tag.g{background:#14361f;color:#7ee2a0}
+.tag.o{background:#3a2a12;color:#f2c179}
+.tag.r{background:#3a1a1a;color:#f2a0a0}
+.empty{color:#5f7397;font-style:italic}
+.muted{color:var(--muted)}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(3,8,20,.66);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:30px 16px;overflow:auto}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--line);border-radius:14px;width:100%;max-width:860px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.modal.wide{max-width:1100px}
+.modal .mh{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal .mh h3{margin:0;font-size:15px}
+.modal .mh .x{margin-left:auto;background:none;border:none;color:var(--muted);font-size:22px;line-height:1}
+.modal .mb{padding:18px 20px;max-height:70vh;overflow:auto}
+.modal .mf{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px}
+.fld label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.section-h{font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+
+/* Switch port grid */
+.swhead{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.portgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;max-width:900px}
+.port{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;cursor:pointer;min-height:42px}
+.port:hover{border-color:var(--accent)}
+.port.occ{background:#122a45;border-color:#2a5a8a}
+.port .num{font-weight:700;background:var(--panel2);border-radius:6px;min-width:30px;text-align:center;padding:3px 4px;font-size:12px}
+.port.occ .num{background:var(--accent);color:#fff}
+.port .info{overflow:hidden}
+.port .info .d{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.port .info .s{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin:8px 0 16px}
+.sw-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;cursor:pointer}
+.sw-card:hover{border-color:var(--accent)}
+.sw-card h4{margin:0 0 6px;font-size:14px}
+.bar{height:6px;background:var(--panel2);border-radius:4px;overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;background:var(--accent)}
+.backlink{color:var(--muted);cursor:pointer;font-size:13px;margin-bottom:12px;display:inline-block}
+.backlink:hover{color:var(--accent)}
+.help{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;color:var(--muted);font-size:12.5px;margin-bottom:16px;line-height:1.6}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--panel2);border:1px solid var(--accent2);color:var(--txt);padding:12px 18px;border-radius:10px;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);transition:.25s}
+.toast.show{opacity:1;transform:none}
+.pill{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--chip);color:#bcd4f5;cursor:pointer}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.dz{border:1px dashed var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+kbd{background:#0b1424;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:11px}
+
+/* ===== Quadro Incroci (matrice audio tipo Dante Controller) ===== */
+.xp-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.xp-toolbar .grpbtn{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.xp-toolbar .grpbtn>button{background:var(--panel2);border:none;border-right:1px solid var(--line);color:var(--txt);padding:6px 10px;font-size:12px}
+.xp-toolbar .grpbtn>button:last-child{border-right:none}
+.xp-toolbar .grpbtn>button:hover{background:var(--accent);color:#fff}
+.xp-stat{font-size:12px;color:var(--muted)}
+.xp-stat b{color:var(--accent2)}
+.xp-scroll{position:relative;overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);max-height:calc(100vh - 205px)}
+table.xp{border-collapse:separate;border-spacing:0;font-size:11px;white-space:nowrap}
+table.xp th,table.xp td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:0;margin:0}
+/* corner */
+table.xp .corner{position:sticky;left:0;top:0;z-index:6;background:var(--bg2);min-width:230px;max-width:230px;width:230px;padding:6px 10px;text-align:left;vertical-align:bottom;white-space:normal}
+table.xp .corner b{color:var(--accent);font-size:11px}
+table.xp .corner small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+/* input device header (columns) */
+table.xp thead th.dev{position:sticky;top:0;z-index:4;background:var(--panel2);color:#bcd4f5;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;text-align:center;cursor:pointer;border-bottom:2px solid var(--accent)}
+table.xp thead th.dev:hover{background:var(--accent);color:#fff}
+table.xp thead th.dev .cc{color:var(--accent2);font-weight:700}
+/* input channel header (rotated) */
+table.xp thead th.ch{position:sticky;top:0;z-index:3;background:var(--panel2);height:150px;min-width:26px;max-width:26px;width:26px;vertical-align:bottom;cursor:pointer;padding:0}
+table.xp thead th.ch>div{width:26px;transform-origin:bottom left;transform:translateX(23px) rotate(-90deg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:146px;font-size:10.5px;padding-bottom:5px;text-align:left}
+table.xp thead th.ch:hover{background:var(--accent)}
+table.xp thead th.ch.hl{background:var(--accent);color:#fff}
+/* collapsed input device = single vertical column */
+table.xp thead th.devcol{position:sticky;top:0;z-index:4;background:#173049;height:150px;min-width:30px;max-width:30px;width:30px;vertical-align:bottom;cursor:pointer;padding:0;border-bottom:2px solid var(--accent)}
+table.xp thead th.devcol>div{width:30px;transform-origin:bottom left;transform:translateX(26px) rotate(-90deg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:146px;font-size:11px;font-weight:600;color:#bcd4f5;padding-bottom:6px;text-align:left}
+table.xp thead th.devcol:hover>div{color:#fff}
+table.xp thead th.devcol:hover{background:var(--accent)}
+table.xp thead th.dev>span{white-space:nowrap}
+/* output device row header */
+table.xp tr.devrow th{position:sticky;left:0;z-index:2;background:var(--panel2);color:#bcd4f5;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:6px 10px;text-align:left;cursor:pointer;border-top:2px solid var(--accent);min-width:230px;max-width:230px;width:230px}
+table.xp tr.devrow th:hover{background:var(--accent);color:#fff}
+table.xp tr.devrow th .cc{color:var(--accent2);font-weight:700}
+table.xp tr.devrow td.blk{background:var(--panel)}
+/* output channel row label (sticky left) */
+table.xp td.rowlab{position:sticky;left:0;z-index:1;background:var(--bg2);min-width:230px;max-width:230px;width:230px;padding:3px 10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.xp td.rowlab:hover{background:var(--panel2)}
+table.xp td.rowlab.hl{background:var(--accent);color:#fff}
+table.xp td.rowlab .lr{display:inline-block;min-width:16px;color:var(--muted);font-weight:700}
+table.xp td.rowlab .src{color:var(--accent2);font-size:10px}
+/* crosspoints */
+table.xp td.xp{width:26px;min-width:26px;max-width:26px;height:22px;text-align:center;cursor:pointer;background:var(--panel)}
+table.xp td.xp:hover{background:#1d3a5f}
+table.xp td.xp.on{background:#123a22}
+table.xp td.xp.on::after{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--accent2);box-shadow:0 0 6px rgba(34,197,94,.7)}
+table.xp td.xp.rhl{background:#16263f}
+table.xp td.xp.chl{background:#16263f}
+table.xp td.xp.on.rhl,table.xp td.xp.on.chl{background:#123a22}
+/* aggregate (device x device) cell */
+table.xp td.agg{width:30px;min-width:30px;max-width:30px;text-align:center;cursor:pointer;background:var(--panel);color:var(--muted);font-size:12px;padding:4px 2px}
+table.xp td.agg:hover{background:#1d3a5f;color:#fff}
+table.xp td.agg.has{background:#123a22;color:var(--accent2);font-weight:700}
+table.xp td.agg.mixed{cursor:default}
+/* CCRF device cards */
+.ccrf-dev{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ccrf-dev .n{font-weight:600}
+.ccrf-dev .b{font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <h1>🎛️ Gestione Audio</h1>
+      <small>Regie &amp; Matrice CCRF · dati locali</small>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="dbstat" id="dbstat">
+      <span class="dot"></span><span id="dbstatText">Database non collegato</span>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <div class="title" id="viewTitle">Dashboard</div>
+      <div class="sp"></div>
+      <button class="btn sm" id="btnConnect">📂 Cartella database</button>
+      <button class="btn sm green" id="btnSave">💾 Salva</button>
+      <button class="btn sm" id="btnBackup">⤓ Backup</button>
+    </div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+
+/* ---------- Seed minimo: la struttura dati vive nel database.json esterno ---------- */
+const SEED_DB = {"meta":{"versione":1,"app":"Gestione Audio Regie (CCRF)","creato":"2026-07-20","descrizione":"Database locale - matrice audio delle regie radiofoniche. Tutti i dati risiedono nel file database.json esterno."}};
+
+/* -------------------- Stato & persistenza -------------------- */
+let DB = null;
+let fileHandle = null;      // FileSystemFileHandle sul database.json
+let dirty = false;
+let autosaveTimer = null;
+const hasFS = 'showSaveFilePicker' in window;
+
+const IDB = {
+  db:null,
+  open(){ return new Promise((res,rej)=>{ const r=indexedDB.open('gestioneaudio',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('kv');
+    r.onsuccess=()=>{IDB.db=r.result;res()}; r.onerror=()=>rej(r.error); }); },
+  async set(k,v){ if(!IDB.db) await IDB.open(); return new Promise((res,rej)=>{ const t=IDB.db.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=res; t.onerror=()=>rej(t.error);}); },
+  async get(k){ if(!IDB.db) await IDB.open(); return new Promise((res,rej)=>{ const t=IDB.db.transaction('kv','readonly'); const rq=t.objectStore('kv').get(k); rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error);}); }
+};
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function uid(p){ return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function markDirty(){ dirty=true; renderDbStat(); clearTimeout(autosaveTimer); autosaveTimer=setTimeout(saveDB,1500); }
+
+async function loadDB(){
+  // 1) prova a riconnettere il file handle salvato
+  try{
+    const h = await IDB.get('fileHandle');
+    if(h){
+      const perm = await h.queryPermission({mode:'readwrite'});
+      if(perm==='granted'){
+        fileHandle=h;
+        const txt = await (await h.getFile()).text();
+        DB = JSON.parse(txt); dirty=false; return 'file';
+      } else { fileHandle=h; } // richiederà permesso al primo salvataggio
+    }
+  }catch(e){ console.warn('handle',e); }
+  // 2) fallback: copia di lavoro nel browser
+  const local = localStorage.getItem('gestioneaudio_db');
+  if(local){ try{ DB=JSON.parse(local); return 'local'; }catch(e){} }
+  // 3) dati iniziali (seed)
+  DB = clone(SEED_DB); return 'seed';
+}
+
+async function saveDB(){
+  DB.meta.salvato = new Date().toISOString();
+  const txt = JSON.stringify(DB);
+  localStorage.setItem('gestioneaudio_db', txt);
+  if(fileHandle){
+    try{
+      let perm = await fileHandle.queryPermission({mode:'readwrite'});
+      if(perm!=='granted') perm = await fileHandle.requestPermission({mode:'readwrite'});
+      if(perm==='granted'){
+        const w = await fileHandle.createWritable();
+        await w.write(txt); await w.close();
+        dirty=false; renderDbStat(); toast('Database salvato su file'); return;
+      }
+    }catch(e){ console.warn(e); toast('Errore salvataggio file — copia locale ok'); }
+  }
+  dirty=false; renderDbStat();
+  toast(hasFS?'Salvato in locale (collega una cartella per il file)':'Salvato nel browser');
+}
+
+async function connectFolder(){
+  if(!hasFS){ toast('Browser senza accesso file: usa Edge o Chrome, oppure Backup/Ripristino'); return; }
+  const create = confirm('OK = CREA un nuovo database.json in una cartella\nAnnulla = APRI un database.json esistente');
+  try{
+    if(create){
+      fileHandle = await window.showSaveFilePicker({suggestedName:'database.json',
+        types:[{description:'Database JSON',accept:{'application/json':['.json']}}]});
+      await IDB.set('fileHandle', fileHandle);
+      await saveDB();
+    }else{
+      const [h] = await window.showOpenFilePicker({types:[{description:'Database JSON',accept:{'application/json':['.json']}}]});
+      fileHandle=h; await IDB.set('fileHandle', fileHandle);
+      const txt = await (await h.getFile()).text();
+      DB = JSON.parse(txt); dirty=false;
+      route(); toast('Database collegato e caricato');
+    }
+    renderDbStat();
+  }catch(e){ if(e.name!=='AbortError') toast('Operazione annullata'); }
+}
+
+/* ============================================================
+   Mini-motore XLSX (lettura + scrittura) senza dipendenze.
+   - Scrittura: ZIP con metodo STORE (no compressione) + CRC32,
+     celle come inlineStr => Excel valido.
+   - Lettura: parser ZIP (central directory) + inflate DEFLATE
+     (porting di "tinf") + parsing worksheet/sharedStrings.
+   ============================================================ */
+const XLSX = (function(){
+
+  /* ---------- CRC32 ---------- */
+  const CRC_TABLE = (()=>{ const t=new Uint32Array(256);
+    for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? (0xEDB88320 ^ (c>>>1)) : (c>>>1); t[n]=c>>>0; }
+    return t; })();
+  function crc32(buf){ let c=0xFFFFFFFF; for(let i=0;i<buf.length;i++) c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c>>>8); return (c ^ 0xFFFFFFFF)>>>0; }
+
+  const enc = new TextEncoder();
+  function u16(n){ return [n&0xFF,(n>>>8)&0xFF]; }
+  function u32(n){ return [n&0xFF,(n>>>8)&0xFF,(n>>>16)&0xFF,(n>>>24)&0xFF]; }
+
+  /* ---------- ZIP writer (STORE) ---------- */
+  function zip(files){ // files: [{name, data:Uint8Array}]
+    const chunks=[]; const central=[]; let offset=0;
+    for(const f of files){
+      const nameBytes = enc.encode(f.name);
+      const crc = crc32(f.data);
+      const size = f.data.length;
+      const local = [].concat(u32(0x04034b50), u16(20), u16(0), u16(0), u16(0), u16(0),
+        u32(crc), u32(size), u32(size), u16(nameBytes.length), u16(0));
+      const localHeader = new Uint8Array(local);
+      chunks.push(localHeader, nameBytes, f.data);
+      const localLen = localHeader.length + nameBytes.length + f.data.length;
+      const cen = [].concat(u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
+        u32(crc), u32(size), u32(size), u16(nameBytes.length), u16(0), u16(0), u16(0), u16(0),
+        u32(0), u32(offset));
+      central.push(new Uint8Array(cen), nameBytes);
+      offset += localLen;
+    }
+    let cenSize=0; for(const c of central) cenSize+=c.length;
+    const eocd = new Uint8Array([].concat(u32(0x06054b50), u16(0), u16(0),
+      u16(files.length), u16(files.length), u32(cenSize), u32(offset), u16(0)));
+    const all=[...chunks, ...central, eocd];
+    let total=0; for(const a of all) total+=a.length;
+    const out=new Uint8Array(total); let p=0;
+    for(const a of all){ out.set(a,p); p+=a.length; }
+    return out;
+  }
+
+  /* ---------- XML helpers ---------- */
+  function xmlEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c])); }
+  function colName(i){ let s=''; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=(i-m-1)/26; } return s; }
+
+  function sheetXml(rows){ // rows: array of array of cell values (strings/numbers)
+    let out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+    rows.forEach((row,r)=>{
+      out+='<row r="'+(r+1)+'">';
+      row.forEach((val,c)=>{
+        const ref=colName(c)+(r+1);
+        if(val===''||val==null){ out+='<c r="'+ref+'"/>'; return; }
+        if(typeof val==='number' && isFinite(val)){ out+='<c r="'+ref+'"><v>'+val+'</v></c>'; }
+        else { out+='<c r="'+ref+'" t="inlineStr"><is><t xml:space="preserve">'+xmlEsc(val)+'</t></is></c>'; }
+      });
+      out+='</row>';
+    });
+    out+='</sheetData></worksheet>';
+    return out;
+  }
+
+  // sheets: [{name, rows:[[...]]}]
+  function build(sheets){
+    sheets = sheets.map((s,i)=>({name:(s.name||('Foglio'+(i+1))).slice(0,31).replace(/[\\\/\?\*\[\]:]/g,' '), rows:s.rows}));
+    const files=[];
+    files.push({name:'[Content_Types].xml', data:enc.encode(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+      '<Default Extension="xml" ContentType="application/xml"/>'+
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+      sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+
+      '</Types>')});
+    files.push({name:'_rels/.rels', data:enc.encode(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+      '</Relationships>')});
+    files.push({name:'xl/workbook.xml', data:enc.encode(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+
+      sheets.map((s,i)=>'<sheet name="'+xmlEsc(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join('')+
+      '</sheets></workbook>')});
+    files.push({name:'xl/_rels/workbook.xml.rels', data:enc.encode(
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+      sheets.map((s,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+
+      '</Relationships>')});
+    sheets.forEach((s,i)=>files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml', data:enc.encode(sheetXml(s.rows))}));
+    return zip(files);
+  }
+
+  /* ---------- INFLATE (tinf port) ---------- */
+  function Tree(){ this.table=new Uint16Array(16); this.trans=new Uint16Array(288); }
+  function Data(source){ this.s=source; this.i=0; this.tag=0; this.bitcount=0;
+    this.ltree=new Tree(); this.dtree=new Tree(); }
+  const sltree=new Tree(), sdtree=new Tree();
+  const length_bits=new Uint8Array(30), length_base=new Uint16Array(30),
+        dist_bits=new Uint8Array(30), dist_base=new Uint16Array(30);
+  const clcidx=new Uint8Array([16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15]);
+  function build_bits_base(bits,base,delta,first){ let i,sum=first;
+    for(i=0;i<delta;i++) bits[i]=0;
+    for(i=0;i<30-delta;i++) bits[i+delta]=(i/delta)|0;
+    for(i=0;i<30;i++){ base[i]=sum; sum+=1<<bits[i]; } }
+  function build_fixed_trees(lt,dt){ let i;
+    for(i=0;i<7;i++) lt.table[i]=0; lt.table[7]=24; lt.table[8]=152; lt.table[9]=112;
+    for(i=0;i<24;i++) lt.trans[i]=256+i;
+    for(i=0;i<144;i++) lt.trans[24+i]=i;
+    for(i=0;i<8;i++) lt.trans[24+144+i]=280+i;
+    for(i=0;i<112;i++) lt.trans[24+144+8+i]=144+i;
+    for(i=0;i<5;i++) dt.table[i]=0; dt.table[5]=32;
+    for(i=0;i<32;i++) dt.trans[i]=i; }
+  function build_tree(t,lengths,off,num){ const offs=new Uint16Array(16); let i,sum=0;
+    for(i=0;i<16;i++) t.table[i]=0;
+    for(i=0;i<num;i++) t.table[lengths[off+i]]++;
+    t.table[0]=0;
+    for(i=0;i<16;i++){ offs[i]=sum; sum+=t.table[i]; }
+    for(i=0;i<num;i++){ if(lengths[off+i]) t.trans[offs[lengths[off+i]]++]=i; } }
+  function getbit(d){ if(!d.bitcount--){ d.tag=d.s[d.i++]; d.bitcount=7; }
+    const bit=d.tag&1; d.tag>>>=1; return bit; }
+  function read_bits(d,num,base){ if(!num) return base; let val=0;
+    while(d.bitcount<24){ d.tag|=d.s[d.i++]<<d.bitcount; d.bitcount+=8; }
+    val=d.tag&(0xffff>>>(16-num)); d.tag>>>=num; d.bitcount-=num; return val+base; }
+  function decode_symbol(d,t){ let sum=0,cur=0,len=0;
+    do{ cur=2*cur+getbit(d); len++; sum+=t.table[len]; cur-=t.table[len]; }while(cur>=0);
+    return t.trans[sum+cur]; }
+  function decode_trees(d,lt,dt){ const lengths=new Uint8Array(288+32); let i,num,length;
+    const hlit=read_bits(d,5,257); const hdist=read_bits(d,5,1); const hclen=read_bits(d,4,4);
+    for(i=0;i<19;i++) lengths[i]=0;
+    for(i=0;i<hclen;i++){ const clen=read_bits(d,3,0); lengths[clcidx[i]]=clen; }
+    build_tree(d.ltree, lengths, 0, 19);
+    for(num=0;num<hlit+hdist;){ const sym=decode_symbol(d,d.ltree);
+      switch(sym){
+        case 16:{ let prev=lengths[num-1]; for(length=read_bits(d,2,3);length;length--) lengths[num++]=prev; break; }
+        case 17:{ for(length=read_bits(d,3,3);length;length--) lengths[num++]=0; break; }
+        case 18:{ for(length=read_bits(d,7,11);length;length--) lengths[num++]=0; break; }
+        default: lengths[num++]=sym; break;
+      } }
+    build_tree(lt, lengths, 0, hlit); build_tree(dt, lengths, hlit, hdist); }
+  function inflate_block_data(d,out,lt,dt){
+    for(;;){ let sym=decode_symbol(d,lt);
+      if(sym===256) return;
+      if(sym<256){ out.push(sym); }
+      else{ sym-=257; const length=read_bits(d,length_bits[sym],length_base[sym]);
+        const dist=decode_symbol(d,dt); const offs=out.length-read_bits(d,dist_bits[dist],dist_base[dist]);
+        for(let i=offs;i<offs+length;i++) out.push(out[i]); } } }
+  function inflate_uncompressed(d,out){ let length,invlength;
+    while(d.bitcount>8){ d.i--; d.bitcount-=8; }
+    length=d.s[d.i+1]; length=256*length+d.s[d.i]; d.i+=4; // skip length + ~length
+    for(let i=length;i;i--) out.push(d.s[d.i++]);
+    d.bitcount=0; }
+  let treesReady=false;
+  function initTrees(){ if(treesReady) return; build_fixed_trees(sltree,sdtree);
+    build_bits_base(length_bits,length_base,4,3); build_bits_base(dist_bits,dist_base,2,1);
+    length_bits[28]=0; length_base[28]=258; treesReady=true; }
+  function inflateRaw(source){ initTrees();
+    const d=new Data(source); const out=[]; let bfinal,btype; const LIM=source.length;
+    do{
+      if(d.i>LIM+8) throw new Error('inflate: stream troncato');
+      bfinal=getbit(d); btype=read_bits(d,2,0);
+      if(btype===0) inflate_uncompressed(d,out);
+      else if(btype===1) inflate_block_data(d,out,sltree,sdtree);
+      else if(btype===2){ decode_trees(d,d.ltree,d.dtree); inflate_block_data(d,out,d.ltree,d.dtree); }
+      else throw new Error('inflate: blocco non valido');
+    }while(!bfinal);
+    return new Uint8Array(out); }
+
+  // Decompressione preferendo l'API nativa del browser (Edge/Chrome), fallback JS.
+  async function inflateRawAsync(source){
+    if(typeof DecompressionStream!=='undefined'){
+      try{
+        const ds=new DecompressionStream('deflate-raw');
+        const stream=new Blob([source]).stream().pipeThrough(ds);
+        return new Uint8Array(await new Response(stream).arrayBuffer());
+      }catch(e){ /* fallback */ }
+    }
+    return inflateRaw(source);
+  }
+
+  /* ---------- ZIP reader ---------- */
+  function readU16(b,o){ return b[o]|(b[o+1]<<8); }
+  function readU32(b,o){ return (b[o]|(b[o+1]<<8)|(b[o+2]<<16)|(b[o+3]<<24))>>>0; }
+  async function unzip(bytes){ // returns {name: Uint8Array}
+    // find EOCD
+    let eocd=-1;
+    for(let i=bytes.length-22;i>=0;i--){ if(readU32(bytes,i)===0x06054b50){ eocd=i; break; } }
+    if(eocd<0) throw new Error('ZIP non valido');
+    const cdCount=readU16(bytes,eocd+10);
+    let p=readU32(bytes,eocd+16);
+    const out={};
+    for(let n=0;n<cdCount;n++){
+      if(readU32(bytes,p)!==0x02014b50) break;
+      const method=readU16(bytes,p+10);
+      const compSize=readU32(bytes,p+20);
+      const nameLen=readU16(bytes,p+28);
+      const extraLen=readU16(bytes,p+30);
+      const commentLen=readU16(bytes,p+32);
+      const localOff=readU32(bytes,p+42);
+      const name=new TextDecoder().decode(bytes.subarray(p+46,p+46+nameLen));
+      // local header
+      const lNameLen=readU16(bytes,localOff+26);
+      const lExtraLen=readU16(bytes,localOff+28);
+      const dataStart=localOff+30+lNameLen+lExtraLen;
+      const comp=bytes.subarray(dataStart,dataStart+compSize);
+      let data;
+      if(method===0) data=comp;
+      else if(method===8) data=await inflateRawAsync(comp);
+      else throw new Error('Metodo compressione non supportato: '+method);
+      out[name]=data;
+      p+=46+nameLen+extraLen+commentLen;
+    }
+    return out;
+  }
+
+  /* ---------- XLSX parse ---------- */
+  function parseSharedStrings(xml){
+    const res=[]; if(!xml) return res;
+    const re=/<si>([\s\S]*?)<\/si>/g; let m;
+    while((m=re.exec(xml))){
+      let s=''; const tre=/<t[^>]*>([\s\S]*?)<\/t>/g; let tm;
+      while((tm=tre.exec(m[1]))) s+=tm[1];
+      res.push(unescapeXml(s));
+    }
+    return res;
+  }
+  function unescapeXml(s){ return s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#(\d+);/g,(_,d)=>String.fromCharCode(+d)).replace(/&amp;/g,'&'); }
+  function colToIndex(ref){ const m=/^([A-Z]+)/.exec(ref); let c=0; for(const ch of m[1]) c=c*26+(ch.charCodeAt(0)-64); return c-1; }
+  function parseSheet(xml, shared){
+    const rows=[]; const rowRe=/<row[^>]*>([\s\S]*?)<\/row>/g; let rm;
+    while((rm=rowRe.exec(xml))){
+      const cells=[]; const cRe=/<c\s+([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g; let cm;
+      while((cm=cRe.exec(rm[1]))){
+        const attrs=cm[1]; const inner=cm[2]||'';
+        const refM=/r="([A-Z]+\d+)"/.exec(attrs); const ci=refM?colToIndex(refM[1]):cells.length;
+        const tM=/t="([^"]+)"/.exec(attrs); const type=tM?tM[1]:'n';
+        let val='';
+        if(type==='s'){ const vM=/<v>([\s\S]*?)<\/v>/.exec(inner); if(vM) val=shared[+vM[1]]||''; }
+        else if(type==='inlineStr'){ let s=''; const tre=/<t[^>]*>([\s\S]*?)<\/t>/g; let tm; while((tm=tre.exec(inner))) s+=tm[1]; val=unescapeXml(s); }
+        else if(type==='str'){ const vM=/<v>([\s\S]*?)<\/v>/.exec(inner); if(vM) val=unescapeXml(vM[1]); }
+        else { const vM=/<v>([\s\S]*?)<\/v>/.exec(inner); if(vM) val=vM[1]; }
+        cells[ci]=val;
+      }
+      for(let i=0;i<cells.length;i++) if(cells[i]==null) cells[i]='';
+      rows.push(cells);
+    }
+    return rows;
+  }
+  function firstSheetPath(zipFiles){
+    // resolve first sheet target from workbook rels; fallback to sheet1
+    const names=Object.keys(zipFiles).filter(n=>/^xl\/worksheets\/sheet\d+\.xml$/.test(n))
+      .sort((a,b)=>(+a.match(/(\d+)/)[1])-(+b.match(/(\d+)/)[1]));
+    return names[0];
+  }
+  // read: returns {sheetNames, rows} for first sheet (or named)
+  async function read(bytes){
+    const files=await unzip(bytes);
+    const shared=parseSharedStrings(files['xl/sharedStrings.xml']?new TextDecoder().decode(files['xl/sharedStrings.xml']):'');
+    const sheetPath=firstSheetPath(files);
+    if(!sheetPath) throw new Error('Nessun foglio trovato');
+    const xml=new TextDecoder().decode(files[sheetPath]);
+    const rows=parseSheet(xml, shared);
+    return {rows};
+  }
+
+  return { build, read, unzip, inflateRaw };
+})();
+
+/* Parser log Cisco (show int status / description / mac-address-table / cdp)
+   Riempie SOLO i campi vuoti delle porte switch (non sovrascrive i dati Excel). */
+const SWLOG = (function(){
+  function normId(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+  function macFmt(raw){ // "5006.ab08.d360" o "5006AB08D360" -> "50:06:AB:08:D3:60"
+    const h=String(raw||'').replace(/[^0-9a-fA-F]/g,'').toUpperCase();
+    if(h.length!==12) return String(raw||'').toUpperCase();
+    return h.match(/.{2}/g).join(':');
+  }
+  // interfaccia -> {membro, porta} solo per Gi<m>/0/<p>
+  function parseIface(name){
+    const m=/^(?:Gi|Gig|GigabitEthernet)\s?(\d+)\/(\d+)\/(\d+)$/i.exec(String(name).trim().replace(/\s+/,''));
+    if(!m) return null;
+    return {membro:+m[1], slot:+m[2], porta:+m[3]};
+  }
+  function parseIfaceLoose(name){ // per CDP "Gig 2/0/5"
+    const m=/(\d+)\/(\d+)\/(\d+)/.exec(String(name));
+    if(!m) return null; return {membro:+m[1], slot:+m[2], porta:+m[3]};
+  }
+
+  function parse(text){
+    const lines=text.split(/\r?\n/);
+    const swName=(text.match(/^\s*(SW-VE-[A-Z0-9-]+)/m)||[])[1] || (lines[0]||'').replace(/_.*/,'').trim();
+    const ports={}; // key "m/p" -> {membro,porta,name,vlan,status,speed,type,desc,macs:[],cdp:null}
+    function P(m,p){ const k=m+'/'+p; return ports[k]||(ports[k]={membro:m,porta:p,name:'',vlan:'',status:'',speed:'',type:'',desc:'',macs:[],cdp:null}); }
+
+    let sec='';
+    for(let i=0;i<lines.length;i++){
+      const ln=lines[i];
+      if(/#show int status/i.test(ln)){ sec='status'; continue; }
+      if(/#show int description/i.test(ln)){ sec='desc'; continue; }
+      if(/#sh(ow)? mac address-table/i.test(ln)){ sec='mac'; continue; }
+      if(/#sh(ow)? cdp n/i.test(ln)){ sec='cdp'; continue; }
+      if(/#(exi|exit|conf|wr)/i.test(ln)){ sec=''; continue; }
+
+      if(sec==='status'){
+        // Gi1/0/1  Name(può contenere spazi)  Status  Vlan  Duplex  Speed  Type
+        // Ancoriamo sulla parola chiave di stato (il Name può riempire l'intera colonna).
+        const m=/^(Gi\d+\/\d+\/\d+)\s+(.*?)\s+(connected|notconnect|disabled|err-disabled|monitoring)\s+(\S+)\s+(\S+)\s+(\S+)\s+(.+?)\s*$/.exec(ln);
+        if(m){ const intf=parseIface(m[1]); if(intf){ const pt=P(intf.membro,intf.porta);
+          pt.name=m[2].trim(); pt.status=m[3]; pt.vlan=m[4]; pt.speed=m[6]; pt.type=m[7].trim(); } }
+      } else if(sec==='desc'){
+        // Gi1/0/1   up  up  Description...
+        const m=/^(Gi\d+\/\d+\/\d+)\s+(\S+(?:\s\S+)?)\s+(up|down)\s*(.*)$/.exec(ln);
+        if(m){ const intf=parseIface(m[1]); if(intf){ const pt=P(intf.membro,intf.porta); const d=(m[4]||'').trim(); if(d) pt.desc=d; } }
+      } else if(sec==='mac'){
+        // vlan  mac  type  iface
+        const m=/^\s*(\S+)\s+([0-9a-fA-F]{4}\.[0-9a-fA-F]{4}\.[0-9a-fA-F]{4})\s+(STATIC|DYNAMIC)\s+(Gi\d+\/\d+\/\d+)/.exec(ln);
+        if(m){ const intf=parseIface(m[4]); if(intf){ const pt=P(intf.membro,intf.porta);
+          pt.macs.push({vlan:m[1], mac:m[2], type:m[3]}); } }
+      } else if(sec==='cdp'){
+        // Device ID puo' stare su riga separata dalla local intrfce
+        const m=/^(\S.*?)\s{2,}(Gig?\s?\d+\/\d+\/\d+)\s+\d+\s+([RTBSHIPrDCM ]+?)\s+(\S+)\s+(\S.*)$/.exec(ln);
+        let dev,ifc,cap,plat;
+        if(m){ dev=m[1].trim(); ifc=m[2]; cap=m[3].trim(); plat=m[4]; }
+        else{
+          // Device ID su riga a sé, poi riga con "  Gig x/y/z  ..."
+          const m2=/^\s+(Gig?\s?\d+\/\d+\/\d+)\s+\d+\s+([RTBSHIPrDCM ]+?)\s+(\S+)\s+(\S.*)$/.exec(ln);
+          if(m2){ dev=(lines[i-1]||'').trim(); ifc=m2[1]; cap=m2[2].trim(); plat=m2[3]; }
+        }
+        if(ifc){ const intf=parseIfaceLoose(ifc); if(intf){ const pt=P(intf.membro,intf.porta);
+          pt.cdp={device:dev, cap, plat}; } }
+      }
+    }
+    return {swName, swNorm:normId(swName), ports};
+  }
+
+  // sceglie il MAC da mettere in porta (dal Device ID CDP se telefono, altrimenti mac-table)
+  function pickMac(pt){
+    const dev=(pt.cdp && pt.cdp.device)||'';
+    let m=/^SEP([0-9A-Fa-f]{12})$/.exec(dev); if(m) return macFmt(m[1]);
+    m=/^T21P_E2([0-9A-Fa-f]{12})$/i.exec(dev); if(m) return macFmt(m[1]);
+    const macs=[...new Set(pt.macs.map(x=>x.mac))];
+    if(macs.length===0 || macs.length>6) return ''; // 0 o uplink/trunk (troppi)
+    return macs.map(macFmt).join(' ');
+  }
+  function deviceLabel(pt){
+    const dev=(pt.cdp && pt.cdp.device)||''; if(!dev) return '';
+    const plat=(pt.cdp && pt.cdp.plat)||'';
+    if(/^SEP[0-9A-F]{12}$/i.test(dev)) return 'Telefono '+dev;
+    if(/^T21P/i.test(dev)) return 'Telefono Yealink';
+    if(/^AP-|AIR|LAP|CAP/i.test(dev+plat)) return 'AP '+dev.replace(/\.servizi.*/i,'');
+    if(/^SW-VE|^RT-VE/i.test(dev)) return 'Uplink '+dev.replace(/\.network.*/i,'');
+    return dev.replace(/\.(servizi|network)\.rai\.it.*/i,'');
+  }
+  function buildNote(pt){
+    const bits=[];
+    if(pt.status) bits.push(pt.status);
+    if(pt.speed && /\d/.test(pt.speed)) bits.push(pt.speed.replace('a-',''));
+    const dl=deviceLabel(pt); if(dl) bits.push(dl);
+    return bits.join(' · ');
+  }
+
+  // applica i log al DB: riempie solo campi vuoti. Ritorna statistiche.
+  function apply(DB, parsedLogs, opts){
+    opts=opts||{};
+    const stats={switchTrovati:0, switchNonTrovati:[], porteAggiornate:0, campiScritti:0, dettaglio:[]};
+    for(const log of parsedLogs){
+      // trova gli switch del DB con prefisso normalizzato = log.swNorm, in ordine di array (= membri)
+      const membri=DB.switches.filter(s=>normId(s.nome).startsWith(log.swNorm) && normId(s.nome).length>=log.swNorm.length);
+      if(!membri.length){ stats.switchNonTrovati.push(log.swName); continue; }
+      stats.switchTrovati++;
+      let swPorte=0, swCampi=0;
+      for(const [k,pt] of Object.entries(log.ports)){
+        const sw=membri[pt.membro-1]; if(!sw) continue;
+        const porta=sw.porte.find(p=>p.numero===pt.porta); if(!porta) continue;
+        let touched=false;
+        const desc=pt.desc || pt.name;
+        const setIf=(campo,val)=>{ if(val && !String(porta[campo]||'').trim()){ porta[campo]=val; swCampi++; stats.campiScritti++; touched=true; } };
+        setIf('descrizione', desc);
+        setIf('vlan', pt.vlan && pt.vlan!=='1' ? pt.vlan : (pt.vlan==='1'?'':''));
+        setIf('mac', pickMac(pt));
+        setIf('note', buildNote(pt));
+        if(touched){ swPorte++; stats.porteAggiornate++; }
+      }
+      stats.dettaglio.push({switch:membri.map(m=>m.nome).join(' + '), porte:swPorte, campi:swCampi});
+    }
+    return stats;
+  }
+
+  // applica il log a UN SOLO switch, usando le porte del membro indicato (default 1). Riempi-solo-vuoti.
+  function applyOne(sw, parsedLog, member, overwrite){
+    member=member||1; const stats={porte:0, campi:0};
+    for(const pt of Object.values(parsedLog.ports)){
+      if(pt.membro!==member) continue;
+      const porta=sw.porte.find(p=>p.numero===pt.porta); if(!porta) continue;
+      let touched=false;
+      const desc=pt.desc || pt.name;
+      const setIf=(campo,val)=>{ if(val && (overwrite || !String(porta[campo]||'').trim())){ porta[campo]=val; stats.campi++; touched=true; } };
+      setIf('descrizione', desc);
+      setIf('vlan', pt.vlan && pt.vlan!=='1' ? pt.vlan : '');
+      setIf('mac', pickMac(pt));
+      setIf('note', buildNote(pt));
+      if(touched) stats.porte++;
+    }
+    return stats;
+  }
+
+  return { parse, apply, applyOne, normId };
+})();
+
+
+
+/* -------------------- Utilità UI -------------------- */
+const $ = s=>document.querySelector(s);
+function el(tag, attrs={}, ...kids){
+  const e=document.createElement(tag);
+  for(const k in attrs){ if(k==='class')e.className=attrs[k]; else if(k==='html')e.innerHTML=attrs[k]; else if(k.startsWith('on'))e.addEventListener(k.slice(2),attrs[k]); else if(attrs[k]!=null)e.setAttribute(k,attrs[k]); }
+  for(const kid of kids.flat()){ if(kid==null)continue; e.append(kid.nodeType?kid:document.createTextNode(kid)); }
+  return e;
+}
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+let toastTimer;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
+function openModal(node,wide){ const m=$('#modal'); m.className='modal'+(wide?' wide':''); m.innerHTML=''; m.append(node); $('#overlay').classList.add('show'); }
+function closeModal(){ $('#overlay').classList.remove('show'); }
+$('#overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeModal(); });
+
+function renderDbStat(){
+  const s=$('#dbstat'), t=$('#dbstatText');
+  if(fileHandle){ s.classList.add('ok'); t.innerHTML='File: <b>'+esc(fileHandle.name)+'</b>'+(dirty?' · <span style="color:#f59e0b">da salvare</span>':' · salvato'); }
+  else if(!hasFS){ s.classList.remove('ok'); t.innerHTML='Memoria browser'+(dirty?' · da salvare':' · ok'); }
+  else { s.classList.remove('ok'); t.innerHTML='Nessuna cartella collegata'+(dirty?' · <span style="color:#f59e0b">non salvato</span>':''); }
+}
+
+/* -------------------- Dati di riferimento CCRF (matrice audio) --------------------
+   Struttura ingressi/uscite delle regie e della matrice centralizzata,
+   importata dal file di cablaggio (foglio MATRICE CCRF). Gli "incroci"
+   (instradamenti) vengono salvati nel database.json dell'utente. */
+const SEED_CCRF = {"version":1,"ingressi":[{"id":"in_madi1","nome":"MADI 1 · FUTURO RAIWAY","canali":[{"idx":1,"canale":"MADI 1 IN 1","macchina":"MADI 1 IN 1","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":2,"canale":"MADI 1 IN 2","macchina":"MADI 1 IN 2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"MADI 1 IN 3","macchina":"MADI 1 IN 3","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"MADI 1 IN 4","macchina":"MADI 1 IN 4","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"MADI 1 IN 5","macchina":"MADI 1 IN 5","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"MADI 1 IN 6","macchina":"MADI 1 IN 6","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"MADI 1 IN 7","macchina":"MADI 1 IN 7","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"MADI 1 IN 8","macchina":"MADI 1 IN 8","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"MADI 1 IN 9","macchina":"MADI 1 IN 9","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"MADI 1 IN 10","macchina":"MADI 1 IN 10","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"MADI 1 IN 11","macchina":"MADI 1 IN 11","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"MADI 1 IN 12","macchina":"MADI 1 IN 12","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"MADI 1 IN 13","macchina":"MADI 1 IN 13","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 1 IN 14","macchina":"MADI 1 IN 14","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 1 IN 15","macchina":"MADI 1 IN 15","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 1 IN 16","macchina":"MADI 1 IN 16","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 1 IN 17","macchina":"MADI 1 IN 17","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"MADI 1 IN 18","macchina":"MADI 1 IN 18","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 1 IN 19","macchina":"MADI 1 IN 19","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 1 IN 20","macchina":"MADI 1 IN 20","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 1 IN 21","macchina":"MADI 1 IN 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 1 IN 22","macchina":"MADI 1 IN 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 1 IN 23","macchina":"MADI 1 IN 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 1 IN 24","macchina":"MADI 1 IN 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 1 IN 25","macchina":"MADI 1 IN 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 1 IN 26","macchina":"MADI 1 IN 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 1 IN 27","macchina":"MADI 1 IN 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 1 IN 28","macchina":"MADI 1 IN 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 1 IN 29","macchina":"MADI 1 IN 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 1 IN 30","macchina":"MADI 1 IN 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 1 IN 31","macchina":"MADI 1 IN 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 1 IN 32","macchina":"MADI 1 IN 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 1 IN 33","macchina":"MADI 1 IN 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 1 IN 34","macchina":"MADI 1 IN 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 1 IN 35","macchina":"MADI 1 IN 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 1 IN 36","macchina":"MADI 1 IN 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 1 IN 37","macchina":"MADI 1 IN 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 1 IN 38","macchina":"MADI 1 IN 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 1 IN 39","macchina":"MADI 1 IN 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 1 IN 40","macchina":"MADI 1 IN 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 1 IN 41","macchina":"MADI 1 IN 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 1 IN 42","macchina":"MADI 1 IN 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 1 IN 43","macchina":"MADI 1 IN 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 1 IN 44","macchina":"MADI 1 IN 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 1 IN 45","macchina":"MADI 1 IN 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 1 IN 46","macchina":"MADI 1 IN 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 1 IN 47","macchina":"MADI 1 IN 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 1 IN 48","macchina":"MADI 1 IN 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 1 IN 49","macchina":"MADI 1 IN 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 1 IN 50","macchina":"MADI 1 IN 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 1 IN 51","macchina":"MADI 1 IN 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 1 IN 52","macchina":"MADI 1 IN 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 1 IN 53","macchina":"MADI 1 IN 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 1 IN 54","macchina":"MADI 1 IN 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 1 IN 55","macchina":"MADI 1 IN 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 1 IN 56","macchina":"MADI 1 IN 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 1 IN 57","macchina":"MADI 1 IN 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 1 IN 58","macchina":"MADI 1 IN 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 1 IN 59","macchina":"MADI 1 IN 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 1 IN 60","macchina":"MADI 1 IN 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_madi2","nome":"MADI 2 · da REGIA B","canali":[{"idx":1,"canale":"MADI 2 IN 1","macchina":"RB PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":2,"canale":"MADI 2 IN 2","macchina":"RB PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"MADI 2 IN 3","macchina":"RB PGM 2 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"MADI 2 IN 4","macchina":"RB PGM 2 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"MADI 2 IN 5","macchina":"RB PGM REC OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"MADI 2 IN 6","macchina":"RB PGM REC OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"MADI 2 IN 7","macchina":"RB AUX 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"MADI 2 IN 8","macchina":"RB AUX 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"MADI 2 IN 9","macchina":"RB AUX 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"MADI 2 IN 10","macchina":"RB AUX 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"MADI 2 IN 11","macchina":"RB AUX 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"MADI 2 IN 12","macchina":"RB AUX 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"MADI 2 IN 13","macchina":"RB AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 2 IN 14","macchina":"RB AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 2 IN 15","macchina":"RB AUX 5 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 2 IN 16","macchina":"RB AUX 5 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 2 IN 17","macchina":"RB AUX 6 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"MADI 2 IN 18","macchina":"RB AUX 6 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 2 IN 19","macchina":"RB TV N-X 4","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 2 IN 20","macchina":"RB TV N-X 4","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 2 IN 21","macchina":"RB QUANTUM 1 N-X 5","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 2 IN 22","macchina":"RB QUANTUM 1 N-X 5","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 2 IN 23","macchina":"RB QUANTUM 2 N-X 6","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 2 IN 24","macchina":"RB QUANTUM 2 N-X 6","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 2 IN 25","macchina":"RB ISDN 1 N-X 7","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 2 IN 26","macchina":"RB ISDN 1 N-X 7","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 2 IN 27","macchina":"RB ISDN 2 N-X 8","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 2 IN 28","macchina":"RB ISDN 2 N-X 8","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 2 IN 29","macchina":"RB RC N-X 9","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 2 IN 30","macchina":"RB RC N-X 9","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 2 IN 31","macchina":"RB TP N-X 10","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 2 IN 32","macchina":"RB TP N-X 10","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 2 IN 33","macchina":"RB ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 2 IN 34","macchina":"RB ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 2 IN 35","macchina":"RB CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 2 IN 36","macchina":"RB CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 2 IN 37","macchina":"RB CUFFIA OSPITI L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 2 IN 38","macchina":"RB CUFFIA OSPITI R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 2 IN 39","macchina":"MD 1 RB 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 2 IN 40","macchina":"MD 1 RB 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 2 IN 41","macchina":"MD 1 RB 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 2 IN 42","macchina":"MD 1 RB 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 2 IN 43","macchina":"MD 1 RB 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 2 IN 44","macchina":"MD 1 RB 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 2 IN 45","macchina":"MD 1 RB 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 2 IN 46","macchina":"MD 1 RB 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 2 IN 47","macchina":"MD 1 RB 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 2 IN 48","macchina":"MD 1 RB 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 2 IN 49","macchina":"MD 1 RB 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 2 IN 50","macchina":"MD 1 RB 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 2 IN 51","macchina":"MD 1 RB 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 2 IN 52","macchina":"MD 1 RB 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 2 IN 53","macchina":"MD 1 RB 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 2 IN 54","macchina":"MD 1 RB 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 2 IN 55","macchina":"MD 1 RB 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 2 IN 56","macchina":"MD 1 RB 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 2 IN 57","macchina":"MD 1 RB 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 2 IN 58","macchina":"MD 1 RB 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 2 IN 59","macchina":"MD 1 RB 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 2 IN 60","macchina":"MD 1 RB 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_madi3","nome":"MADI 3 · da REGIA TV","canali":[{"idx":1,"canale":"MADI 3 IN 1","macchina":"TV PGM 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":2,"canale":"MADI 3 IN 2","macchina":"TV PGM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"MADI 3 IN 3","macchina":"TV PGM 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"MADI 3 IN 4","macchina":"TV PGM 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"MADI 3 IN 5","macchina":"TV ASCOLTO STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"MADI 3 IN 6","macchina":"TV ASCOLTO STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"MADI 3 IN 7","macchina":"TV ASCOLTO AURICOLARE L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"MADI 3 IN 8","macchina":"TV ASCOLTO AURICOLARE R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"MADI 3 IN 9","macchina":"TV AUX S 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"MADI 3 IN 10","macchina":"TV AUX S 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"MADI 3 IN 11","macchina":"TV AUX S 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"MADI 3 IN 12","macchina":"TV AUX S 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"MADI 3 IN 13","macchina":"TV AUX S 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 3 IN 14","macchina":"TV AUX S 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 3 IN 15","macchina":"TV AUX S 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 3 IN 16","macchina":"TV AUX S 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 3 IN 17","macchina":"TV N-X 3 RF","ch":"M","ms":"MONO","note":"","slot":""},{"idx":18,"canale":"MADI 3 IN 18","macchina":"MD TV 18","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 3 IN 19","macchina":"MD TV 19","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 3 IN 20","macchina":"MD TV 20","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 3 IN 21","macchina":"MD TV 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 3 IN 22","macchina":"MD TV 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 3 IN 23","macchina":"MD TV 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 3 IN 24","macchina":"MD TV 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 3 IN 25","macchina":"MD TV 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 3 IN 26","macchina":"MD TV 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 3 IN 27","macchina":"MD TV 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 3 IN 28","macchina":"MD TV 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 3 IN 29","macchina":"MD TV 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 3 IN 30","macchina":"MD TV 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 3 IN 31","macchina":"MD TV 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 3 IN 32","macchina":"MD TV 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 3 IN 33","macchina":"MD TV 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 3 IN 34","macchina":"MD TV 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 3 IN 35","macchina":"MD TV 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 3 IN 36","macchina":"MD TV 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 3 IN 37","macchina":"MD TV 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 3 IN 38","macchina":"MD TV 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 3 IN 39","macchina":"MD TV 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 3 IN 40","macchina":"MD TV 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 3 IN 41","macchina":"MD TV 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 3 IN 42","macchina":"MD TV 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 3 IN 43","macchina":"MD TV 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 3 IN 44","macchina":"MD TV 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 3 IN 45","macchina":"MD TV 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 3 IN 46","macchina":"MD TV 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 3 IN 47","macchina":"MD TV 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 3 IN 48","macchina":"MD TV 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 3 IN 49","macchina":"MD TV 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 3 IN 50","macchina":"MD TV 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 3 IN 51","macchina":"MD TV 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 3 IN 52","macchina":"MD TV 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 3 IN 53","macchina":"MD TV 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 3 IN 54","macchina":"MD TV 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 3 IN 55","macchina":"MD TV 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 3 IN 56","macchina":"MD TV 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 3 IN 57","macchina":"MD TV 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 3 IN 58","macchina":"MD TV 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 3 IN 59","macchina":"MD TV 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 3 IN 60","macchina":"MD TV 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_madi4","nome":"MADI 4 · da TIEPOLO","canali":[{"idx":1,"canale":"MADI 4 IN 1","macchina":"TP 1","ch":"M","ms":"MONO","note":"","slot":""},{"idx":2,"canale":"MADI 4 IN 2","macchina":"TP 2","ch":"M","ms":"MONO","note":"","slot":""},{"idx":3,"canale":"MADI 4 IN 3","macchina":"TP 3","ch":"M","ms":"MONO","note":"","slot":""},{"idx":4,"canale":"MADI 4 IN 4","macchina":"TP 4","ch":"M","ms":"MONO","note":"","slot":""},{"idx":5,"canale":"MADI 4 IN 5","macchina":"TP 5","ch":"M","ms":"MONO","note":"","slot":""},{"idx":6,"canale":"MADI 4 IN 6","macchina":"TP 6","ch":"M","ms":"MONO","note":"","slot":""},{"idx":7,"canale":"MADI 4 IN 7","macchina":"TP 7","ch":"M","ms":"MONO","note":"","slot":""},{"idx":8,"canale":"MADI 4 IN 8","macchina":"TP 8","ch":"M","ms":"MONO","note":"","slot":""},{"idx":9,"canale":"MADI 4 IN 9","macchina":"TP 9","ch":"M","ms":"MONO","note":"","slot":""},{"idx":10,"canale":"MADI 4 IN 10","macchina":"TP 10","ch":"M","ms":"MONO","note":"","slot":""},{"idx":11,"canale":"MADI 4 IN 11","macchina":"TP 11","ch":"M","ms":"MONO","note":"","slot":""},{"idx":12,"canale":"MADI 4 IN 12","macchina":"TP 12","ch":"M","ms":"MONO","note":"","slot":""},{"idx":13,"canale":"MADI 4 IN 13","macchina":"TP 13","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 4 IN 14","macchina":"TP 14","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 4 IN 15","macchina":"TP 15","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 4 IN 16","macchina":"TP 16","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 4 IN 17","macchina":"TP PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"MADI 4 IN 18","macchina":"TP PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 4 IN 19","macchina":"TP PGM 2 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 4 IN 20","macchina":"TP PGM 2 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 4 IN 21","macchina":"TP PGM REC OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 4 IN 22","macchina":"TP PGM REC OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 4 IN 23","macchina":"TP AUX 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 4 IN 24","macchina":"TP AUX 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 4 IN 25","macchina":"TP AUX 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 4 IN 26","macchina":"TP AUX 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 4 IN 27","macchina":"TP AUX 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 4 IN 28","macchina":"TP AUX 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 4 IN 29","macchina":"TP AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 4 IN 30","macchina":"TP AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 4 IN 31","macchina":"TP AUX 5 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 4 IN 32","macchina":"TP AUX 5 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 4 IN 33","macchina":"TP AUX 6 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 4 IN 34","macchina":"TP AUX 6 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 4 IN 35","macchina":"TP ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 4 IN 36","macchina":"TP ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 4 IN 37","macchina":"TP CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 4 IN 38","macchina":"TP CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 4 IN 39","macchina":"TP N- RB","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 4 IN 40","macchina":"TP N- RB","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 4 IN 41","macchina":"TP N- RC","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 4 IN 42","macchina":"TP N- RC","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 4 IN 43","macchina":"TP N- TV","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 4 IN 44","macchina":"TP N- TV","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 4 IN 45","macchina":"TP N- TV","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 4 IN 46","macchina":"TP N- TV","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 4 IN 47","macchina":"MD 1 TP 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 4 IN 48","macchina":"MD 1 TP 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 4 IN 49","macchina":"MD 1 TP 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 4 IN 50","macchina":"MD 1 TP 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 4 IN 51","macchina":"MD 1 TP 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 4 IN 52","macchina":"MD 1 TP 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 4 IN 53","macchina":"MD 1 TP 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 4 IN 54","macchina":"MD 1 TP 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 4 IN 55","macchina":"MD 1 TP 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 4 IN 56","macchina":"MD 1 TP 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 4 IN 57","macchina":"MD 1 TP 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 4 IN 58","macchina":"MD 1 TP 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 4 IN 59","macchina":"MD 1 TP 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 4 IN 60","macchina":"MD 1 TP 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_bealinx","nome":"BEALINX · da REGIA C","canali":[{"idx":1,"canale":"BEA IN 1","macchina":"RC PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":2,"canale":"BEA IN 2","macchina":"RC PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"BEA IN 3","macchina":"RC PGM 2 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"BEA IN 4","macchina":"RC PGM 2 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"BEA IN 5","macchina":"RC PGM REC OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"BEA IN 6","macchina":"RC PGM REC OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"BEA IN 7","macchina":"RC AUX 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"BEA IN 8","macchina":"RC AUX 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"BEA IN 9","macchina":"RC AUX 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"BEA IN 10","macchina":"RC AUX 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"BEA IN 11","macchina":"RC AUX 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"BEA IN 12","macchina":"RC AUX 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"BEA IN 13","macchina":"RC AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":14,"canale":"BEA IN 14","macchina":"RC AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"BEA IN 15","macchina":"RC AUX 5 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"BEA IN 16","macchina":"RC AUX 5 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"BEA IN 17","macchina":"RC AUX 6 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"BEA IN 18","macchina":"RC AUX 6 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"BEA IN 19","macchina":"RC TV N-X 4","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"BEA IN 20","macchina":"RC TV N-X 4","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"BEA IN 21","macchina":"RC QUANTUM 1 N-X 5","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"BEA IN 22","macchina":"RC QUANTUM 1 N-X 5","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"BEA IN 23","macchina":"RC QUANTUM 2 N-X 6","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"BEA IN 24","macchina":"RC QUANTUM 2 N-X 6","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"BEA IN 25","macchina":"RC ISDN 1 N-X 7","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"BEA IN 26","macchina":"RC ISDN 1 N-X 7","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"BEA IN 27","macchina":"RC ISDN 2 N-X 8","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"BEA IN 28","macchina":"RC ISDN 2 N-X 8","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"BEA IN 29","macchina":"RC RB N-X 9","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"BEA IN 30","macchina":"RC RB N-X 9","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"BEA IN 31","macchina":"RC TP N-X 10","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"BEA IN 32","macchina":"RC TP N-X 10","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"BEA IN 33","macchina":"RC ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"BEA IN 34","macchina":"RC ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"BEA IN 35","macchina":"RC CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"BEA IN 36","macchina":"RC CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"BEA IN 37","macchina":"RC CUFFIA OSPITI L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"BEA IN 38","macchina":"RC CUFFIA OSPITI R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"BEA IN 39","macchina":"RC Mic 1 PostProcess","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"BEA IN 40","macchina":"RC Mic 2 PostProcess","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"BEA IN 41","macchina":"RC Mic 3 PostProcess","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"BEA IN 42","macchina":"RC Mic 4 PostProcess","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"BEA IN 43","macchina":"RC RMIC 1 PostProcess","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"BEA IN 44","macchina":"RC RMIC 2 PostProcess","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"BEA IN 45","macchina":"BEA RC 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"BEA IN 46","macchina":"BEA RC 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"BEA IN 47","macchina":"BEA RC 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"BEA IN 48","macchina":"BEA RC 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"BEA IN 49","macchina":"BEA RC 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"BEA IN 50","macchina":"BEA RC 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"BEA IN 51","macchina":"BEA RC 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"BEA IN 52","macchina":"BEA RC 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"BEA IN 53","macchina":"BEA RC 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"BEA IN 54","macchina":"BEA RC 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"BEA IN 55","macchina":"BEA RC 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"BEA IN 56","macchina":"BEA RC 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"BEA IN 57","macchina":"BEA RC 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"BEA IN 58","macchina":"BEA RC 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"BEA IN 59","macchina":"BEA RC 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"BEA IN 60","macchina":"BEA RC 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_dante_core","nome":"IN DANTE CORE","canali":[{"idx":1,"canale":"Dante IN 01","macchina":"SA 1","ch":"L","ms":"STEREO","note":"RADIO 1 STEREO PONTE RADIO 1","slot":"FERROFISH 1"},{"idx":2,"canale":"Dante IN 02","macchina":"SB 1","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"Dante IN 03","macchina":"SA 2","ch":"L","ms":"STEREO","note":"RADIO 2 STEREO PONTE RADIO 2","slot":""},{"idx":4,"canale":"Dante IN 04","macchina":"SB 2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"Dante IN 05","macchina":"SA 3","ch":"L","ms":"STEREO","note":"RADIO 3 STEREO PONTE RADIO 3","slot":""},{"idx":6,"canale":"Dante IN 06","macchina":"SB 3","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"Dante IN 07","macchina":"MI 27","ch":"L","ms":"MONO/STEREO","note":"DA MILANO","slot":""},{"idx":8,"canale":"Dante IN 08","macchina":"MI 28","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":9,"canale":"Dante IN 09","macchina":"TS 11","ch":"L","ms":"MONO/STEREO","note":"DA TRIESTE","slot":""},{"idx":10,"canale":"Dante IN 10","macchina":"TS 12","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":11,"canale":"Dante IN 11","macchina":"FD 4 L","ch":"L","ms":"STEREO","note":"FILODIFFUSIONE 4","slot":""},{"idx":12,"canale":"Dante IN 12","macchina":"FD 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"Dante IN 13","macchina":"ER1 MONO","ch":"L","ms":"MONO","note":"MONO PONTE RADIO 1","slot":""},{"idx":14,"canale":"Dante IN 14","macchina":"ER2 MONO","ch":"R","ms":"MONO","note":"MONO PONTE RADIO 2","slot":""},{"idx":15,"canale":"Dante IN 15","macchina":"IN 15","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"Dante IN 16","macchina":"IN 16","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"Dante IN 17","macchina":"QUANTUM 1 L","ch":"L","ms":"STEREO","note":"QUANTUM 1","slot":"QUANTUM 1"},{"idx":18,"canale":"Dante IN 18","macchina":"QUANTUM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"Dante IN 19","macchina":"QUANTUM 2 L","ch":"L","ms":"STEREO","note":"QUANTUM 2","slot":"QUANTUM 2"},{"idx":20,"canale":"Dante IN 20","macchina":"QUANTUM 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"Dante IN 21","macchina":"DANTE 1 IN 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"Dante IN 22","macchina":"DANTE 1 IN 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"Dante IN 23","macchina":"DANTE 1 IN 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"Dante IN 24","macchina":"DANTE 1 IN 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"Dante IN 25","macchina":"DANTE 1 IN 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"Dante IN 26","macchina":"DANTE 1 IN 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"Dante IN 27","macchina":"DANTE 1 IN 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"Dante IN 28","macchina":"DANTE 1 IN 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"Dante IN 29","macchina":"DANTE 1 IN 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"Dante IN 30","macchina":"DANTE 1 IN 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"Dante IN 31","macchina":"DANTE 1 IN 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"Dante IN 32","macchina":"DANTE 1 IN 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"Dante IN 33","macchina":"DANTE 1 IN 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"Dante IN 34","macchina":"DANTE 1 IN 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"Dante IN 35","macchina":"DANTE 1 IN 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"Dante IN 36","macchina":"DANTE 1 IN 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"Dante IN 37","macchina":"DANTE 1 IN 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"Dante IN 38","macchina":"DANTE 1 IN 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"Dante IN 39","macchina":"DANTE 1 IN 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"Dante IN 40","macchina":"DANTE 1 IN 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"Dante IN 41","macchina":"DANTE 1 IN 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"Dante IN 42","macchina":"DANTE 1 IN 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"Dante IN 43","macchina":"DANTE 1 IN 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"Dante IN 44","macchina":"DANTE 1 IN 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"Dante IN 45","macchina":"DANTE 1 IN 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"Dante IN 46","macchina":"DANTE 1 IN 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"Dante IN 47","macchina":"DANTE 1 IN 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"Dante IN 48","macchina":"DANTE 1 IN 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"Dante IN 49","macchina":"DANTE 1 IN 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"Dante IN 50","macchina":"DANTE 1 IN 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"Dante IN 51","macchina":"DANTE 1 IN 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"Dante IN 52","macchina":"DANTE 1 IN 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"Dante IN 53","macchina":"DANTE 1 IN 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"Dante IN 54","macchina":"DANTE 1 IN 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"Dante IN 55","macchina":"DANTE 1 IN 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"Dante IN 56","macchina":"DANTE 1 IN 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"Dante IN 57","macchina":"DANTE 1 IN 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"Dante IN 58","macchina":"DANTE 1 IN 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"Dante IN 59","macchina":"DANTE 1 IN 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"Dante IN 60","macchina":"DANTE 1 IN 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_dante2","nome":"IN DANTE 2","canali":[{"idx":1,"canale":"Dante IN 01","macchina":"SA 1","ch":"L","ms":"STEREO","note":"RADIO 1 STEREO PONTE RADIO 1","slot":"FERROFISH 2"},{"idx":2,"canale":"Dante IN 02","macchina":"SB 1","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"Dante IN 03","macchina":"SA 2","ch":"L","ms":"STEREO","note":"RADIO 2 STEREO PONTE RADIO 2","slot":""},{"idx":4,"canale":"Dante IN 04","macchina":"SB 2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"Dante IN 05","macchina":"SA 3","ch":"L","ms":"STEREO","note":"RADIO 3 STEREO PONTE RADIO 3","slot":""},{"idx":6,"canale":"Dante IN 06","macchina":"SB 3","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"Dante IN 07","macchina":"MI 27","ch":"L","ms":"MONO/STEREO","note":"DA MILANO","slot":""},{"idx":8,"canale":"Dante IN 08","macchina":"MI 28","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":9,"canale":"Dante IN 09","macchina":"TS 11","ch":"L","ms":"MONO/STEREO","note":"DA TRIESTE","slot":""},{"idx":10,"canale":"Dante IN 10","macchina":"TS 12","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":11,"canale":"Dante IN 11","macchina":"FD 4 L","ch":"L","ms":"STEREO","note":"FILODIFFUSIONE 4","slot":""},{"idx":12,"canale":"Dante IN 12","macchina":"FD 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"Dante IN 13","macchina":"ER1 MONO","ch":"L","ms":"MONO","note":"MONO PONTE RADIO 1","slot":""},{"idx":14,"canale":"Dante IN 14","macchina":"ER2 MONO","ch":"R","ms":"MONO","note":"MONO PONTE RADIO 2","slot":""},{"idx":15,"canale":"Dante IN 15","macchina":"IN 15","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"Dante IN 16","macchina":"IN 16","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"Dante IN 17","macchina":"DANTE 2 IN 17","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"Dante IN 18","macchina":"DANTE 2 IN 18","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"Dante IN 19","macchina":"DANTE 2 IN 19","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"Dante IN 20","macchina":"DANTE 2 IN 20","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"Dante IN 21","macchina":"DANTE 2 IN 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"Dante IN 22","macchina":"DANTE 2 IN 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"Dante IN 23","macchina":"DANTE 2 IN 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"Dante IN 24","macchina":"DANTE 2 IN 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"Dante IN 25","macchina":"DANTE 2 IN 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"Dante IN 26","macchina":"DANTE 2 IN 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"Dante IN 27","macchina":"DANTE 2 IN 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"Dante IN 28","macchina":"DANTE 2 IN 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"Dante IN 29","macchina":"DANTE 2 IN 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"Dante IN 30","macchina":"DANTE 2 IN 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"Dante IN 31","macchina":"DANTE 2 IN 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"Dante IN 32","macchina":"DANTE 2 IN 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"Dante IN 33","macchina":"DANTE 2 IN 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"Dante IN 34","macchina":"DANTE 2 IN 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"Dante IN 35","macchina":"DANTE 2 IN 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"Dante IN 36","macchina":"DANTE 2 IN 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"Dante IN 37","macchina":"DANTE 2 IN 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"Dante IN 38","macchina":"DANTE 2 IN 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"Dante IN 39","macchina":"DANTE 2 IN 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"Dante IN 40","macchina":"DANTE 2 IN 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"Dante IN 41","macchina":"DANTE 2 IN 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"Dante IN 42","macchina":"DANTE 2 IN 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"Dante IN 43","macchina":"DANTE 2 IN 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"Dante IN 44","macchina":"DANTE 2 IN 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"Dante IN 45","macchina":"DANTE 2 IN 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"Dante IN 46","macchina":"DANTE 2 IN 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"Dante IN 47","macchina":"DANTE 2 IN 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"Dante IN 48","macchina":"DANTE 2 IN 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"Dante IN 49","macchina":"DANTE 2 IN 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"Dante IN 50","macchina":"DANTE 2 IN 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"Dante IN 51","macchina":"DANTE 2 IN 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"Dante IN 52","macchina":"DANTE 2 IN 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"Dante IN 53","macchina":"DANTE 2 IN 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"Dante IN 54","macchina":"DANTE 2 IN 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"Dante IN 55","macchina":"DANTE 2 IN 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"Dante IN 56","macchina":"DANTE 2 IN 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"Dante IN 57","macchina":"DANTE 2 IN 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"Dante IN 58","macchina":"DANTE 2 IN 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"Dante IN 59","macchina":"DANTE 2 IN 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"Dante IN 60","macchina":"DANTE 2 IN 60","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"in_aes","nome":"LOCAL AES IN","canali":[{"idx":1,"canale":"1","macchina":"ISDN 1","ch":"L","ms":"MONO/STEREO","note":"","slot":"Slot ? In 1"},{"idx":2,"canale":"","macchina":"ISDN 1","ch":"R","ms":"MONO/STEREO","note":"","slot":"Slot ? In 2"},{"idx":3,"canale":"2","macchina":"QUANTUM 1 AES","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 3"},{"idx":4,"canale":"","macchina":"QUANTUM 1 AES","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 4"},{"idx":5,"canale":"3","macchina":"QUANTUM 2 AES","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 5"},{"idx":6,"canale":"","macchina":"QUANTUM 2 AES","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 6"},{"idx":7,"canale":"4","macchina":"IN 7/8","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 7"},{"idx":8,"canale":"","macchina":"IN 7/8","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 8"},{"idx":9,"canale":"5","macchina":"IN 9/10","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 9"},{"idx":10,"canale":"","macchina":"IN 9/10","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 10"},{"idx":11,"canale":"6","macchina":"IN 11/12","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 11"},{"idx":12,"canale":"","macchina":"IN 11/12","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 12"},{"idx":13,"canale":"7","macchina":"IN 13/14","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 13"},{"idx":14,"canale":"","macchina":"IN 13/14","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 14"},{"idx":15,"canale":"8","macchina":"IN 15/16","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 15"},{"idx":16,"canale":"","macchina":"IN 15/16","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 16"},{"idx":17,"canale":"1","macchina":"IN 17/18","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 1"},{"idx":18,"canale":"","macchina":"IN 17/18","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 2"},{"idx":19,"canale":"2","macchina":"IN 19/20","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 3"},{"idx":20,"canale":"","macchina":"IN 19/20","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 4"},{"idx":21,"canale":"3","macchina":"IN 21/22","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 5"},{"idx":22,"canale":"","macchina":"IN 21/22","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 6"},{"idx":23,"canale":"4","macchina":"IN 23/24","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 7"},{"idx":24,"canale":"","macchina":"IN 23/24","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 8"},{"idx":25,"canale":"5","macchina":"IN 25/26","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 9"},{"idx":26,"canale":"","macchina":"IN 25/26","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 10"},{"idx":27,"canale":"6","macchina":"IN 27/28","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 11"},{"idx":28,"canale":"","macchina":"IN 27/28","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 12"},{"idx":29,"canale":"7","macchina":"IN 29/30","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 13"},{"idx":30,"canale":"","macchina":"IN 29/30","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 14"},{"idx":31,"canale":"8","macchina":"IN 31/32","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 15"},{"idx":32,"canale":"","macchina":"IN 31/32","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 16"}]},{"id":"in_analog","nome":"LOCAL IN ANALOG","canali":[{"idx":1,"canale":"1","macchina":"R1 FM L HARMAN","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 1"},{"idx":2,"canale":"2","macchina":"R1 FM R HARMAN","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 2"},{"idx":3,"canale":"3","macchina":"R2 FM L HARMAN","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 3"},{"idx":4,"canale":"4","macchina":"R2 FM R HARMAN","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 4"},{"idx":5,"canale":"5","macchina":"R3 FM L HARMAN","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 5"},{"idx":6,"canale":"6","macchina":"R3 FM R HARMAN","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 6"},{"idx":7,"canale":"7","macchina":"RIS FM L HARMAN","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 7"},{"idx":8,"canale":"8","macchina":"RIS FM R HARMAN","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 8"},{"idx":9,"canale":"9","macchina":"IN 9","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 9"},{"idx":10,"canale":"10","macchina":"IN 10","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 10"},{"idx":11,"canale":"11","macchina":"ISDN 2 L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 11"},{"idx":12,"canale":"12","macchina":"ISDN 2 R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 12"},{"idx":13,"canale":"13","macchina":"ORBAN 1 L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 13"},{"idx":14,"canale":"14","macchina":"ORBAN 1 R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 14"},{"idx":15,"canale":"15","macchina":"ORBAN 2 L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 15"},{"idx":16,"canale":"16","macchina":"ORBAN 2 R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 16"}]}],"uscite":[{"id":"out_madi1","nome":"MADI 1 · a FUTURO RAIWAY","canali":[{"idx":1,"canale":"MADI 1 OUT 1","macchina":"MADI 1 OUT 1","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":2,"canale":"MADI 1 OUT 2","macchina":"MADI 1 OUT 2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"MADI 1 OUT 3","macchina":"MADI 1 OUT 3","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"MADI 1 OUT 4","macchina":"MADI 1 OUT 4","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"MADI 1 OUT 5","macchina":"MADI 1 OUT 5","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"MADI 1 OUT 6","macchina":"MADI 1 OUT 6","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"MADI 1 OUT 7","macchina":"MADI 1 OUT 7","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"MADI 1 OUT 8","macchina":"MADI 1 OUT 8","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"MADI 1 OUT 9","macchina":"MADI 1 OUT 9","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"MADI 1 OUT 10","macchina":"MADI 1 OUT 10","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"MADI 1 OUT 11","macchina":"MADI 1 OUT 11","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"MADI 1 OUT 12","macchina":"MADI 1 OUT 12","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"MADI 1 OUT 13","macchina":"MADI 1 OUT 13","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 1 OUT 14","macchina":"MADI 1 OUT 14","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 1 OUT 15","macchina":"MADI 1 OUT 15","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 1 OUT 16","macchina":"MADI 1 OUT 16","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 1 OUT 17","macchina":"MADI 1 OUT 17","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"MADI 1 OUT 18","macchina":"MADI 1 OUT 18","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 1 OUT 19","macchina":"MADI 1 OUT 19","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 1 OUT 20","macchina":"MADI 1 OUT 20","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 1 OUT 21","macchina":"MADI 1 OUT 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 1 OUT 22","macchina":"MADI 1 OUT 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 1 OUT 23","macchina":"MADI 1 OUT 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 1 OUT 24","macchina":"MADI 1 OUT 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 1 OUT 25","macchina":"MADI 1 OUT 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 1 OUT 26","macchina":"MADI 1 OUT 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 1 OUT 27","macchina":"MADI 1 OUT 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 1 OUT 28","macchina":"MADI 1 OUT 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 1 OUT 29","macchina":"MADI 1 OUT 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 1 OUT 30","macchina":"MADI 1 OUT 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 1 OUT 31","macchina":"MADI 1 OUT 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 1 OUT 32","macchina":"MADI 1 OUT 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 1 OUT 33","macchina":"MADI 1 OUT 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 1 OUT 34","macchina":"MADI 1 OUT 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 1 OUT 35","macchina":"MADI 1 OUT 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 1 OUT 36","macchina":"MADI 1 OUT 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 1 OUT 37","macchina":"MADI 1 OUT 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 1 OUT 38","macchina":"MADI 1 OUT 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 1 OUT 39","macchina":"MADI 1 OUT 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 1 OUT 40","macchina":"MADI 1 OUT 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 1 OUT 41","macchina":"MADI 1 OUT 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 1 OUT 42","macchina":"MADI 1 OUT 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 1 OUT 43","macchina":"MADI 1 OUT 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 1 OUT 44","macchina":"MADI 1 OUT 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 1 OUT 45","macchina":"MADI 1 OUT 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 1 OUT 46","macchina":"MADI 1 OUT 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 1 OUT 47","macchina":"MADI 1 OUT 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 1 OUT 48","macchina":"MADI 1 OUT 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 1 OUT 49","macchina":"MADI 1 OUT 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 1 OUT 50","macchina":"MADI 1 OUT 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 1 OUT 51","macchina":"MADI 1 OUT 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 1 OUT 52","macchina":"MADI 1 OUT 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 1 OUT 53","macchina":"MADI 1 OUT 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 1 OUT 54","macchina":"MADI 1 OUT 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 1 OUT 55","macchina":"MADI 1 OUT 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 1 OUT 56","macchina":"MADI 1 OUT 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 1 OUT 57","macchina":"MADI 1 OUT 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 1 OUT 58","macchina":"MADI 1 OUT 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 1 OUT 59","macchina":"MADI 1 OUT 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 1 OUT 60","macchina":"MADI 1 OUT 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"MADI 1 OUT 61","macchina":"MADI 1 OUT 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"MADI 1 OUT 62","macchina":"MADI 1 OUT 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"MADI 1 OUT 63","macchina":"MADI 1 OUT 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"MADI 1 OUT 64","macchina":"MADI 1 OUT 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_madi2","nome":"MADI 2 · a REGIA B","canali":[{"idx":1,"canale":"MADI 2 OUT 1","macchina":"SEL. ENTRANTI 1/2","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":2,"canale":"MADI 2 OUT 2","macchina":"SEL. ENTRANTI 1/2","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":3,"canale":"MADI 2 OUT 3","macchina":"SEL. ENTRANTI 3/4","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":4,"canale":"MADI 2 OUT 4","macchina":"SEL. ENTRANTI 3/4","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":5,"canale":"MADI 2 OUT 5","macchina":"RM 1 L","ch":"L","ms":"STEREO","note":"","slot":"CCRF"},{"idx":6,"canale":"MADI 2 OUT 6","macchina":"RM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"MADI 2 OUT 7","macchina":"RM 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"MADI 2 OUT 8","macchina":"RM 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"MADI 2 OUT 9","macchina":"RM 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"MADI 2 OUT 10","macchina":"RM 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"MADI 2 OUT 11","macchina":"FD 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"MADI 2 OUT 12","macchina":"FD 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"MADI 2 OUT 13","macchina":"MI 27","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 2 OUT 14","macchina":"MI 28","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 2 OUT 15","macchina":"TS 11","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 2 OUT 16","macchina":"TS 12","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 2 OUT 17","macchina":"HARMAN R1 FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"MADI 2 OUT 18","macchina":"HARMAN R1 FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 2 OUT 19","macchina":"HARMAN RIS FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 2 OUT 20","macchina":"HARMAN RIS FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 2 OUT 21","macchina":"HARMAN R2 FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 2 OUT 22","macchina":"HARMAN R2 FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 2 OUT 23","macchina":"HARMAN R3 FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 2 OUT 24","macchina":"HARMAN R3 FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 2 OUT 25","macchina":"ISDN 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 2 OUT 26","macchina":"ISDN 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 2 OUT 27","macchina":"ISDN 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 2 OUT 28","macchina":"ISDN 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 2 OUT 29","macchina":"RC PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":"RC"},{"idx":30,"canale":"MADI 2 OUT 30","macchina":"RC PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 2 OUT 31","macchina":"RC AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 2 OUT 32","macchina":"RC AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 2 OUT 33","macchina":"RC ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 2 OUT 34","macchina":"RC ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 2 OUT 35","macchina":"RC CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 2 OUT 36","macchina":"RC CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 2 OUT 37","macchina":"RC CUFFIA OSPITI L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 2 OUT 38","macchina":"RC CUFFIA OSPITI R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 2 OUT 39","macchina":"RC RB N-X 9","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 2 OUT 40","macchina":"RC RB N-X 9","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 2 OUT 41","macchina":"TV PGM 1 L","ch":"L","ms":"STEREO","note":"","slot":"TV"},{"idx":42,"canale":"MADI 2 OUT 42","macchina":"TV PGM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 2 OUT 43","macchina":"TV AUX S 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 2 OUT 44","macchina":"TV AUX S 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 2 OUT 45","macchina":"TV ASCOLTO STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 2 OUT 46","macchina":"TV ASCOLTO STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 2 OUT 47","macchina":"TV ASCOLTO AURICOLARE L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 2 OUT 48","macchina":"TV ASCOLTO AURICOLARE R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 2 OUT 49","macchina":"TV N-X 3 RF","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 2 OUT 50","macchina":"TV N-X 3 RF","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 2 OUT 51","macchina":"MD 1 RB 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 2 OUT 52","macchina":"MD 1 RB 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 2 OUT 53","macchina":"MD 1 RB 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 2 OUT 54","macchina":"MD 1 RB 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 2 OUT 55","macchina":"MD 1 RB 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 2 OUT 56","macchina":"MD 1 RB 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 2 OUT 57","macchina":"MD 1 RB 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 2 OUT 58","macchina":"MD 1 RB 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 2 OUT 59","macchina":"MD 1 RB 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 2 OUT 60","macchina":"MD 1 RB 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"MADI 2 OUT 61","macchina":"MD 1 RB 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"MADI 2 OUT 62","macchina":"MD 1 RB 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"MADI 2 OUT 63","macchina":"MD 1 RB 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"MADI 2 OUT 64","macchina":"MD 1 RB 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_madi3","nome":"MADI 3 · a REGIA TV","canali":[{"idx":1,"canale":"MADI 3 OUT 1","macchina":"TP 1","ch":"M","ms":"MONO","note":"","slot":"TIEPOLO"},{"idx":2,"canale":"MADI 3 OUT 2","macchina":"TP 2","ch":"M","ms":"MONO","note":"","slot":""},{"idx":3,"canale":"MADI 3 OUT 3","macchina":"TP 3","ch":"M","ms":"MONO","note":"","slot":""},{"idx":4,"canale":"MADI 3 OUT 4","macchina":"TP 4","ch":"M","ms":"MONO","note":"","slot":""},{"idx":5,"canale":"MADI 3 OUT 5","macchina":"TP 5","ch":"M","ms":"MONO","note":"","slot":""},{"idx":6,"canale":"MADI 3 OUT 6","macchina":"TP 6","ch":"M","ms":"MONO","note":"","slot":""},{"idx":7,"canale":"MADI 3 OUT 7","macchina":"TP 7","ch":"M","ms":"MONO","note":"","slot":""},{"idx":8,"canale":"MADI 3 OUT 8","macchina":"TP 8","ch":"M","ms":"MONO","note":"","slot":""},{"idx":9,"canale":"MADI 3 OUT 9","macchina":"TP 9","ch":"M","ms":"MONO","note":"","slot":""},{"idx":10,"canale":"MADI 3 OUT 10","macchina":"TP 10","ch":"M","ms":"MONO","note":"","slot":""},{"idx":11,"canale":"MADI 3 OUT 11","macchina":"TP 11","ch":"M","ms":"MONO","note":"","slot":""},{"idx":12,"canale":"MADI 3 OUT 12","macchina":"TP 12","ch":"M","ms":"MONO","note":"","slot":""},{"idx":13,"canale":"MADI 3 OUT 13","macchina":"TP 13","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 3 OUT 14","macchina":"TP 14","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 3 OUT 15","macchina":"TP 15","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 3 OUT 16","macchina":"TP 16","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 3 OUT 17","macchina":"TP PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"MADI 3 OUT 18","macchina":"TP PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"MADI 3 OUT 19","macchina":"TP N- TV","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"MADI 3 OUT 20","macchina":"TP N- TV","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 3 OUT 21","macchina":"RB PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":"RB"},{"idx":22,"canale":"MADI 3 OUT 22","macchina":"RB PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 3 OUT 23","macchina":"RB AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 3 OUT 24","macchina":"RB AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 3 OUT 25","macchina":"RB TV N-X 4","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 3 OUT 26","macchina":"RB TV N-X 4","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 3 OUT 27","macchina":"RC PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":"RC"},{"idx":28,"canale":"MADI 3 OUT 28","macchina":"RC PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 3 OUT 29","macchina":"RC AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 3 OUT 30","macchina":"RC AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 3 OUT 31","macchina":"RC TV N-X 4","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"MADI 3 OUT 32","macchina":"RC TV N-X 4","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 3 OUT 33","macchina":"SEL. ENTRANTI 1/2","ch":"L","ms":"STEREO","note":"","slot":"CCRF"},{"idx":34,"canale":"MADI 3 OUT 34","macchina":"SEL. ENTRANTI 1/2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 3 OUT 35","macchina":"MD TV 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 3 OUT 36","macchina":"MD TV 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 3 OUT 37","macchina":"MD TV 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 3 OUT 38","macchina":"MD TV 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 3 OUT 39","macchina":"MD TV 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 3 OUT 40","macchina":"MD TV 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 3 OUT 41","macchina":"MD TV 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 3 OUT 42","macchina":"MD TV 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 3 OUT 43","macchina":"MD TV 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 3 OUT 44","macchina":"MD TV 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 3 OUT 45","macchina":"MD TV 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 3 OUT 46","macchina":"MD TV 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 3 OUT 47","macchina":"MD TV 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 3 OUT 48","macchina":"MD TV 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 3 OUT 49","macchina":"MD TV 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 3 OUT 50","macchina":"MD TV 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 3 OUT 51","macchina":"MD TV 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 3 OUT 52","macchina":"MD TV 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 3 OUT 53","macchina":"MD TV 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 3 OUT 54","macchina":"MD TV 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 3 OUT 55","macchina":"MD TV 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 3 OUT 56","macchina":"MD TV 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 3 OUT 57","macchina":"MD TV 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 3 OUT 58","macchina":"MD TV 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 3 OUT 59","macchina":"MD TV 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 3 OUT 60","macchina":"MD TV 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"MADI 3 OUT 61","macchina":"MD TV 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"MADI 3 OUT 62","macchina":"MD TV 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"MADI 3 OUT 63","macchina":"MD TV 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"MADI 3 OUT 64","macchina":"MD TV 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_madi4","nome":"MADI 4 · a TIEPOLO","canali":[{"idx":1,"canale":"MADI 4 OUT 1","macchina":"TV PGM 1 L","ch":"L","ms":"STEREO","note":"","slot":"TV"},{"idx":2,"canale":"MADI 4 OUT 2","macchina":"TV PGM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"MADI 4 OUT 3","macchina":"TV PGM 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"MADI 4 OUT 4","macchina":"TV PGM 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"MADI 4 OUT 5","macchina":"TV ASCOLTO STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"MADI 4 OUT 6","macchina":"TV ASCOLTO STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"MADI 4 OUT 7","macchina":"TV ASCOLTO AURICOLARE L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"MADI 4 OUT 8","macchina":"TV ASCOLTO AURICOLARE R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"MADI 4 OUT 9","macchina":"TV AUX S 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"MADI 4 OUT 10","macchina":"TV AUX S 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"MADI 4 OUT 11","macchina":"TV AUX S 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"MADI 4 OUT 12","macchina":"TV AUX S 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"MADI 4 OUT 13","macchina":"TV AUX S 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":14,"canale":"MADI 4 OUT 14","macchina":"TV AUX S 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"MADI 4 OUT 15","macchina":"TV AUX S 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"MADI 4 OUT 16","macchina":"TV AUX S 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"MADI 4 OUT 17","macchina":"TV N-X 3 RF","ch":"M","ms":"MONO","note":"","slot":""},{"idx":18,"canale":"MADI 4 OUT 18","macchina":"MD 1 IN TP 18","ch":"M","ms":"MONO","note":"","slot":""},{"idx":19,"canale":"MADI 4 OUT 19","macchina":"RB PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":"RB"},{"idx":20,"canale":"MADI 4 OUT 20","macchina":"RB PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"MADI 4 OUT 21","macchina":"RB AUX 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"MADI 4 OUT 22","macchina":"RB AUX 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"MADI 4 OUT 23","macchina":"RB ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"MADI 4 OUT 24","macchina":"RB ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"MADI 4 OUT 25","macchina":"RB CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"MADI 4 OUT 26","macchina":"RB CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"MADI 4 OUT 27","macchina":"RB CUFFIA OSPITI L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"MADI 4 OUT 28","macchina":"RB CUFFIA OSPITI R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"MADI 4 OUT 29","macchina":"RB TP N-X 10","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"MADI 4 OUT 30","macchina":"RB TP N-X 10","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"MADI 4 OUT 31","macchina":"RC PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":"RC"},{"idx":32,"canale":"MADI 4 OUT 32","macchina":"RC PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"MADI 4 OUT 33","macchina":"RC AUX 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"MADI 4 OUT 34","macchina":"RC AUX 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"MADI 4 OUT 35","macchina":"RC ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"MADI 4 OUT 36","macchina":"RC ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"MADI 4 OUT 37","macchina":"RC CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"MADI 4 OUT 38","macchina":"RC CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"MADI 4 OUT 39","macchina":"RC CUFFIA OSPITI L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"MADI 4 OUT 40","macchina":"RC CUFFIA OSPITI R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"MADI 4 OUT 41","macchina":"RC TP N-X 10","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"MADI 4 OUT 42","macchina":"RC TP N-X 10","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"MADI 4 OUT 43","macchina":"MD 1 IN TP 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"MADI 4 OUT 44","macchina":"MD 1 IN TP 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"MADI 4 OUT 45","macchina":"MD 1 IN TP 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"MADI 4 OUT 46","macchina":"MD 1 IN TP 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"MADI 4 OUT 47","macchina":"MD 1 IN TP 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"MADI 4 OUT 48","macchina":"MD 1 IN TP 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"MADI 4 OUT 49","macchina":"MD 1 IN TP 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"MADI 4 OUT 50","macchina":"MD 1 IN TP 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"MADI 4 OUT 51","macchina":"MD 1 IN TP 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"MADI 4 OUT 52","macchina":"MD 1 IN TP 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"MADI 4 OUT 53","macchina":"MD 1 IN TP 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"MADI 4 OUT 54","macchina":"MD 1 IN TP 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"MADI 4 OUT 55","macchina":"MD 1 IN TP 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"MADI 4 OUT 56","macchina":"MD 1 IN TP 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"MADI 4 OUT 57","macchina":"MD 1 IN TP 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"MADI 4 OUT 58","macchina":"MD 1 IN TP 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"MADI 4 OUT 59","macchina":"MD 1 IN TP 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"MADI 4 OUT 60","macchina":"MD 1 IN TP 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"MADI 4 OUT 61","macchina":"MD 1 IN TP 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"MADI 4 OUT 62","macchina":"MD 1 IN TP 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"MADI 4 OUT 63","macchina":"MD 1 IN TP 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"MADI 4 OUT 64","macchina":"MD 1 IN TP 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_bealinx","nome":"BEALINX · a REGIA C","canali":[{"idx":1,"canale":"BEA OUT 1","macchina":"SEL. ENTRANTI 1/2","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":2,"canale":"BEA OUT 2","macchina":"SEL. ENTRANTI 1/2","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":3,"canale":"BEA OUT 3","macchina":"SEL. ENTRANTI 3/4","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":4,"canale":"BEA OUT 4","macchina":"SEL. ENTRANTI 3/4","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":5,"canale":"BEA OUT 5","macchina":"RM 1 L","ch":"L","ms":"STEREO","note":"","slot":"CCRF"},{"idx":6,"canale":"BEA OUT 6","macchina":"RM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"BEA OUT 7","macchina":"RM 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"BEA OUT 8","macchina":"RM 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"BEA OUT 9","macchina":"RM 3 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"BEA OUT 10","macchina":"RM 3 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"BEA OUT 11","macchina":"FD 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"BEA OUT 12","macchina":"FD 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"BEA OUT 13","macchina":"MI 27","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":14,"canale":"BEA OUT 14","macchina":"MI 28","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":15,"canale":"BEA OUT 15","macchina":"TS 11","ch":"L","ms":"MONO/STEREO","note":"","slot":""},{"idx":16,"canale":"BEA OUT 16","macchina":"TS 12","ch":"R","ms":"MONO/STEREO","note":"","slot":""},{"idx":17,"canale":"BEA OUT 17","macchina":"HARMAN R1 FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"BEA OUT 18","macchina":"HARMAN R1 FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"BEA OUT 19","macchina":"HARMAN RIS FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"BEA OUT 20","macchina":"HARMAN RIS FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"BEA OUT 21","macchina":"HARMAN R2 FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"BEA OUT 22","macchina":"HARMAN R2 FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"BEA OUT 23","macchina":"HARMAN R3 FM L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"BEA OUT 24","macchina":"HARMAN R3 FM R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"BEA OUT 25","macchina":"ISDN 1 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"BEA OUT 26","macchina":"ISDN 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"BEA OUT 27","macchina":"ISDN 2 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"BEA OUT 28","macchina":"ISDN 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"BEA OUT 29","macchina":"RB PGM 1 OUT L","ch":"L","ms":"STEREO","note":"","slot":"RB"},{"idx":30,"canale":"BEA OUT 30","macchina":"RB PGM 1 OUT R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"BEA OUT 31","macchina":"RB AUX 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"BEA OUT 32","macchina":"RB AUX 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"BEA OUT 33","macchina":"RB ASC. STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"BEA OUT 34","macchina":"RB ASC. STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"BEA OUT 35","macchina":"RB CUFFIA COND. L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"BEA OUT 36","macchina":"RB CUFFIA COND. R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"BEA OUT 37","macchina":"RB CUFFIA OSPITI L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"BEA OUT 38","macchina":"RB CUFFIA OSPITI R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"BEA OUT 39","macchina":"RB RC N-X 9","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"BEA OUT 40","macchina":"RB RC N-X 9","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"BEA OUT 41","macchina":"TV PGM 1 L","ch":"L","ms":"STEREO","note":"","slot":"TV"},{"idx":42,"canale":"BEA OUT 42","macchina":"TV PGM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"BEA OUT 43","macchina":"TV AUX S 4 L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"BEA OUT 44","macchina":"TV AUX S 4 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"BEA OUT 45","macchina":"TV ASCOLTO STUDIO L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"BEA OUT 46","macchina":"TV ASCOLTO STUDIO R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"BEA OUT 47","macchina":"TV ASCOLTO AURICOLARE L","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"BEA OUT 48","macchina":"TV ASCOLTO AURICOLARE R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"BEA OUT 49","macchina":"TV N-X 3 RF","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"BEA OUT 50","macchina":"TV N-X 3 RF","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"BEA OUT 51","macchina":"BEA RC 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"BEA OUT 52","macchina":"BEA RC 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"BEA OUT 53","macchina":"BEA RC 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"BEA OUT 54","macchina":"BEA RC 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"BEA OUT 55","macchina":"BEA RC 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"BEA OUT 56","macchina":"BEA RC 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"BEA OUT 57","macchina":"BEA RC 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"BEA OUT 58","macchina":"BEA RC 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"BEA OUT 59","macchina":"BEA RC 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"BEA OUT 60","macchina":"BEA RC 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"BEA OUT 61","macchina":"BEA RC 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"BEA OUT 62","macchina":"BEA RC 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"BEA OUT 63","macchina":"BEA RC 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"BEA OUT 64","macchina":"BEA RC 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_dante1","nome":"OUT DANTE 1","canali":[{"idx":1,"canale":"DANTE OUT 1","macchina":"VE SA 1","ch":"L","ms":"STEREO","note":"TX VERSO RAIWAY","slot":"FERROFISH CCRF 1"},{"idx":2,"canale":"DANTE OUT 2","macchina":"VE SB 1","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"DANTE OUT 3","macchina":"VE SA 2","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"DANTE OUT 4","macchina":"VE SB 2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"DANTE OUT 5","macchina":"VE SA 3","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"DANTE OUT 6","macchina":"VE SB 3","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"DANTE OUT 7","macchina":"VE 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"DANTE OUT 8","macchina":"VE 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"DANTE OUT 9","macchina":"VE 11","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"DANTE OUT 10","macchina":"VE 12","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"DANTE OUT 11","macchina":"DANTE OUT 11","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"DANTE OUT 12","macchina":"DANTE OUT 12","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"DANTE OUT 13","macchina":"SONIFEX HIGH","ch":"L","ms":"STEREO","note":"REGISTRAZIONI DOCUMENTO","slot":""},{"idx":14,"canale":"DANTE OUT 14","macchina":"SONIFEX HIGH","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"DANTE OUT 15","macchina":"SONIFEX LOW","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"DANTE OUT 16","macchina":"SONIFEX LOW","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"DANTE OUT 17","macchina":"QUANTUM 1 L","ch":"L","ms":"STEREO","note":"QUANTUM 1","slot":"QUANTUM 1"},{"idx":18,"canale":"DANTE OUT 18","macchina":"QUANTUM 1 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"DANTE OUT 19","macchina":"QUANTUM 2 L","ch":"L","ms":"STEREO","note":"QUANTUM 2","slot":"QUANTUM 2"},{"idx":20,"canale":"DANTE OUT 20","macchina":"QUANTUM 2 R","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"DANTE OUT 21","macchina":"DANTE 1 OUT 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"DANTE OUT 22","macchina":"DANTE 1 OUT 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"DANTE OUT 23","macchina":"DANTE 1 OUT 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"DANTE OUT 24","macchina":"DANTE 1 OUT 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"DANTE OUT 25","macchina":"DANTE 1 OUT 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"DANTE OUT 26","macchina":"DANTE 1 OUT 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"DANTE OUT 27","macchina":"DANTE 1 OUT 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"DANTE OUT 28","macchina":"DANTE 1 OUT 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"DANTE OUT 29","macchina":"DANTE 1 OUT 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"DANTE OUT 30","macchina":"DANTE 1 OUT 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"DANTE OUT 31","macchina":"DANTE 1 OUT 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"DANTE OUT 32","macchina":"DANTE 1 OUT 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"DANTE OUT 33","macchina":"DANTE 1 OUT 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"DANTE OUT 34","macchina":"DANTE 1 OUT 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"DANTE OUT 35","macchina":"DANTE 1 OUT 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"DANTE OUT 36","macchina":"DANTE 1 OUT 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"DANTE OUT 37","macchina":"DANTE 1 OUT 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"DANTE OUT 38","macchina":"DANTE 1 OUT 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"DANTE OUT 39","macchina":"DANTE 1 OUT 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"DANTE OUT 40","macchina":"DANTE 1 OUT 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"DANTE OUT 41","macchina":"DANTE 1 OUT 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"DANTE OUT 42","macchina":"DANTE 1 OUT 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"DANTE OUT 43","macchina":"DANTE 1 OUT 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"DANTE OUT 44","macchina":"DANTE 1 OUT 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"DANTE OUT 45","macchina":"DANTE 1 OUT 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"DANTE OUT 46","macchina":"DANTE 1 OUT 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"DANTE OUT 47","macchina":"DANTE 1 OUT 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"DANTE OUT 48","macchina":"DANTE 1 OUT 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"DANTE OUT 49","macchina":"DANTE 1 OUT 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"DANTE OUT 50","macchina":"DANTE 1 OUT 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"DANTE OUT 51","macchina":"DANTE 1 OUT 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"DANTE OUT 52","macchina":"DANTE 1 OUT 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"DANTE OUT 53","macchina":"DANTE 1 OUT 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"DANTE OUT 54","macchina":"DANTE 1 OUT 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"DANTE OUT 55","macchina":"DANTE 1 OUT 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"DANTE OUT 56","macchina":"DANTE 1 OUT 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"DANTE OUT 57","macchina":"DANTE 1 OUT 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"DANTE OUT 58","macchina":"DANTE 1 OUT 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"DANTE OUT 59","macchina":"DANTE 1 OUT 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"DANTE OUT 60","macchina":"DANTE 1 OUT 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"DANTE OUT 61","macchina":"DANTE 1 OUT 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"DANTE OUT 62","macchina":"DANTE 1 OUT 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"DANTE OUT 63","macchina":"DANTE 1 OUT 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"DANTE OUT 64","macchina":"DANTE 1 OUT 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_dante2","nome":"OUT DANTE 2","canali":[{"idx":1,"canale":"DANTE OUT 1","macchina":"VE SA 1","ch":"L","ms":"STEREO","note":"TX VERSO RAIWAY","slot":"FERROFISH CCRF 2"},{"idx":2,"canale":"DANTE OUT 2","macchina":"VE SB 1","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":3,"canale":"DANTE OUT 3","macchina":"VE SA 2","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":4,"canale":"DANTE OUT 4","macchina":"VE SB 2","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":5,"canale":"DANTE OUT 5","macchina":"VE SA 3","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":6,"canale":"DANTE OUT 6","macchina":"VE SB 3","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":7,"canale":"DANTE OUT 7","macchina":"VE 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":8,"canale":"DANTE OUT 8","macchina":"VE 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":9,"canale":"DANTE OUT 9","macchina":"VE 11","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":10,"canale":"DANTE OUT 10","macchina":"VE 12","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":11,"canale":"DANTE OUT 11","macchina":"DANTE OUT 11","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":12,"canale":"DANTE OUT 12","macchina":"DANTE OUT 12","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":13,"canale":"DANTE OUT 13","macchina":"SONIFEX HIGH","ch":"L","ms":"STEREO","note":"REGISTRAZIONI DOCUMENTO","slot":""},{"idx":14,"canale":"DANTE OUT 14","macchina":"SONIFEX HIGH","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":15,"canale":"DANTE OUT 15","macchina":"SONIFEX LOW","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":16,"canale":"DANTE OUT 16","macchina":"SONIFEX LOW","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":17,"canale":"DANTE OUT 17","macchina":"DANTE 2 OUT 17","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":18,"canale":"DANTE OUT 18","macchina":"DANTE 2 OUT 18","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":19,"canale":"DANTE OUT 19","macchina":"DANTE 2 OUT 19","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":20,"canale":"DANTE OUT 20","macchina":"DANTE 2 OUT 20","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":21,"canale":"DANTE OUT 21","macchina":"DANTE 2 OUT 21","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":22,"canale":"DANTE OUT 22","macchina":"DANTE 2 OUT 22","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":23,"canale":"DANTE OUT 23","macchina":"DANTE 2 OUT 23","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":24,"canale":"DANTE OUT 24","macchina":"DANTE 2 OUT 24","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":25,"canale":"DANTE OUT 25","macchina":"DANTE 2 OUT 25","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":26,"canale":"DANTE OUT 26","macchina":"DANTE 2 OUT 26","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":27,"canale":"DANTE OUT 27","macchina":"DANTE 2 OUT 27","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":28,"canale":"DANTE OUT 28","macchina":"DANTE 2 OUT 28","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":29,"canale":"DANTE OUT 29","macchina":"DANTE 2 OUT 29","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":30,"canale":"DANTE OUT 30","macchina":"DANTE 2 OUT 30","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":31,"canale":"DANTE OUT 31","macchina":"DANTE 2 OUT 31","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":32,"canale":"DANTE OUT 32","macchina":"DANTE 2 OUT 32","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":33,"canale":"DANTE OUT 33","macchina":"DANTE 2 OUT 33","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":34,"canale":"DANTE OUT 34","macchina":"DANTE 2 OUT 34","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":35,"canale":"DANTE OUT 35","macchina":"DANTE 2 OUT 35","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":36,"canale":"DANTE OUT 36","macchina":"DANTE 2 OUT 36","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":37,"canale":"DANTE OUT 37","macchina":"DANTE 2 OUT 37","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":38,"canale":"DANTE OUT 38","macchina":"DANTE 2 OUT 38","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":39,"canale":"DANTE OUT 39","macchina":"DANTE 2 OUT 39","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":40,"canale":"DANTE OUT 40","macchina":"DANTE 2 OUT 40","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":41,"canale":"DANTE OUT 41","macchina":"DANTE 2 OUT 41","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":42,"canale":"DANTE OUT 42","macchina":"DANTE 2 OUT 42","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":43,"canale":"DANTE OUT 43","macchina":"DANTE 2 OUT 43","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":44,"canale":"DANTE OUT 44","macchina":"DANTE 2 OUT 44","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":45,"canale":"DANTE OUT 45","macchina":"DANTE 2 OUT 45","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":46,"canale":"DANTE OUT 46","macchina":"DANTE 2 OUT 46","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":47,"canale":"DANTE OUT 47","macchina":"DANTE 2 OUT 47","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":48,"canale":"DANTE OUT 48","macchina":"DANTE 2 OUT 48","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":49,"canale":"DANTE OUT 49","macchina":"DANTE 2 OUT 49","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":50,"canale":"DANTE OUT 50","macchina":"DANTE 2 OUT 50","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":51,"canale":"DANTE OUT 51","macchina":"DANTE 2 OUT 51","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":52,"canale":"DANTE OUT 52","macchina":"DANTE 2 OUT 52","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":53,"canale":"DANTE OUT 53","macchina":"DANTE 2 OUT 53","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":54,"canale":"DANTE OUT 54","macchina":"DANTE 2 OUT 54","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":55,"canale":"DANTE OUT 55","macchina":"DANTE 2 OUT 55","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":56,"canale":"DANTE OUT 56","macchina":"DANTE 2 OUT 56","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":57,"canale":"DANTE OUT 57","macchina":"DANTE 2 OUT 57","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":58,"canale":"DANTE OUT 58","macchina":"DANTE 2 OUT 58","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":59,"canale":"DANTE OUT 59","macchina":"DANTE 2 OUT 59","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":60,"canale":"DANTE OUT 60","macchina":"DANTE 2 OUT 60","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":61,"canale":"DANTE OUT 61","macchina":"DANTE 2 OUT 61","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":62,"canale":"DANTE OUT 62","macchina":"DANTE 2 OUT 62","ch":"R","ms":"STEREO","note":"","slot":""},{"idx":63,"canale":"DANTE OUT 63","macchina":"DANTE 2 OUT 63","ch":"L","ms":"STEREO","note":"","slot":""},{"idx":64,"canale":"DANTE OUT 64","macchina":"DANTE 2 OUT 64","ch":"R","ms":"STEREO","note":"","slot":""}]},{"id":"out_aes","nome":"LOCAL AES OUT","canali":[{"idx":1,"canale":"1","macchina":"ISDN 1","ch":"L","ms":"MONO/STEREO","note":"","slot":"Slot ? In 1"},{"idx":2,"canale":"","macchina":"ISDN 1","ch":"R","ms":"MONO/STEREO","note":"","slot":"Slot ? In 2"},{"idx":3,"canale":"2","macchina":"QUANTUM 1 AES","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 3"},{"idx":4,"canale":"","macchina":"QUANTUM 1 AES","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 4"},{"idx":5,"canale":"3","macchina":"QUANTUM 2 AES","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 5"},{"idx":6,"canale":"","macchina":"QUANTUM 2 AES","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 6"},{"idx":7,"canale":"4","macchina":"OUT 7/8","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 7"},{"idx":8,"canale":"","macchina":"OUT 7/8","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 8"},{"idx":9,"canale":"5","macchina":"OUT 9/10","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 9"},{"idx":10,"canale":"","macchina":"OUT 9/10","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 10"},{"idx":11,"canale":"6","macchina":"OUT 11/12","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 11"},{"idx":12,"canale":"","macchina":"OUT 11/12","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 12"},{"idx":13,"canale":"7","macchina":"OUT 13/14","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 13"},{"idx":14,"canale":"","macchina":"OUT 13/14","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 14"},{"idx":15,"canale":"8","macchina":"OUT 15/16","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 15"},{"idx":16,"canale":"","macchina":"OUT 15/16","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 16"},{"idx":17,"canale":"1","macchina":"OUT 17/18","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 1"},{"idx":18,"canale":"","macchina":"OUT 17/18","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 2"},{"idx":19,"canale":"2","macchina":"OUT 19/20","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 3"},{"idx":20,"canale":"","macchina":"OUT 19/20","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 4"},{"idx":21,"canale":"3","macchina":"OUT 21/22","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 5"},{"idx":22,"canale":"","macchina":"OUT 21/22","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 6"},{"idx":23,"canale":"4","macchina":"OUT 23/24","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 7"},{"idx":24,"canale":"","macchina":"OUT 23/24","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 8"},{"idx":25,"canale":"5","macchina":"OUT 25/26","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 9"},{"idx":26,"canale":"","macchina":"OUT 25/26","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 10"},{"idx":27,"canale":"6","macchina":"OUT 27/28","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 11"},{"idx":28,"canale":"","macchina":"OUT 27/28","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 12"},{"idx":29,"canale":"7","macchina":"OUT 29/30","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 13"},{"idx":30,"canale":"","macchina":"OUT 29/30","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 14"},{"idx":31,"canale":"8","macchina":"OUT 31/32","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 15"},{"idx":32,"canale":"","macchina":"OUT 31/32","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 16"}]},{"id":"out_analog","nome":"LOCAL ANALOG OUT","canali":[{"idx":1,"canale":"1","macchina":"ASCOLTO MONITOR L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 1"},{"idx":2,"canale":"2","macchina":"ASCOLTO MONITOR R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 2"},{"idx":3,"canale":"3","macchina":"OUT 3","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 3"},{"idx":4,"canale":"4","macchina":"OUT 4","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 4"},{"idx":5,"canale":"5","macchina":"OUT 5","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 5"},{"idx":6,"canale":"6","macchina":"OUT 6","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 6"},{"idx":7,"canale":"7","macchina":"OUT 7","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 7"},{"idx":8,"canale":"8","macchina":"OUT 8","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 8"},{"idx":9,"canale":"9","macchina":"ISDN 2 L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 9"},{"idx":10,"canale":"10","macchina":"ISDN 2 R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 10"},{"idx":11,"canale":"11","macchina":"OUT 11","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 11"},{"idx":12,"canale":"12","macchina":"OUT 12","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 12"},{"idx":13,"canale":"13","macchina":"ORBAN 1 L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 13"},{"idx":14,"canale":"14","macchina":"ORBAN 1 R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 14"},{"idx":15,"canale":"15","macchina":"ORBAN 2 L","ch":"L","ms":"STEREO","note":"","slot":"Slot ? In 15"},{"idx":16,"canale":"16","macchina":"ORBAN 2 R","ch":"R","ms":"STEREO","note":"","slot":"Slot ? In 16"}]}],"incroci":{}};
+
+/* -------------------- Navigazione -------------------- */
+const VIEWS=[
+  {id:'dashboard', ico:'📊', label:'Dashboard'},
+  {grp:'AUDIO · CCRF'},
+  {id:'incroci', ico:'🎛️', label:'Quadro Incroci'},
+  {id:'ccrf', ico:'🎚️', label:'Regie & Matrice'},
+  {grp:'SISTEMA'},
+  {id:'backup', ico:'💽', label:'Backup / Ripristino'},
+];
+function buildNav(){
+  const nav=$('#nav'); nav.innerHTML='';
+  const cur=location.hash.slice(1)||'dashboard';
+  for(const it of VIEWS){
+    if(it.grp){ nav.append(el('div',{class:'grp'},it.grp)); continue; }
+    const cnt=navCount(it.id);
+    const active=(cur===it.id || (it.id==='ccrf'&&cur.startsWith('ccrf/')));
+    nav.append(el('a',{href:'#'+it.id, class:(active?'active':'')},
+      el('span',{class:'ico'},it.ico), el('span',{},it.label),
+      cnt!=null?el('span',{class:'cnt'},String(cnt)):null));
+  }
+}
+function navCount(id){
+  if(!DB||!DB.ccrf)return null;
+  if(id==='incroci')return Object.keys(DB.ccrf.incroci||{}).length;
+  if(id==='ccrf')return DB.ccrf.ingressi.length+DB.ccrf.uscite.length;
+  return null;
+}
+window.addEventListener('hashchange',route);
+function route(){
+  const hash=location.hash.slice(1)||'dashboard';
+  buildNav();
+  const c=$('#content'); c.innerHTML='';
+  if(hash==='dashboard'){ $('#viewTitle').textContent='Dashboard'; viewDashboard(c); }
+  else if(hash==='incroci'){ $('#viewTitle').textContent='Quadro Incroci — Matrice CCRF'; viewIncroci(c); }
+  else if(hash==='ccrf'){ $('#viewTitle').textContent='Regie & Matrice audio (CCRF)'; viewCCRF(c); }
+  else if(hash.startsWith('ccrf/')){ viewCCRFDevice(c, hash.slice(5)); }
+  else if(hash==='backup'){ $('#viewTitle').textContent='Backup / Ripristino'; viewBackup(c); }
+  else { location.hash='dashboard'; }
+}
+
+/* -------------------- Dashboard -------------------- */
+function viewDashboard(c){
+  c.append(el('div',{class:'help', html:
+    'Benvenuto in <b>Gestione Audio Regie</b>. Il software gira <b>senza installazione</b> e <b>senza server</b>: '+
+    'tutti i dati (compresi gli incroci della matrice) stanno nel file <kbd>database.json</kbd>. '+
+    'Premi <b>📂 Cartella database</b> per crearlo/collegarlo, poi <b>💾 Salva</b>. '+
+    (hasFS?'':'<br><b>Attenzione:</b> questo browser non supporta il salvataggio diretto su file — usa <b>Microsoft Edge</b> o <b>Chrome</b>, oppure la sezione <b>Backup</b>.')
+  }));
+  if(!DB.ccrf){ return; }
+  const M=DB.ccrf;
+  const nIn=M.ingressi.reduce((a,g)=>a+g.canali.length,0);
+  const nOut=M.uscite.reduce((a,g)=>a+g.canali.length,0);
+  const nCross=Object.keys(M.incroci||{}).length;
+  const cards=el('div',{class:'cards'});
+  const mk=(k,v,sub,color,go)=>{ const card=el('div',{class:'card'},el('div',{class:'k'},k),el('div',{class:'v',style:color?'color:'+color:''},String(v)),sub?el('div',{class:'sub'},sub):null); if(go){card.style.cursor='pointer';card.onclick=()=>location.hash=go;} return card; };
+  cards.append(
+    mk('Incroci audio attivi', nCross, 'clic per aprire il Quadro Incroci','#22c55e','incroci'),
+    mk('Dispositivi ingresso', M.ingressi.length, nIn+' canali sorgente',null,'ccrf'),
+    mk('Dispositivi uscita', M.uscite.length, nOut+' canali destinazione',null,'ccrf'),
+    mk('Uscite instradate', M.uscite.reduce((a,g)=>a+g.canali.filter(oc=>M.incroci[g.id+'#'+oc.idx]).length,0), 'su '+nOut+' canali di uscita','#3b82f6','incroci'),
+  );
+  c.append(cards);
+  // riepilogo per dispositivo
+  const box=el('div',{class:'cards',style:'margin-top:16px;grid-template-columns:1fr 1fr'});
+  const distr=(title,groups,kind)=>{
+    const card=el('div',{class:'card'}); card.append(el('div',{class:'k',style:'margin-bottom:10px'},title));
+    const max=Math.max(...groups.map(g=>g.canali.length),1);
+    for(const g of groups){
+      const active=(kind==='out')?g.canali.filter(oc=>M.incroci[g.id+'#'+oc.idx]).length:
+        M.uscite.reduce((a,og)=>a+og.canali.filter(oc=>{const s=M.incroci[og.id+'#'+oc.idx];return s&&s.startsWith(g.id+'#');}).length,0);
+      card.append(el('div',{style:'display:flex;align-items:center;gap:10px;margin:6px 0'},
+        el('div',{style:'width:170px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'},g.nome),
+        el('div',{class:'bar',style:'flex:1'}, el('i',{style:'width:'+(g.canali.length/max*100)+'%'})),
+        el('div',{style:'width:64px;text-align:right;font-size:11px;color:var(--muted)'},g.canali.length+'ch·'+active)));
+    }
+    return card;
+  };
+  box.append(distr('Ingressi (sorgenti)', M.ingressi,'in'), distr('Uscite (destinazioni)', M.uscite,'out'));
+  c.append(box);
+}
+
+/* ============================================================
+   QUADRO INCROCI — matrice audio CCRF (tipo "Dante Controller")
+   Ingressi (sorgenti) sulle colonne, uscite (destinazioni) sulle
+   righe. Ogni uscita può ricevere UNA sorgente: cliccando un
+   incrocio si instrada l'ingresso verso quell'uscita.
+   Dispositivi comprimibili/espandibili come in Dante Controller.
+   ============================================================ */
+function ccrf(){ return DB.ccrf; }
+function chId(gid,idx){ return gid+'#'+idx; }
+function ccrfFindGroup(gid){ return ccrf().ingressi.find(g=>g.id===gid) || ccrf().uscite.find(g=>g.id===gid) || null; }
+function ccrfChan(id){ if(!id)return null; const [gid,idx]=id.split('#'); const g=ccrfFindGroup(gid); if(!g)return null; return g.canali.find(c=>String(c.idx)===String(idx))||null; }
+function chLabel(c){ if(!c)return ''; const nome=c.macchina||c.canale||('ch '+c.idx); const lr=c.ch?(' '+c.ch):''; return nome+lr; }
+function chLabelFull(gid,c){ const g=ccrfFindGroup(gid); return (g?g.nome+' · ':'')+chLabel(c); }
+
+// stato di visualizzazione (non persistito): dispositivi espansi + filtri
+const xpUI = { expIn:new Set(), expOut:new Set(), qIn:'', qOut:'', onlyActive:false };
+
+function ccrfGroupMatches(g,q){
+  if(!q)return true; q=q.toLowerCase();
+  if(g.nome.toLowerCase().includes(q))return true;
+  return g.canali.some(c=>chMatch(c,q));
+}
+function chMatch(c,q){ return [c.canale,c.macchina,c.ch,c.note,c.slot].some(v=>String(v||'').toLowerCase().includes(q)); }
+
+function viewIncroci(c){
+  if(!DB.ccrf){ c.append(el('div',{class:'help'},'Dati matrice CCRF non presenti nel database.')); return; }
+  const M=ccrf();
+  const nCross=()=>Object.keys(M.incroci||{}).length;
+
+  c.append(el('div',{class:'help',html:
+    '<b>Quadro Incroci</b> — matrice di smistamento audio in stile <i>Dante Controller</i>. '+
+    'Le <b>colonne</b> sono gli <b>ingressi</b> (sorgenti: MADI delle regie, Dante, AES, analogico); '+
+    'le <b>righe</b> sono le <b>uscite</b> (destinazioni). '+
+    'Clicca l\'intestazione di un dispositivo per <b>espanderlo/comprimerlo</b>; con entrambi i lati espansi '+
+    'clicca la casella all\'incrocio per <b>instradare</b> l\'ingresso verso l\'uscita. '+
+    'Ogni uscita riceve <b>una sola</b> sorgente (riclicca per staccare). Le celle riepilogo mostrano il numero di incroci attivi.'
+  }));
+
+  const bar=el('div',{class:'xp-toolbar'});
+  const stat=el('span',{class:'xp-stat'});
+  const upStat=()=>stat.innerHTML='Incroci attivi: <b>'+nCross()+'</b> · ingressi '+M.ingressi.reduce((a,g)=>a+g.canali.length,0)+' · uscite '+M.uscite.reduce((a,g)=>a+g.canali.length,0);
+
+  const qIn=el('input',{class:'search',style:'max-width:170px',placeholder:'🔎 ingressi…',value:xpUI.qIn,oninput:e=>{xpUI.qIn=e.target.value;render();}});
+  const qOut=el('input',{class:'search',style:'max-width:170px',placeholder:'🔎 uscite…',value:xpUI.qOut,oninput:e=>{xpUI.qOut=e.target.value;render();}});
+  const onlyA=el('label',{style:'display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)'},
+    el('input',{type:'checkbox',style:'width:auto',checked:xpUI.onlyActive?'checked':null,onchange:e=>{xpUI.onlyActive=e.target.checked;render();}}),'solo uscite instradate');
+
+  const expandAll=(which,val)=>{ const set=which==='in'?xpUI.expIn:xpUI.expOut; const groups=which==='in'?M.ingressi:M.uscite; set.clear(); if(val) groups.forEach(g=>set.add(g.id)); render(); };
+  bar.append(
+    el('span',{class:'xp-stat'},'Ingressi:'),
+    el('div',{class:'grpbtn'},
+      el('button',{onclick:()=>expandAll('in',true)},'▸ espandi'),
+      el('button',{onclick:()=>expandAll('in',false)},'▾ comprimi')),
+    el('span',{class:'xp-stat'},'Uscite:'),
+    el('div',{class:'grpbtn'},
+      el('button',{onclick:()=>expandAll('out',true)},'▸ espandi'),
+      el('button',{onclick:()=>expandAll('out',false)},'▾ comprimi')),
+    qIn, qOut, onlyA,
+    el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:exportIncroci},'⤓ Excel'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Azzerare TUTTI gli incroci attivi?')){ M.incroci={}; markDirty(); render(); toast('Incroci azzerati'); } }},'✕ Azzera')
+  );
+  c.append(bar);
+  c.append(el('div',{style:'margin-bottom:10px'},stat));
+
+  const scroll=el('div',{class:'xp-scroll'});
+  c.append(scroll);
+
+  function render(){
+    buildNav(); upStat();
+    scroll.innerHTML='';
+    scroll.append(buildMatrix());
+  }
+
+  function inGroupsVis(){ return M.ingressi.filter(g=>ccrfGroupMatches(g,xpUI.qIn)); }
+  function outGroupsVis(){
+    let gs=M.uscite.filter(g=>ccrfGroupMatches(g,xpUI.qOut));
+    return gs;
+  }
+  function inChansVis(g){ return g.canali.filter(c=>!xpUI.qIn || chMatch(c,xpUI.qIn) || g.nome.toLowerCase().includes(xpUI.qIn.toLowerCase())); }
+  function outChansVis(g){
+    let cs=g.canali.filter(c=>!xpUI.qOut || chMatch(c,xpUI.qOut) || g.nome.toLowerCase().includes(xpUI.qOut.toLowerCase()));
+    if(xpUI.onlyActive) cs=cs.filter(c=>M.incroci[chId(g.id,c.idx)]);
+    return cs;
+  }
+  // conteggio incroci fra un gruppo/canale ingresso e un gruppo/canale uscita
+  function countBetween(outIds, inIdSet){
+    let n=0; for(const oid of outIds){ const src=M.incroci[oid]; if(src && inIdSet.has(src)) n++; } return n;
+  }
+
+  function buildMatrix(){
+    const inGroups=inGroupsVis();
+    const outGroups=outGroupsVis();
+    // colonne (flat)
+    const cols=[];
+    for(const g of inGroups){
+      if(xpUI.expIn.has(g.id)){ for(const ch of inChansVis(g)) cols.push({type:'ch',g,ch,id:chId(g.id,ch.idx)}); }
+      else cols.push({type:'agg',g});
+    }
+    const table=el('table',{class:'xp'});
+    // ---- THEAD: riga dispositivi + riga canali ----
+    const thead=el('thead'); const rDev=el('tr'); const rCh=el('tr');
+    const corner=el('th',{class:'corner',rowspan:'2',html:'<b>USCITE \\ INGRESSI</b><small>clic dispositivo = espandi/comprimi · clic incrocio = instrada</small>'});
+    rDev.append(corner);
+    for(const g of inGroups){
+      const exp=xpUI.expIn.has(g.id);
+      const cc=M.uscite.reduce((a,og)=>a+og.canali.filter(oc=>{const s=M.incroci[chId(og.id,oc.idx)]; return s&&s.startsWith(g.id+'#');}).length,0);
+      if(exp){
+        const chans=inChansVis(g);
+        const span=Math.max(chans.length,1);
+        rDev.append(el('th',{class:'dev',colspan:String(span),title:g.nome,onclick:()=>{ xpUI.expIn.delete(g.id); render(); }},
+          '▾ '+g.nome+(cc?' ':''), cc?el('span',{class:'cc'},'('+cc+')'):null));
+        if(chans.length===0){ rCh.append(el('th',{class:'ch'})); }
+        for(const ch of chans){
+          const id=chId(g.id,ch.idx);
+          rCh.append(el('th',{class:'ch','data-in':id,title:chLabelFull(g.id,ch),
+            onclick:()=>highlightCol(id)},
+            el('div',{},chLabel(ch)||('ch '+ch.idx))));
+        }
+      } else {
+        // dispositivo compresso: colonna verticale singola su entrambe le righe
+        rDev.append(el('th',{class:'devcol',rowspan:'2',title:g.nome+' — clic per espandere',
+          onclick:()=>{ xpUI.expIn.add(g.id); render(); }},
+          el('div',{}, '▸ '+g.nome + (cc?(' ('+cc+')'):''))));
+      }
+    }
+    thead.append(rDev,rCh); table.append(thead);
+
+    // ---- TBODY ----
+    const tbody=el('tbody');
+    for(const g of outGroups){
+      const exp=xpUI.expOut.has(g.id);
+      const outChans=exp?outChansVis(g):[];
+      // riga dispositivo uscita
+      const trDev=el('tr',{class:'devrow'});
+      const cc=g.canali.filter(oc=>M.incroci[chId(g.id,oc.idx)]).length;
+      const thd=el('th',{title:g.nome,onclick:()=>{ exp?xpUI.expOut.delete(g.id):xpUI.expOut.add(g.id); render(); }},
+        (exp?'▾ ':'▸ ')+g.nome+' ', cc?el('span',{class:'cc'},'('+cc+')'):null);
+      trDev.append(thd);
+      // celle riga-dispositivo: aggregate verso ogni colonna
+      const outAllIds=g.canali.map(oc=>chId(g.id,oc.idx));
+      for(const col of cols){
+        if(col.type==='ch'){
+          const n=countBetween(outAllIds,new Set([col.id]));
+          trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); render(); }));
+        } else {
+          const inIds=new Set(col.g.canali.map(ic=>chId(col.g.id,ic.idx)));
+          const n=countBetween(outAllIds,inIds);
+          trDev.append(aggCell(n,()=>{ xpUI.expOut.add(g.id); xpUI.expIn.add(col.g.id); render(); }));
+        }
+      }
+      tbody.append(trDev);
+      // righe canale (solo se uscita espansa)
+      for(const oc of outChans){
+        const oid=chId(g.id,oc.idx);
+        const src=M.incroci[oid];
+        const tr=el('tr');
+        const lab=el('td',{class:'rowlab','data-out':oid,title:chLabelFull(g.id,oc),onclick:()=>highlightRow(oid)},
+          el('span',{class:'lr'},oc.ch||''), (oc.macchina||oc.canale||('ch '+oc.idx)),
+          src?el('span',{class:'src'},' ◂ '+chLabel(ccrfChan(src))):null);
+        tr.append(lab);
+        for(const col of cols){
+          if(col.type==='ch'){
+            const on=(src===col.id);
+            const td=el('td',{class:'xp'+(on?' on':''),'data-out':oid,'data-in':col.id,
+              title:'IN: '+chLabelFull(col.g.id,col.ch)+'  →  OUT: '+chLabelFull(g.id,oc),
+              onclick:()=>toggleXP(oid,col.id)});
+            tr.append(td);
+          } else {
+            const inIds=new Set(col.g.canali.map(ic=>chId(col.g.id,ic.idx)));
+            const n=(src&&inIds.has(src))?1:0;
+            tr.append(aggCell(n,()=>{ xpUI.expIn.add(col.g.id); render(); }));
+          }
+        }
+        tbody.append(tr);
+      }
+    }
+    table.append(tbody);
+    return table;
+  }
+  function aggCell(n,onclick){ return el('td',{class:'agg'+(n?' has':''),onclick},n?String(n):'·'); }
+
+  function toggleXP(oid,inId){
+    if(M.incroci[oid]===inId) delete M.incroci[oid];
+    else M.incroci[oid]=inId;
+    markDirty();
+    // aggiornamento mirato del DOM
+    scroll.querySelectorAll('td.xp[data-out="'+cssq(oid)+'"]').forEach(td=>td.classList.remove('on'));
+    if(M.incroci[oid]) scroll.querySelector('td.xp[data-out="'+cssq(oid)+'"][data-in="'+cssq(inId)+'"]')?.classList.add('on');
+    // aggiorna etichetta sorgente sulla riga
+    const lab=scroll.querySelector('td.rowlab[data-out="'+cssq(oid)+'"]');
+    if(lab){ lab.querySelector('.src')?.remove(); const s=M.incroci[oid]; if(s) lab.append(el('span',{class:'src'},' ◂ '+chLabel(ccrfChan(s)))); }
+    upStat(); buildNav();
+  }
+  function highlightRow(oid){
+    const on=!scroll.querySelector('td.rowlab[data-out="'+cssq(oid)+'"]')?.classList.contains('hl');
+    scroll.querySelectorAll('.hl').forEach(x=>x.classList.remove('hl'));
+    scroll.querySelectorAll('.rhl').forEach(x=>x.classList.remove('rhl'));
+    if(on){ scroll.querySelector('td.rowlab[data-out="'+cssq(oid)+'"]')?.classList.add('hl');
+      scroll.querySelectorAll('td.xp[data-out="'+cssq(oid)+'"]').forEach(td=>td.classList.add('rhl')); }
+  }
+  function highlightCol(inId){
+    const on=!scroll.querySelector('th.ch[data-in="'+cssq(inId)+'"]')?.classList.contains('hl');
+    scroll.querySelectorAll('th.ch.hl').forEach(x=>x.classList.remove('hl'));
+    scroll.querySelectorAll('.chl').forEach(x=>x.classList.remove('chl'));
+    if(on){ scroll.querySelector('th.ch[data-in="'+cssq(inId)+'"]')?.classList.add('hl');
+      scroll.querySelectorAll('td.xp[data-in="'+cssq(inId)+'"]').forEach(td=>td.classList.add('chl')); }
+  }
+  function cssq(s){ return String(s).replace(/(["\\])/g,'\\$1'); }
+
+  function exportIncroci(){
+    const rows=[['USCITA (destinazione)','Gruppo uscita','CH','INGRESSO (sorgente)','Gruppo ingresso','CH','Note ingresso']];
+    for(const g of M.uscite) for(const oc of g.canali){
+      const oid=chId(g.id,oc.idx); const src=M.incroci[oid]; if(!src)continue;
+      const ic=ccrfChan(src); const [sgid]=src.split('#'); const sg=ccrfFindGroup(sgid);
+      rows.push([oc.macchina||oc.canale, g.nome, oc.ch||'', ic?(ic.macchina||ic.canale):src, sg?sg.nome:'', ic?ic.ch||'':'', ic?ic.note||'':'']);
+    }
+    if(rows.length===1){ toast('Nessun incrocio attivo da esportare'); return; }
+    const bytes=XLSX.build([{name:'Incroci CCRF',rows}]);
+    downloadBytes('quadro_incroci_ccrf_'+new Date().toISOString().slice(0,10)+'.xlsx',bytes,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    toast('Incroci esportati ('+(rows.length-1)+')');
+  }
+
+  render();
+}
+
+/* ============================================================
+   Regie & Matrice — gestione elenchi ingressi/uscite per dispositivo
+   ============================================================ */
+function viewCCRF(c){
+  if(!DB.ccrf){ c.append(el('div',{class:'help'},'Dati matrice CCRF non presenti nel database.')); return; }
+  const M=ccrf();
+  c.append(el('div',{class:'help',html:
+    'Gestione delle <b>3 regie radiofoniche</b> e della <b>matrice centralizzata</b> audio (CCRF). '+
+    'Ogni <b>dispositivo</b> (MADI, Dante, AES, analogico) raggruppa i suoi canali di ingresso o di uscita. '+
+    'Apri un dispositivo per vedere/modificare i canali; da <b>🎛️ Quadro Incroci</b> instradi gli ingressi sulle uscite.'
+  }));
+  c.append(el('div',{class:'toolbar'},
+    el('button',{class:'btn sm',onclick:()=>location.hash='incroci'},'🎛️ Vai al Quadro Incroci'),
+    el('button',{class:'btn sm',onclick:exportCCRFAll},'⤓ Excel (tutto)')
+  ));
+
+  const mkGroup=(titolo,groups,kind)=>{
+    c.append(el('div',{class:'section-h'},titolo));
+    const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(260px,1fr))'});
+    for(const g of groups){
+      const card=el('div',{class:'card',style:'cursor:pointer'});
+      card.onclick=()=>location.hash='ccrf/'+g.id;
+      const active=(kind==='out')?g.canali.filter(oc=>M.incroci[chId(g.id,oc.idx)]).length:
+        M.uscite.reduce((a,og)=>a+og.canali.filter(oc=>{const s=M.incroci[chId(og.id,oc.idx)];return s&&s.startsWith(g.id+'#');}).length,0);
+      card.append(
+        el('div',{class:'ccrf-dev'}, el('div',{class:'n'},g.nome), el('div',{class:'b'},(kind==='in'?'🎙️':'🔊'))),
+        el('div',{class:'sub',style:'margin-top:8px'}, g.canali.length+' canali · '+
+          (kind==='out'?(active+' instradati'):(active+' instradamenti in uscita'))),
+        el('div',{class:'bar',style:'margin-top:8px'}, el('i',{style:'width:'+(g.canali.length?Math.round(active/g.canali.length*100):0)+'%'}))
+      );
+      cards.append(card);
+    }
+    c.append(cards);
+  };
+  mkGroup('Ingressi · sorgenti (regie & linee)', M.ingressi,'in');
+  mkGroup('Uscite · destinazioni', M.uscite,'out');
+}
+
+function exportCCRFAll(){
+  const M=ccrf();
+  const mkRows=groups=>{ const rows=[['Dispositivo','#','Canale','Macchina','CH','Mono/Stereo','Note','Slot']];
+    for(const g of groups) for(const ch of g.canali) rows.push([g.nome,ch.idx,ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot]); return rows; };
+  const sheets=[{name:'Ingressi',rows:mkRows(M.ingressi)},{name:'Uscite',rows:mkRows(M.uscite)}];
+  const inc=[['USCITA','Gruppo uscita','CH','INGRESSO','Gruppo ingresso','CH']];
+  for(const g of M.uscite) for(const oc of g.canali){ const oid=chId(g.id,oc.idx); const s=M.incroci[oid]; if(!s)continue;
+    const ic=ccrfChan(s); const sg=ccrfFindGroup(s.split('#')[0]); inc.push([oc.macchina||oc.canale,g.nome,oc.ch||'',ic?(ic.macchina||ic.canale):s,sg?sg.nome:'',ic?ic.ch||'':'']); }
+  sheets.push({name:'Incroci',rows:inc});
+  const bytes=XLSX.build(sheets);
+  downloadBytes('matrice_ccrf_'+new Date().toISOString().slice(0,10)+'.xlsx',bytes,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Matrice CCRF esportata');
+}
+
+// dettaglio di un dispositivo: tabella canali editabile
+function viewCCRFDevice(c,gid){
+  if(!DB.ccrf){ location.hash='ccrf'; return; }
+  const M=ccrf(); const g=ccrfFindGroup(gid);
+  if(!g){ location.hash='ccrf'; return; }
+  const isIn=M.ingressi.includes(g);
+  $('#viewTitle').textContent=(isIn?'Ingressi · ':'Uscite · ')+g.nome;
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='ccrf'},'‹ Regie & Matrice'));
+  c.append(el('div',{class:'toolbar'},
+    el('div',{style:'font-size:15px;font-weight:600'},(isIn?'🎙️ ':'🔊 ')+g.nome),
+    el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>{ g.canali.push({idx:(g.canali.reduce((a,c)=>Math.max(a,c.idx),0)+1),canale:'',macchina:'',ch:'',ms:'',note:'',slot:''}); markDirty(); viewReload(); }},'➕ Canale'),
+    el('button',{class:'btn sm',onclick:()=>location.hash='incroci'},'🎛️ Quadro Incroci')
+  ));
+  const wrap=el('div',{class:'tablewrap'});
+  const tbl=el('table');
+  tbl.append(el('thead',{},el('tr',{},
+    ...['#','Canale','Macchina','CH','Mono/Stereo','Note','Slot',isIn?'→ Uscite':'◂ Sorgente',''].map(h=>el('th',{},h)))));
+  const tb=el('tbody');
+  for(const ch of g.canali){
+    const id=chId(g.id,ch.idx);
+    const tr=el('tr');
+    const inp=(key,w)=>el('input',{value:ch[key]||'',style:'padding:4px 6px'+(w?';max-width:'+w:''),onchange:e=>{ch[key]=e.target.value;markDirty();}});
+    tr.append(el('td',{},String(ch.idx)));
+    tr.append(el('td',{},inp('canale')));
+    tr.append(el('td',{},inp('macchina')));
+    tr.append(el('td',{style:'max-width:60px'},inp('ch','50px')));
+    tr.append(el('td',{},inp('ms','120px')));
+    tr.append(el('td',{},inp('note')));
+    tr.append(el('td',{},inp('slot','120px')));
+    // colonna instradamento
+    if(isIn){
+      const outs=[]; for(const og of M.uscite) for(const oc of og.canali){ if(M.incroci[chId(og.id,oc.idx)]===id) outs.push(og.nome+' · '+(oc.macchina||oc.canale)+(oc.ch?(' '+oc.ch):'')); }
+      tr.append(el('td',{class:outs.length?'':'empty',style:'white-space:normal;max-width:220px'}, outs.length?outs.join(' ; '):'—'));
+    } else {
+      const s=M.incroci[id]; const ic=ccrfChan(s); const sg=s?ccrfFindGroup(s.split('#')[0]):null;
+      tr.append(el('td',{class:s?'':'empty'}, s?(sg.nome+' · '+chLabel(ic)):'—'));
+    }
+    tr.append(el('td',{},el('button',{class:'btn sm danger rowbtn',title:'Elimina canale',onclick:()=>{ if(confirm('Eliminare il canale?')){ // rimuovi incroci collegati
+      const cid=chId(g.id,ch.idx);
+      if(!isIn) delete M.incroci[cid];
+      else for(const k in M.incroci) if(M.incroci[k]===cid) delete M.incroci[k];
+      g.canali=g.canali.filter(x=>x!==ch); markDirty(); viewReload(); } }},'🗑')));
+    tb.append(tr);
+  }
+  tbl.append(tb); wrap.append(tbl); c.append(wrap);
+  function viewReload(){ const cc=$('#content'); cc.innerHTML=''; viewCCRFDevice(cc,gid); }
+}
+
+
+/* -------------------- Migrazione / seed CCRF -------------------- */
+function ensureCCRF(){
+  if(typeof SEED_CCRF==='undefined') return false;
+  let changed=false;
+  if(!DB.ccrf){ DB.ccrf=clone(SEED_CCRF); changed=true; }
+  else {
+    if(!DB.ccrf.incroci){ DB.ccrf.incroci={}; changed=true; }
+    if(!DB.ccrf.ingressi || !DB.ccrf.ingressi.length){ DB.ccrf.ingressi=clone(SEED_CCRF.ingressi); changed=true; }
+    if(!DB.ccrf.uscite || !DB.ccrf.uscite.length){ DB.ccrf.uscite=clone(SEED_CCRF.uscite); changed=true; }
+  }
+  return changed;
+}
+
+/* -------------------- Backup / Ripristino -------------------- */
+function download(name,text,type){ const b=new Blob([text],{type:type||'application/octet-stream'}); const u=URL.createObjectURL(b); const a=el('a',{href:u,download:name}); document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(u); }
+function downloadBytes(name, bytes, type){ const b=new Blob([bytes],{type:type||'application/octet-stream'}); const u=URL.createObjectURL(b); const a=el('a',{href:u,download:name}); document.body.append(a); a.click(); a.remove(); URL.revokeObjectURL(u); }
+function exportJSON(){ download('database_gestioneaudio_'+new Date().toISOString().slice(0,10)+'.json', JSON.stringify(DB,null,1), 'application/json'); toast('Backup esportato'); }
+function importJSON(){
+  const inp=el('input',{type:'file',accept:'.json',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return; try{ const d=JSON.parse(await f.text());
+      if(!d.ccrf){ toast('File non valido (manca la matrice CCRF)'); return; }
+      if(confirm('Sostituire i dati correnti con il file importato?')){ DB=d; ensureCCRF(); markDirty(); route(); toast('Dati importati'); }
+    }catch(err){ toast('Errore lettura file'); } }});
+  document.body.append(inp); inp.click(); inp.remove();
+}
+function viewBackup(c){
+  c.append(el('div',{class:'help',html:'Esporta o reimporta l\'intero database (matrice + incroci) come file JSON, oppure esporta la matrice in Excel. '+
+    'Il file JSON è il tuo backup: conservalo e potrai ripristinarlo in qualsiasi momento.'}));
+  const wrap=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+  const act=(t,sub,fn,cls)=>{ const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=fn;
+    card.append(el('div',{class:'v',style:'font-size:20px'+(cls?';color:'+cls:'')},t), el('div',{class:'sub',style:'margin-top:6px'},sub)); return card; };
+  wrap.append(
+    act('⤓ Esporta JSON','Scarica il database completo (backup)',exportJSON),
+    act('⤒ Importa JSON','Ripristina da un file di backup',importJSON),
+    act('📊 Esporta Excel','Ingressi, Uscite e Incroci in .xlsx',exportCCRFAll,'#22c55e'),
+    act('✕ Azzera incroci','Rimuove tutti gli instradamenti attivi',()=>{ if(confirm('Azzerare TUTTI gli incroci attivi?')){ DB.ccrf.incroci={}; markDirty(); toast('Incroci azzerati'); } },'#f59e0b'),
+    act('♻ Ripristina matrice','Ricarica ingressi/uscite dai dati di riferimento (mantiene gli incroci)',()=>{ if(confirm('Ricaricare la struttura di ingressi e uscite dai dati di riferimento? Gli incroci esistenti verranno mantenuti dove possibile.')){ const inc=DB.ccrf.incroci||{}; DB.ccrf.ingressi=clone(SEED_CCRF.ingressi); DB.ccrf.uscite=clone(SEED_CCRF.uscite); DB.ccrf.incroci=inc; markDirty(); route(); toast('Struttura ripristinata'); } },'#ef4444'),
+  );
+  c.append(wrap);
+}
+
+/* -------------------- Avvio -------------------- */
+$('#btnConnect').addEventListener('click',connectFolder);
+$('#btnSave').addEventListener('click',saveDB);
+$('#btnBackup').addEventListener('click',()=>location.hash='backup');
+window.addEventListener('keydown',e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){ e.preventDefault(); saveDB(); } });
+(async function init(){
+  try{ await IDB.open(); }catch(e){}
+  const src = await loadDB();
+  const seeded = ensureCCRF();
+  if(!location.hash) location.hash='dashboard';
+  route(); renderDbStat();
+  if(src==='seed') toast('Database vuoto: premi «📂 Cartella database» per crearlo/collegarlo (o apri database-esempio.json)');
+  else if(src==='file') toast('Database caricato dal file');
+  if(seeded && src!=='seed') markDirty();
+})();
+
+</script>
+</body>
+</html>

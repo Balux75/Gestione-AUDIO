@@ -1,0 +1,8800 @@
+{
+ "meta": {
+  "versione": 1,
+  "app": "Gestione Audio Regie (CCRF)",
+  "creato": "2026-07-20",
+  "descrizione": "Database di esempio - matrice audio delle regie radiofoniche."
+ },
+ "ccrf": {
+  "version": 1,
+  "ingressi": [
+   {
+    "id": "in_madi1",
+    "nome": "MADI 1 · FUTURO RAIWAY",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 1 IN 1",
+      "macchina": "MADI 1 IN 1",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 1 IN 2",
+      "macchina": "MADI 1 IN 2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 1 IN 3",
+      "macchina": "MADI 1 IN 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 1 IN 4",
+      "macchina": "MADI 1 IN 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 1 IN 5",
+      "macchina": "MADI 1 IN 5",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 1 IN 6",
+      "macchina": "MADI 1 IN 6",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 1 IN 7",
+      "macchina": "MADI 1 IN 7",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 1 IN 8",
+      "macchina": "MADI 1 IN 8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 1 IN 9",
+      "macchina": "MADI 1 IN 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 1 IN 10",
+      "macchina": "MADI 1 IN 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 1 IN 11",
+      "macchina": "MADI 1 IN 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 1 IN 12",
+      "macchina": "MADI 1 IN 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 1 IN 13",
+      "macchina": "MADI 1 IN 13",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 1 IN 14",
+      "macchina": "MADI 1 IN 14",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 1 IN 15",
+      "macchina": "MADI 1 IN 15",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 1 IN 16",
+      "macchina": "MADI 1 IN 16",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 1 IN 17",
+      "macchina": "MADI 1 IN 17",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 1 IN 18",
+      "macchina": "MADI 1 IN 18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 1 IN 19",
+      "macchina": "MADI 1 IN 19",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 1 IN 20",
+      "macchina": "MADI 1 IN 20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 1 IN 21",
+      "macchina": "MADI 1 IN 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 1 IN 22",
+      "macchina": "MADI 1 IN 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 1 IN 23",
+      "macchina": "MADI 1 IN 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 1 IN 24",
+      "macchina": "MADI 1 IN 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 1 IN 25",
+      "macchina": "MADI 1 IN 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 1 IN 26",
+      "macchina": "MADI 1 IN 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 1 IN 27",
+      "macchina": "MADI 1 IN 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 1 IN 28",
+      "macchina": "MADI 1 IN 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 1 IN 29",
+      "macchina": "MADI 1 IN 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 1 IN 30",
+      "macchina": "MADI 1 IN 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 1 IN 31",
+      "macchina": "MADI 1 IN 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 1 IN 32",
+      "macchina": "MADI 1 IN 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 1 IN 33",
+      "macchina": "MADI 1 IN 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 1 IN 34",
+      "macchina": "MADI 1 IN 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 1 IN 35",
+      "macchina": "MADI 1 IN 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 1 IN 36",
+      "macchina": "MADI 1 IN 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 1 IN 37",
+      "macchina": "MADI 1 IN 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 1 IN 38",
+      "macchina": "MADI 1 IN 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 1 IN 39",
+      "macchina": "MADI 1 IN 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 1 IN 40",
+      "macchina": "MADI 1 IN 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 1 IN 41",
+      "macchina": "MADI 1 IN 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 1 IN 42",
+      "macchina": "MADI 1 IN 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 1 IN 43",
+      "macchina": "MADI 1 IN 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 1 IN 44",
+      "macchina": "MADI 1 IN 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 1 IN 45",
+      "macchina": "MADI 1 IN 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 1 IN 46",
+      "macchina": "MADI 1 IN 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 1 IN 47",
+      "macchina": "MADI 1 IN 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 1 IN 48",
+      "macchina": "MADI 1 IN 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 1 IN 49",
+      "macchina": "MADI 1 IN 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 1 IN 50",
+      "macchina": "MADI 1 IN 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 1 IN 51",
+      "macchina": "MADI 1 IN 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 1 IN 52",
+      "macchina": "MADI 1 IN 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 1 IN 53",
+      "macchina": "MADI 1 IN 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 1 IN 54",
+      "macchina": "MADI 1 IN 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 1 IN 55",
+      "macchina": "MADI 1 IN 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 1 IN 56",
+      "macchina": "MADI 1 IN 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 1 IN 57",
+      "macchina": "MADI 1 IN 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 1 IN 58",
+      "macchina": "MADI 1 IN 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 1 IN 59",
+      "macchina": "MADI 1 IN 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 1 IN 60",
+      "macchina": "MADI 1 IN 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_madi2",
+    "nome": "MADI 2 · da REGIA B",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 2 IN 1",
+      "macchina": "RB PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 2 IN 2",
+      "macchina": "RB PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 2 IN 3",
+      "macchina": "RB PGM 2 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 2 IN 4",
+      "macchina": "RB PGM 2 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 2 IN 5",
+      "macchina": "RB PGM REC OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 2 IN 6",
+      "macchina": "RB PGM REC OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 2 IN 7",
+      "macchina": "RB AUX 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 2 IN 8",
+      "macchina": "RB AUX 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 2 IN 9",
+      "macchina": "RB AUX 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 2 IN 10",
+      "macchina": "RB AUX 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 2 IN 11",
+      "macchina": "RB AUX 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 2 IN 12",
+      "macchina": "RB AUX 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 2 IN 13",
+      "macchina": "RB AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 2 IN 14",
+      "macchina": "RB AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 2 IN 15",
+      "macchina": "RB AUX 5 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 2 IN 16",
+      "macchina": "RB AUX 5 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 2 IN 17",
+      "macchina": "RB AUX 6 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 2 IN 18",
+      "macchina": "RB AUX 6 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 2 IN 19",
+      "macchina": "RB TV N-X 4",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 2 IN 20",
+      "macchina": "RB TV N-X 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 2 IN 21",
+      "macchina": "RB QUANTUM 1 N-X 5",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 2 IN 22",
+      "macchina": "RB QUANTUM 1 N-X 5",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 2 IN 23",
+      "macchina": "RB QUANTUM 2 N-X 6",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 2 IN 24",
+      "macchina": "RB QUANTUM 2 N-X 6",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 2 IN 25",
+      "macchina": "RB ISDN 1 N-X 7",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 2 IN 26",
+      "macchina": "RB ISDN 1 N-X 7",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 2 IN 27",
+      "macchina": "RB ISDN 2 N-X 8",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 2 IN 28",
+      "macchina": "RB ISDN 2 N-X 8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 2 IN 29",
+      "macchina": "RB RC N-X 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 2 IN 30",
+      "macchina": "RB RC N-X 9",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 2 IN 31",
+      "macchina": "RB TP N-X 10",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 2 IN 32",
+      "macchina": "RB TP N-X 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 2 IN 33",
+      "macchina": "RB ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 2 IN 34",
+      "macchina": "RB ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 2 IN 35",
+      "macchina": "RB CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 2 IN 36",
+      "macchina": "RB CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 2 IN 37",
+      "macchina": "RB CUFFIA OSPITI L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 2 IN 38",
+      "macchina": "RB CUFFIA OSPITI R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 2 IN 39",
+      "macchina": "MD 1 RB 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 2 IN 40",
+      "macchina": "MD 1 RB 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 2 IN 41",
+      "macchina": "MD 1 RB 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 2 IN 42",
+      "macchina": "MD 1 RB 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 2 IN 43",
+      "macchina": "MD 1 RB 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 2 IN 44",
+      "macchina": "MD 1 RB 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 2 IN 45",
+      "macchina": "MD 1 RB 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 2 IN 46",
+      "macchina": "MD 1 RB 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 2 IN 47",
+      "macchina": "MD 1 RB 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 2 IN 48",
+      "macchina": "MD 1 RB 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 2 IN 49",
+      "macchina": "MD 1 RB 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 2 IN 50",
+      "macchina": "MD 1 RB 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 2 IN 51",
+      "macchina": "MD 1 RB 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 2 IN 52",
+      "macchina": "MD 1 RB 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 2 IN 53",
+      "macchina": "MD 1 RB 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 2 IN 54",
+      "macchina": "MD 1 RB 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 2 IN 55",
+      "macchina": "MD 1 RB 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 2 IN 56",
+      "macchina": "MD 1 RB 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 2 IN 57",
+      "macchina": "MD 1 RB 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 2 IN 58",
+      "macchina": "MD 1 RB 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 2 IN 59",
+      "macchina": "MD 1 RB 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 2 IN 60",
+      "macchina": "MD 1 RB 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_madi3",
+    "nome": "MADI 3 · da REGIA TV",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 3 IN 1",
+      "macchina": "TV PGM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 3 IN 2",
+      "macchina": "TV PGM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 3 IN 3",
+      "macchina": "TV PGM 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 3 IN 4",
+      "macchina": "TV PGM 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 3 IN 5",
+      "macchina": "TV ASCOLTO STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 3 IN 6",
+      "macchina": "TV ASCOLTO STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 3 IN 7",
+      "macchina": "TV ASCOLTO AURICOLARE L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 3 IN 8",
+      "macchina": "TV ASCOLTO AURICOLARE R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 3 IN 9",
+      "macchina": "TV AUX S 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 3 IN 10",
+      "macchina": "TV AUX S 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 3 IN 11",
+      "macchina": "TV AUX S 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 3 IN 12",
+      "macchina": "TV AUX S 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 3 IN 13",
+      "macchina": "TV AUX S 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 3 IN 14",
+      "macchina": "TV AUX S 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 3 IN 15",
+      "macchina": "TV AUX S 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 3 IN 16",
+      "macchina": "TV AUX S 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 3 IN 17",
+      "macchina": "TV N-X 3 RF",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 3 IN 18",
+      "macchina": "MD TV 18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 3 IN 19",
+      "macchina": "MD TV 19",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 3 IN 20",
+      "macchina": "MD TV 20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 3 IN 21",
+      "macchina": "MD TV 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 3 IN 22",
+      "macchina": "MD TV 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 3 IN 23",
+      "macchina": "MD TV 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 3 IN 24",
+      "macchina": "MD TV 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 3 IN 25",
+      "macchina": "MD TV 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 3 IN 26",
+      "macchina": "MD TV 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 3 IN 27",
+      "macchina": "MD TV 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 3 IN 28",
+      "macchina": "MD TV 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 3 IN 29",
+      "macchina": "MD TV 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 3 IN 30",
+      "macchina": "MD TV 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 3 IN 31",
+      "macchina": "MD TV 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 3 IN 32",
+      "macchina": "MD TV 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 3 IN 33",
+      "macchina": "MD TV 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 3 IN 34",
+      "macchina": "MD TV 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 3 IN 35",
+      "macchina": "MD TV 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 3 IN 36",
+      "macchina": "MD TV 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 3 IN 37",
+      "macchina": "MD TV 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 3 IN 38",
+      "macchina": "MD TV 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 3 IN 39",
+      "macchina": "MD TV 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 3 IN 40",
+      "macchina": "MD TV 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 3 IN 41",
+      "macchina": "MD TV 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 3 IN 42",
+      "macchina": "MD TV 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 3 IN 43",
+      "macchina": "MD TV 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 3 IN 44",
+      "macchina": "MD TV 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 3 IN 45",
+      "macchina": "MD TV 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 3 IN 46",
+      "macchina": "MD TV 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 3 IN 47",
+      "macchina": "MD TV 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 3 IN 48",
+      "macchina": "MD TV 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 3 IN 49",
+      "macchina": "MD TV 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 3 IN 50",
+      "macchina": "MD TV 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 3 IN 51",
+      "macchina": "MD TV 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 3 IN 52",
+      "macchina": "MD TV 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 3 IN 53",
+      "macchina": "MD TV 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 3 IN 54",
+      "macchina": "MD TV 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 3 IN 55",
+      "macchina": "MD TV 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 3 IN 56",
+      "macchina": "MD TV 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 3 IN 57",
+      "macchina": "MD TV 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 3 IN 58",
+      "macchina": "MD TV 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 3 IN 59",
+      "macchina": "MD TV 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 3 IN 60",
+      "macchina": "MD TV 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_madi4",
+    "nome": "MADI 4 · da TIEPOLO",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 4 IN 1",
+      "macchina": "TP 1",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 4 IN 2",
+      "macchina": "TP 2",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 4 IN 3",
+      "macchina": "TP 3",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 4 IN 4",
+      "macchina": "TP 4",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 4 IN 5",
+      "macchina": "TP 5",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 4 IN 6",
+      "macchina": "TP 6",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 4 IN 7",
+      "macchina": "TP 7",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 4 IN 8",
+      "macchina": "TP 8",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 4 IN 9",
+      "macchina": "TP 9",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 4 IN 10",
+      "macchina": "TP 10",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 4 IN 11",
+      "macchina": "TP 11",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 4 IN 12",
+      "macchina": "TP 12",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 4 IN 13",
+      "macchina": "TP 13",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 4 IN 14",
+      "macchina": "TP 14",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 4 IN 15",
+      "macchina": "TP 15",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 4 IN 16",
+      "macchina": "TP 16",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 4 IN 17",
+      "macchina": "TP PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 4 IN 18",
+      "macchina": "TP PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 4 IN 19",
+      "macchina": "TP PGM 2 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 4 IN 20",
+      "macchina": "TP PGM 2 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 4 IN 21",
+      "macchina": "TP PGM REC OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 4 IN 22",
+      "macchina": "TP PGM REC OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 4 IN 23",
+      "macchina": "TP AUX 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 4 IN 24",
+      "macchina": "TP AUX 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 4 IN 25",
+      "macchina": "TP AUX 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 4 IN 26",
+      "macchina": "TP AUX 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 4 IN 27",
+      "macchina": "TP AUX 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 4 IN 28",
+      "macchina": "TP AUX 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 4 IN 29",
+      "macchina": "TP AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 4 IN 30",
+      "macchina": "TP AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 4 IN 31",
+      "macchina": "TP AUX 5 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 4 IN 32",
+      "macchina": "TP AUX 5 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 4 IN 33",
+      "macchina": "TP AUX 6 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 4 IN 34",
+      "macchina": "TP AUX 6 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 4 IN 35",
+      "macchina": "TP ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 4 IN 36",
+      "macchina": "TP ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 4 IN 37",
+      "macchina": "TP CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 4 IN 38",
+      "macchina": "TP CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 4 IN 39",
+      "macchina": "TP N- RB",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 4 IN 40",
+      "macchina": "TP N- RB",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 4 IN 41",
+      "macchina": "TP N- RC",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 4 IN 42",
+      "macchina": "TP N- RC",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 4 IN 43",
+      "macchina": "TP N- TV",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 4 IN 44",
+      "macchina": "TP N- TV",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 4 IN 45",
+      "macchina": "TP N- TV",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 4 IN 46",
+      "macchina": "TP N- TV",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 4 IN 47",
+      "macchina": "MD 1 TP 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 4 IN 48",
+      "macchina": "MD 1 TP 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 4 IN 49",
+      "macchina": "MD 1 TP 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 4 IN 50",
+      "macchina": "MD 1 TP 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 4 IN 51",
+      "macchina": "MD 1 TP 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 4 IN 52",
+      "macchina": "MD 1 TP 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 4 IN 53",
+      "macchina": "MD 1 TP 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 4 IN 54",
+      "macchina": "MD 1 TP 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 4 IN 55",
+      "macchina": "MD 1 TP 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 4 IN 56",
+      "macchina": "MD 1 TP 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 4 IN 57",
+      "macchina": "MD 1 TP 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 4 IN 58",
+      "macchina": "MD 1 TP 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 4 IN 59",
+      "macchina": "MD 1 TP 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 4 IN 60",
+      "macchina": "MD 1 TP 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_bealinx",
+    "nome": "BEALINX · da REGIA C",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "BEA IN 1",
+      "macchina": "RC PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "BEA IN 2",
+      "macchina": "RC PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "BEA IN 3",
+      "macchina": "RC PGM 2 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "BEA IN 4",
+      "macchina": "RC PGM 2 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "BEA IN 5",
+      "macchina": "RC PGM REC OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "BEA IN 6",
+      "macchina": "RC PGM REC OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "BEA IN 7",
+      "macchina": "RC AUX 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "BEA IN 8",
+      "macchina": "RC AUX 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "BEA IN 9",
+      "macchina": "RC AUX 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "BEA IN 10",
+      "macchina": "RC AUX 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "BEA IN 11",
+      "macchina": "RC AUX 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "BEA IN 12",
+      "macchina": "RC AUX 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "BEA IN 13",
+      "macchina": "RC AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "BEA IN 14",
+      "macchina": "RC AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "BEA IN 15",
+      "macchina": "RC AUX 5 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "BEA IN 16",
+      "macchina": "RC AUX 5 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "BEA IN 17",
+      "macchina": "RC AUX 6 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "BEA IN 18",
+      "macchina": "RC AUX 6 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "BEA IN 19",
+      "macchina": "RC TV N-X 4",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "BEA IN 20",
+      "macchina": "RC TV N-X 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "BEA IN 21",
+      "macchina": "RC QUANTUM 1 N-X 5",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "BEA IN 22",
+      "macchina": "RC QUANTUM 1 N-X 5",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "BEA IN 23",
+      "macchina": "RC QUANTUM 2 N-X 6",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "BEA IN 24",
+      "macchina": "RC QUANTUM 2 N-X 6",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "BEA IN 25",
+      "macchina": "RC ISDN 1 N-X 7",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "BEA IN 26",
+      "macchina": "RC ISDN 1 N-X 7",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "BEA IN 27",
+      "macchina": "RC ISDN 2 N-X 8",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "BEA IN 28",
+      "macchina": "RC ISDN 2 N-X 8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "BEA IN 29",
+      "macchina": "RC RB N-X 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "BEA IN 30",
+      "macchina": "RC RB N-X 9",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "BEA IN 31",
+      "macchina": "RC TP N-X 10",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "BEA IN 32",
+      "macchina": "RC TP N-X 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "BEA IN 33",
+      "macchina": "RC ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "BEA IN 34",
+      "macchina": "RC ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "BEA IN 35",
+      "macchina": "RC CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "BEA IN 36",
+      "macchina": "RC CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "BEA IN 37",
+      "macchina": "RC CUFFIA OSPITI L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "BEA IN 38",
+      "macchina": "RC CUFFIA OSPITI R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "BEA IN 39",
+      "macchina": "RC Mic 1 PostProcess",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "BEA IN 40",
+      "macchina": "RC Mic 2 PostProcess",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "BEA IN 41",
+      "macchina": "RC Mic 3 PostProcess",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "BEA IN 42",
+      "macchina": "RC Mic 4 PostProcess",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "BEA IN 43",
+      "macchina": "RC RMIC 1 PostProcess",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "BEA IN 44",
+      "macchina": "RC RMIC 2 PostProcess",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "BEA IN 45",
+      "macchina": "BEA RC 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "BEA IN 46",
+      "macchina": "BEA RC 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "BEA IN 47",
+      "macchina": "BEA RC 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "BEA IN 48",
+      "macchina": "BEA RC 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "BEA IN 49",
+      "macchina": "BEA RC 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "BEA IN 50",
+      "macchina": "BEA RC 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "BEA IN 51",
+      "macchina": "BEA RC 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "BEA IN 52",
+      "macchina": "BEA RC 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "BEA IN 53",
+      "macchina": "BEA RC 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "BEA IN 54",
+      "macchina": "BEA RC 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "BEA IN 55",
+      "macchina": "BEA RC 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "BEA IN 56",
+      "macchina": "BEA RC 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "BEA IN 57",
+      "macchina": "BEA RC 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "BEA IN 58",
+      "macchina": "BEA RC 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "BEA IN 59",
+      "macchina": "BEA RC 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "BEA IN 60",
+      "macchina": "BEA RC 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_dante_core",
+    "nome": "IN DANTE CORE",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "Dante IN 01",
+      "macchina": "SA 1",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "RADIO 1 STEREO PONTE RADIO 1",
+      "slot": "FERROFISH 1"
+     },
+     {
+      "idx": 2,
+      "canale": "Dante IN 02",
+      "macchina": "SB 1",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "Dante IN 03",
+      "macchina": "SA 2",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "RADIO 2 STEREO PONTE RADIO 2",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "Dante IN 04",
+      "macchina": "SB 2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "Dante IN 05",
+      "macchina": "SA 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "RADIO 3 STEREO PONTE RADIO 3",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "Dante IN 06",
+      "macchina": "SB 3",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "Dante IN 07",
+      "macchina": "MI 27",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "DA MILANO",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "Dante IN 08",
+      "macchina": "MI 28",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "Dante IN 09",
+      "macchina": "TS 11",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "DA TRIESTE",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "Dante IN 10",
+      "macchina": "TS 12",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "Dante IN 11",
+      "macchina": "FD 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "FILODIFFUSIONE 4",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "Dante IN 12",
+      "macchina": "FD 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "Dante IN 13",
+      "macchina": "ER1 MONO",
+      "ch": "L",
+      "ms": "MONO",
+      "note": "MONO PONTE RADIO 1",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "Dante IN 14",
+      "macchina": "ER2 MONO",
+      "ch": "R",
+      "ms": "MONO",
+      "note": "MONO PONTE RADIO 2",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "Dante IN 15",
+      "macchina": "IN 15",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "Dante IN 16",
+      "macchina": "IN 16",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "Dante IN 17",
+      "macchina": "QUANTUM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "QUANTUM 1",
+      "slot": "QUANTUM 1"
+     },
+     {
+      "idx": 18,
+      "canale": "Dante IN 18",
+      "macchina": "QUANTUM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "Dante IN 19",
+      "macchina": "QUANTUM 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "QUANTUM 2",
+      "slot": "QUANTUM 2"
+     },
+     {
+      "idx": 20,
+      "canale": "Dante IN 20",
+      "macchina": "QUANTUM 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "Dante IN 21",
+      "macchina": "DANTE 1 IN 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "Dante IN 22",
+      "macchina": "DANTE 1 IN 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "Dante IN 23",
+      "macchina": "DANTE 1 IN 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "Dante IN 24",
+      "macchina": "DANTE 1 IN 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "Dante IN 25",
+      "macchina": "DANTE 1 IN 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "Dante IN 26",
+      "macchina": "DANTE 1 IN 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "Dante IN 27",
+      "macchina": "DANTE 1 IN 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "Dante IN 28",
+      "macchina": "DANTE 1 IN 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "Dante IN 29",
+      "macchina": "DANTE 1 IN 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "Dante IN 30",
+      "macchina": "DANTE 1 IN 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "Dante IN 31",
+      "macchina": "DANTE 1 IN 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "Dante IN 32",
+      "macchina": "DANTE 1 IN 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "Dante IN 33",
+      "macchina": "DANTE 1 IN 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "Dante IN 34",
+      "macchina": "DANTE 1 IN 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "Dante IN 35",
+      "macchina": "DANTE 1 IN 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "Dante IN 36",
+      "macchina": "DANTE 1 IN 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "Dante IN 37",
+      "macchina": "DANTE 1 IN 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "Dante IN 38",
+      "macchina": "DANTE 1 IN 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "Dante IN 39",
+      "macchina": "DANTE 1 IN 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "Dante IN 40",
+      "macchina": "DANTE 1 IN 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "Dante IN 41",
+      "macchina": "DANTE 1 IN 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "Dante IN 42",
+      "macchina": "DANTE 1 IN 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "Dante IN 43",
+      "macchina": "DANTE 1 IN 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "Dante IN 44",
+      "macchina": "DANTE 1 IN 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "Dante IN 45",
+      "macchina": "DANTE 1 IN 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "Dante IN 46",
+      "macchina": "DANTE 1 IN 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "Dante IN 47",
+      "macchina": "DANTE 1 IN 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "Dante IN 48",
+      "macchina": "DANTE 1 IN 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "Dante IN 49",
+      "macchina": "DANTE 1 IN 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "Dante IN 50",
+      "macchina": "DANTE 1 IN 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "Dante IN 51",
+      "macchina": "DANTE 1 IN 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "Dante IN 52",
+      "macchina": "DANTE 1 IN 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "Dante IN 53",
+      "macchina": "DANTE 1 IN 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "Dante IN 54",
+      "macchina": "DANTE 1 IN 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "Dante IN 55",
+      "macchina": "DANTE 1 IN 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "Dante IN 56",
+      "macchina": "DANTE 1 IN 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "Dante IN 57",
+      "macchina": "DANTE 1 IN 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "Dante IN 58",
+      "macchina": "DANTE 1 IN 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "Dante IN 59",
+      "macchina": "DANTE 1 IN 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "Dante IN 60",
+      "macchina": "DANTE 1 IN 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_dante2",
+    "nome": "IN DANTE 2",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "Dante IN 01",
+      "macchina": "SA 1",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "RADIO 1 STEREO PONTE RADIO 1",
+      "slot": "FERROFISH 2"
+     },
+     {
+      "idx": 2,
+      "canale": "Dante IN 02",
+      "macchina": "SB 1",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "Dante IN 03",
+      "macchina": "SA 2",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "RADIO 2 STEREO PONTE RADIO 2",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "Dante IN 04",
+      "macchina": "SB 2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "Dante IN 05",
+      "macchina": "SA 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "RADIO 3 STEREO PONTE RADIO 3",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "Dante IN 06",
+      "macchina": "SB 3",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "Dante IN 07",
+      "macchina": "MI 27",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "DA MILANO",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "Dante IN 08",
+      "macchina": "MI 28",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "Dante IN 09",
+      "macchina": "TS 11",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "DA TRIESTE",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "Dante IN 10",
+      "macchina": "TS 12",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "Dante IN 11",
+      "macchina": "FD 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "FILODIFFUSIONE 4",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "Dante IN 12",
+      "macchina": "FD 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "Dante IN 13",
+      "macchina": "ER1 MONO",
+      "ch": "L",
+      "ms": "MONO",
+      "note": "MONO PONTE RADIO 1",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "Dante IN 14",
+      "macchina": "ER2 MONO",
+      "ch": "R",
+      "ms": "MONO",
+      "note": "MONO PONTE RADIO 2",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "Dante IN 15",
+      "macchina": "IN 15",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "Dante IN 16",
+      "macchina": "IN 16",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "Dante IN 17",
+      "macchina": "DANTE 2 IN 17",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "Dante IN 18",
+      "macchina": "DANTE 2 IN 18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "Dante IN 19",
+      "macchina": "DANTE 2 IN 19",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "Dante IN 20",
+      "macchina": "DANTE 2 IN 20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "Dante IN 21",
+      "macchina": "DANTE 2 IN 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "Dante IN 22",
+      "macchina": "DANTE 2 IN 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "Dante IN 23",
+      "macchina": "DANTE 2 IN 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "Dante IN 24",
+      "macchina": "DANTE 2 IN 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "Dante IN 25",
+      "macchina": "DANTE 2 IN 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "Dante IN 26",
+      "macchina": "DANTE 2 IN 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "Dante IN 27",
+      "macchina": "DANTE 2 IN 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "Dante IN 28",
+      "macchina": "DANTE 2 IN 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "Dante IN 29",
+      "macchina": "DANTE 2 IN 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "Dante IN 30",
+      "macchina": "DANTE 2 IN 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "Dante IN 31",
+      "macchina": "DANTE 2 IN 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "Dante IN 32",
+      "macchina": "DANTE 2 IN 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "Dante IN 33",
+      "macchina": "DANTE 2 IN 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "Dante IN 34",
+      "macchina": "DANTE 2 IN 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "Dante IN 35",
+      "macchina": "DANTE 2 IN 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "Dante IN 36",
+      "macchina": "DANTE 2 IN 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "Dante IN 37",
+      "macchina": "DANTE 2 IN 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "Dante IN 38",
+      "macchina": "DANTE 2 IN 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "Dante IN 39",
+      "macchina": "DANTE 2 IN 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "Dante IN 40",
+      "macchina": "DANTE 2 IN 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "Dante IN 41",
+      "macchina": "DANTE 2 IN 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "Dante IN 42",
+      "macchina": "DANTE 2 IN 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "Dante IN 43",
+      "macchina": "DANTE 2 IN 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "Dante IN 44",
+      "macchina": "DANTE 2 IN 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "Dante IN 45",
+      "macchina": "DANTE 2 IN 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "Dante IN 46",
+      "macchina": "DANTE 2 IN 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "Dante IN 47",
+      "macchina": "DANTE 2 IN 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "Dante IN 48",
+      "macchina": "DANTE 2 IN 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "Dante IN 49",
+      "macchina": "DANTE 2 IN 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "Dante IN 50",
+      "macchina": "DANTE 2 IN 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "Dante IN 51",
+      "macchina": "DANTE 2 IN 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "Dante IN 52",
+      "macchina": "DANTE 2 IN 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "Dante IN 53",
+      "macchina": "DANTE 2 IN 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "Dante IN 54",
+      "macchina": "DANTE 2 IN 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "Dante IN 55",
+      "macchina": "DANTE 2 IN 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "Dante IN 56",
+      "macchina": "DANTE 2 IN 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "Dante IN 57",
+      "macchina": "DANTE 2 IN 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "Dante IN 58",
+      "macchina": "DANTE 2 IN 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "Dante IN 59",
+      "macchina": "DANTE 2 IN 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "Dante IN 60",
+      "macchina": "DANTE 2 IN 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "in_aes",
+    "nome": "LOCAL AES IN",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "1",
+      "macchina": "ISDN 1",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": "Slot ? In 1"
+     },
+     {
+      "idx": 2,
+      "canale": "",
+      "macchina": "ISDN 1",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": "Slot ? In 2"
+     },
+     {
+      "idx": 3,
+      "canale": "2",
+      "macchina": "QUANTUM 1 AES",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 3"
+     },
+     {
+      "idx": 4,
+      "canale": "",
+      "macchina": "QUANTUM 1 AES",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 4"
+     },
+     {
+      "idx": 5,
+      "canale": "3",
+      "macchina": "QUANTUM 2 AES",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 5"
+     },
+     {
+      "idx": 6,
+      "canale": "",
+      "macchina": "QUANTUM 2 AES",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 6"
+     },
+     {
+      "idx": 7,
+      "canale": "4",
+      "macchina": "IN 7/8",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 7"
+     },
+     {
+      "idx": 8,
+      "canale": "",
+      "macchina": "IN 7/8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 8"
+     },
+     {
+      "idx": 9,
+      "canale": "5",
+      "macchina": "IN 9/10",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 9"
+     },
+     {
+      "idx": 10,
+      "canale": "",
+      "macchina": "IN 9/10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 10"
+     },
+     {
+      "idx": 11,
+      "canale": "6",
+      "macchina": "IN 11/12",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 11"
+     },
+     {
+      "idx": 12,
+      "canale": "",
+      "macchina": "IN 11/12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 12"
+     },
+     {
+      "idx": 13,
+      "canale": "7",
+      "macchina": "IN 13/14",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 13"
+     },
+     {
+      "idx": 14,
+      "canale": "",
+      "macchina": "IN 13/14",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 14"
+     },
+     {
+      "idx": 15,
+      "canale": "8",
+      "macchina": "IN 15/16",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 15"
+     },
+     {
+      "idx": 16,
+      "canale": "",
+      "macchina": "IN 15/16",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 16"
+     },
+     {
+      "idx": 17,
+      "canale": "1",
+      "macchina": "IN 17/18",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 1"
+     },
+     {
+      "idx": 18,
+      "canale": "",
+      "macchina": "IN 17/18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 2"
+     },
+     {
+      "idx": 19,
+      "canale": "2",
+      "macchina": "IN 19/20",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 3"
+     },
+     {
+      "idx": 20,
+      "canale": "",
+      "macchina": "IN 19/20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 4"
+     },
+     {
+      "idx": 21,
+      "canale": "3",
+      "macchina": "IN 21/22",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 5"
+     },
+     {
+      "idx": 22,
+      "canale": "",
+      "macchina": "IN 21/22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 6"
+     },
+     {
+      "idx": 23,
+      "canale": "4",
+      "macchina": "IN 23/24",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 7"
+     },
+     {
+      "idx": 24,
+      "canale": "",
+      "macchina": "IN 23/24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 8"
+     },
+     {
+      "idx": 25,
+      "canale": "5",
+      "macchina": "IN 25/26",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 9"
+     },
+     {
+      "idx": 26,
+      "canale": "",
+      "macchina": "IN 25/26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 10"
+     },
+     {
+      "idx": 27,
+      "canale": "6",
+      "macchina": "IN 27/28",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 11"
+     },
+     {
+      "idx": 28,
+      "canale": "",
+      "macchina": "IN 27/28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 12"
+     },
+     {
+      "idx": 29,
+      "canale": "7",
+      "macchina": "IN 29/30",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 13"
+     },
+     {
+      "idx": 30,
+      "canale": "",
+      "macchina": "IN 29/30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 14"
+     },
+     {
+      "idx": 31,
+      "canale": "8",
+      "macchina": "IN 31/32",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 15"
+     },
+     {
+      "idx": 32,
+      "canale": "",
+      "macchina": "IN 31/32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 16"
+     }
+    ]
+   },
+   {
+    "id": "in_analog",
+    "nome": "LOCAL IN ANALOG",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "1",
+      "macchina": "R1 FM L HARMAN",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 1"
+     },
+     {
+      "idx": 2,
+      "canale": "2",
+      "macchina": "R1 FM R HARMAN",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 2"
+     },
+     {
+      "idx": 3,
+      "canale": "3",
+      "macchina": "R2 FM L HARMAN",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 3"
+     },
+     {
+      "idx": 4,
+      "canale": "4",
+      "macchina": "R2 FM R HARMAN",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 4"
+     },
+     {
+      "idx": 5,
+      "canale": "5",
+      "macchina": "R3 FM L HARMAN",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 5"
+     },
+     {
+      "idx": 6,
+      "canale": "6",
+      "macchina": "R3 FM R HARMAN",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 6"
+     },
+     {
+      "idx": 7,
+      "canale": "7",
+      "macchina": "RIS FM L HARMAN",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 7"
+     },
+     {
+      "idx": 8,
+      "canale": "8",
+      "macchina": "RIS FM R HARMAN",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 8"
+     },
+     {
+      "idx": 9,
+      "canale": "9",
+      "macchina": "IN 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 9"
+     },
+     {
+      "idx": 10,
+      "canale": "10",
+      "macchina": "IN 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 10"
+     },
+     {
+      "idx": 11,
+      "canale": "11",
+      "macchina": "ISDN 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 11"
+     },
+     {
+      "idx": 12,
+      "canale": "12",
+      "macchina": "ISDN 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 12"
+     },
+     {
+      "idx": 13,
+      "canale": "13",
+      "macchina": "ORBAN 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 13"
+     },
+     {
+      "idx": 14,
+      "canale": "14",
+      "macchina": "ORBAN 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 14"
+     },
+     {
+      "idx": 15,
+      "canale": "15",
+      "macchina": "ORBAN 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 15"
+     },
+     {
+      "idx": 16,
+      "canale": "16",
+      "macchina": "ORBAN 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 16"
+     }
+    ]
+   }
+  ],
+  "uscite": [
+   {
+    "id": "out_madi1",
+    "nome": "MADI 1 · a FUTURO RAIWAY",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 1 OUT 1",
+      "macchina": "MADI 1 OUT 1",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 1 OUT 2",
+      "macchina": "MADI 1 OUT 2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 1 OUT 3",
+      "macchina": "MADI 1 OUT 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 1 OUT 4",
+      "macchina": "MADI 1 OUT 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 1 OUT 5",
+      "macchina": "MADI 1 OUT 5",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 1 OUT 6",
+      "macchina": "MADI 1 OUT 6",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 1 OUT 7",
+      "macchina": "MADI 1 OUT 7",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 1 OUT 8",
+      "macchina": "MADI 1 OUT 8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 1 OUT 9",
+      "macchina": "MADI 1 OUT 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 1 OUT 10",
+      "macchina": "MADI 1 OUT 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 1 OUT 11",
+      "macchina": "MADI 1 OUT 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 1 OUT 12",
+      "macchina": "MADI 1 OUT 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 1 OUT 13",
+      "macchina": "MADI 1 OUT 13",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 1 OUT 14",
+      "macchina": "MADI 1 OUT 14",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 1 OUT 15",
+      "macchina": "MADI 1 OUT 15",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 1 OUT 16",
+      "macchina": "MADI 1 OUT 16",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 1 OUT 17",
+      "macchina": "MADI 1 OUT 17",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 1 OUT 18",
+      "macchina": "MADI 1 OUT 18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 1 OUT 19",
+      "macchina": "MADI 1 OUT 19",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 1 OUT 20",
+      "macchina": "MADI 1 OUT 20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 1 OUT 21",
+      "macchina": "MADI 1 OUT 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 1 OUT 22",
+      "macchina": "MADI 1 OUT 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 1 OUT 23",
+      "macchina": "MADI 1 OUT 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 1 OUT 24",
+      "macchina": "MADI 1 OUT 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 1 OUT 25",
+      "macchina": "MADI 1 OUT 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 1 OUT 26",
+      "macchina": "MADI 1 OUT 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 1 OUT 27",
+      "macchina": "MADI 1 OUT 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 1 OUT 28",
+      "macchina": "MADI 1 OUT 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 1 OUT 29",
+      "macchina": "MADI 1 OUT 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 1 OUT 30",
+      "macchina": "MADI 1 OUT 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 1 OUT 31",
+      "macchina": "MADI 1 OUT 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 1 OUT 32",
+      "macchina": "MADI 1 OUT 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 1 OUT 33",
+      "macchina": "MADI 1 OUT 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 1 OUT 34",
+      "macchina": "MADI 1 OUT 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 1 OUT 35",
+      "macchina": "MADI 1 OUT 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 1 OUT 36",
+      "macchina": "MADI 1 OUT 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 1 OUT 37",
+      "macchina": "MADI 1 OUT 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 1 OUT 38",
+      "macchina": "MADI 1 OUT 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 1 OUT 39",
+      "macchina": "MADI 1 OUT 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 1 OUT 40",
+      "macchina": "MADI 1 OUT 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 1 OUT 41",
+      "macchina": "MADI 1 OUT 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 1 OUT 42",
+      "macchina": "MADI 1 OUT 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 1 OUT 43",
+      "macchina": "MADI 1 OUT 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 1 OUT 44",
+      "macchina": "MADI 1 OUT 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 1 OUT 45",
+      "macchina": "MADI 1 OUT 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 1 OUT 46",
+      "macchina": "MADI 1 OUT 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 1 OUT 47",
+      "macchina": "MADI 1 OUT 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 1 OUT 48",
+      "macchina": "MADI 1 OUT 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 1 OUT 49",
+      "macchina": "MADI 1 OUT 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 1 OUT 50",
+      "macchina": "MADI 1 OUT 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 1 OUT 51",
+      "macchina": "MADI 1 OUT 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 1 OUT 52",
+      "macchina": "MADI 1 OUT 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 1 OUT 53",
+      "macchina": "MADI 1 OUT 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 1 OUT 54",
+      "macchina": "MADI 1 OUT 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 1 OUT 55",
+      "macchina": "MADI 1 OUT 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 1 OUT 56",
+      "macchina": "MADI 1 OUT 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 1 OUT 57",
+      "macchina": "MADI 1 OUT 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 1 OUT 58",
+      "macchina": "MADI 1 OUT 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 1 OUT 59",
+      "macchina": "MADI 1 OUT 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 1 OUT 60",
+      "macchina": "MADI 1 OUT 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "MADI 1 OUT 61",
+      "macchina": "MADI 1 OUT 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "MADI 1 OUT 62",
+      "macchina": "MADI 1 OUT 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "MADI 1 OUT 63",
+      "macchina": "MADI 1 OUT 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "MADI 1 OUT 64",
+      "macchina": "MADI 1 OUT 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_madi2",
+    "nome": "MADI 2 · a REGIA B",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 2 OUT 1",
+      "macchina": "SEL. ENTRANTI 1/2",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 2 OUT 2",
+      "macchina": "SEL. ENTRANTI 1/2",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 2 OUT 3",
+      "macchina": "SEL. ENTRANTI 3/4",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 2 OUT 4",
+      "macchina": "SEL. ENTRANTI 3/4",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 2 OUT 5",
+      "macchina": "RM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "CCRF"
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 2 OUT 6",
+      "macchina": "RM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 2 OUT 7",
+      "macchina": "RM 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 2 OUT 8",
+      "macchina": "RM 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 2 OUT 9",
+      "macchina": "RM 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 2 OUT 10",
+      "macchina": "RM 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 2 OUT 11",
+      "macchina": "FD 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 2 OUT 12",
+      "macchina": "FD 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 2 OUT 13",
+      "macchina": "MI 27",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 2 OUT 14",
+      "macchina": "MI 28",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 2 OUT 15",
+      "macchina": "TS 11",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 2 OUT 16",
+      "macchina": "TS 12",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 2 OUT 17",
+      "macchina": "HARMAN R1 FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 2 OUT 18",
+      "macchina": "HARMAN R1 FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 2 OUT 19",
+      "macchina": "HARMAN RIS FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 2 OUT 20",
+      "macchina": "HARMAN RIS FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 2 OUT 21",
+      "macchina": "HARMAN R2 FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 2 OUT 22",
+      "macchina": "HARMAN R2 FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 2 OUT 23",
+      "macchina": "HARMAN R3 FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 2 OUT 24",
+      "macchina": "HARMAN R3 FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 2 OUT 25",
+      "macchina": "ISDN 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 2 OUT 26",
+      "macchina": "ISDN 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 2 OUT 27",
+      "macchina": "ISDN 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 2 OUT 28",
+      "macchina": "ISDN 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 2 OUT 29",
+      "macchina": "RC PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "RC"
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 2 OUT 30",
+      "macchina": "RC PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 2 OUT 31",
+      "macchina": "RC AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 2 OUT 32",
+      "macchina": "RC AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 2 OUT 33",
+      "macchina": "RC ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 2 OUT 34",
+      "macchina": "RC ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 2 OUT 35",
+      "macchina": "RC CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 2 OUT 36",
+      "macchina": "RC CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 2 OUT 37",
+      "macchina": "RC CUFFIA OSPITI L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 2 OUT 38",
+      "macchina": "RC CUFFIA OSPITI R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 2 OUT 39",
+      "macchina": "RC RB N-X 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 2 OUT 40",
+      "macchina": "RC RB N-X 9",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 2 OUT 41",
+      "macchina": "TV PGM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "TV"
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 2 OUT 42",
+      "macchina": "TV PGM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 2 OUT 43",
+      "macchina": "TV AUX S 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 2 OUT 44",
+      "macchina": "TV AUX S 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 2 OUT 45",
+      "macchina": "TV ASCOLTO STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 2 OUT 46",
+      "macchina": "TV ASCOLTO STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 2 OUT 47",
+      "macchina": "TV ASCOLTO AURICOLARE L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 2 OUT 48",
+      "macchina": "TV ASCOLTO AURICOLARE R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 2 OUT 49",
+      "macchina": "TV N-X 3 RF",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 2 OUT 50",
+      "macchina": "TV N-X 3 RF",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 2 OUT 51",
+      "macchina": "MD 1 RB 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 2 OUT 52",
+      "macchina": "MD 1 RB 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 2 OUT 53",
+      "macchina": "MD 1 RB 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 2 OUT 54",
+      "macchina": "MD 1 RB 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 2 OUT 55",
+      "macchina": "MD 1 RB 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 2 OUT 56",
+      "macchina": "MD 1 RB 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 2 OUT 57",
+      "macchina": "MD 1 RB 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 2 OUT 58",
+      "macchina": "MD 1 RB 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 2 OUT 59",
+      "macchina": "MD 1 RB 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 2 OUT 60",
+      "macchina": "MD 1 RB 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "MADI 2 OUT 61",
+      "macchina": "MD 1 RB 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "MADI 2 OUT 62",
+      "macchina": "MD 1 RB 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "MADI 2 OUT 63",
+      "macchina": "MD 1 RB 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "MADI 2 OUT 64",
+      "macchina": "MD 1 RB 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_madi3",
+    "nome": "MADI 3 · a REGIA TV",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 3 OUT 1",
+      "macchina": "TP 1",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": "TIEPOLO"
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 3 OUT 2",
+      "macchina": "TP 2",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 3 OUT 3",
+      "macchina": "TP 3",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 3 OUT 4",
+      "macchina": "TP 4",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 3 OUT 5",
+      "macchina": "TP 5",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 3 OUT 6",
+      "macchina": "TP 6",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 3 OUT 7",
+      "macchina": "TP 7",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 3 OUT 8",
+      "macchina": "TP 8",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 3 OUT 9",
+      "macchina": "TP 9",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 3 OUT 10",
+      "macchina": "TP 10",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 3 OUT 11",
+      "macchina": "TP 11",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 3 OUT 12",
+      "macchina": "TP 12",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 3 OUT 13",
+      "macchina": "TP 13",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 3 OUT 14",
+      "macchina": "TP 14",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 3 OUT 15",
+      "macchina": "TP 15",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 3 OUT 16",
+      "macchina": "TP 16",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 3 OUT 17",
+      "macchina": "TP PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 3 OUT 18",
+      "macchina": "TP PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 3 OUT 19",
+      "macchina": "TP N- TV",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 3 OUT 20",
+      "macchina": "TP N- TV",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 3 OUT 21",
+      "macchina": "RB PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "RB"
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 3 OUT 22",
+      "macchina": "RB PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 3 OUT 23",
+      "macchina": "RB AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 3 OUT 24",
+      "macchina": "RB AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 3 OUT 25",
+      "macchina": "RB TV N-X 4",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 3 OUT 26",
+      "macchina": "RB TV N-X 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 3 OUT 27",
+      "macchina": "RC PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "RC"
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 3 OUT 28",
+      "macchina": "RC PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 3 OUT 29",
+      "macchina": "RC AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 3 OUT 30",
+      "macchina": "RC AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 3 OUT 31",
+      "macchina": "RC TV N-X 4",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 3 OUT 32",
+      "macchina": "RC TV N-X 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 3 OUT 33",
+      "macchina": "SEL. ENTRANTI 1/2",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "CCRF"
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 3 OUT 34",
+      "macchina": "SEL. ENTRANTI 1/2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 3 OUT 35",
+      "macchina": "MD TV 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 3 OUT 36",
+      "macchina": "MD TV 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 3 OUT 37",
+      "macchina": "MD TV 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 3 OUT 38",
+      "macchina": "MD TV 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 3 OUT 39",
+      "macchina": "MD TV 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 3 OUT 40",
+      "macchina": "MD TV 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 3 OUT 41",
+      "macchina": "MD TV 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 3 OUT 42",
+      "macchina": "MD TV 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 3 OUT 43",
+      "macchina": "MD TV 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 3 OUT 44",
+      "macchina": "MD TV 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 3 OUT 45",
+      "macchina": "MD TV 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 3 OUT 46",
+      "macchina": "MD TV 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 3 OUT 47",
+      "macchina": "MD TV 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 3 OUT 48",
+      "macchina": "MD TV 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 3 OUT 49",
+      "macchina": "MD TV 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 3 OUT 50",
+      "macchina": "MD TV 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 3 OUT 51",
+      "macchina": "MD TV 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 3 OUT 52",
+      "macchina": "MD TV 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 3 OUT 53",
+      "macchina": "MD TV 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 3 OUT 54",
+      "macchina": "MD TV 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 3 OUT 55",
+      "macchina": "MD TV 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 3 OUT 56",
+      "macchina": "MD TV 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 3 OUT 57",
+      "macchina": "MD TV 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 3 OUT 58",
+      "macchina": "MD TV 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 3 OUT 59",
+      "macchina": "MD TV 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 3 OUT 60",
+      "macchina": "MD TV 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "MADI 3 OUT 61",
+      "macchina": "MD TV 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "MADI 3 OUT 62",
+      "macchina": "MD TV 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "MADI 3 OUT 63",
+      "macchina": "MD TV 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "MADI 3 OUT 64",
+      "macchina": "MD TV 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_madi4",
+    "nome": "MADI 4 · a TIEPOLO",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "MADI 4 OUT 1",
+      "macchina": "TV PGM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "TV"
+     },
+     {
+      "idx": 2,
+      "canale": "MADI 4 OUT 2",
+      "macchina": "TV PGM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "MADI 4 OUT 3",
+      "macchina": "TV PGM 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "MADI 4 OUT 4",
+      "macchina": "TV PGM 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "MADI 4 OUT 5",
+      "macchina": "TV ASCOLTO STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "MADI 4 OUT 6",
+      "macchina": "TV ASCOLTO STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "MADI 4 OUT 7",
+      "macchina": "TV ASCOLTO AURICOLARE L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "MADI 4 OUT 8",
+      "macchina": "TV ASCOLTO AURICOLARE R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "MADI 4 OUT 9",
+      "macchina": "TV AUX S 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "MADI 4 OUT 10",
+      "macchina": "TV AUX S 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "MADI 4 OUT 11",
+      "macchina": "TV AUX S 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "MADI 4 OUT 12",
+      "macchina": "TV AUX S 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "MADI 4 OUT 13",
+      "macchina": "TV AUX S 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "MADI 4 OUT 14",
+      "macchina": "TV AUX S 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "MADI 4 OUT 15",
+      "macchina": "TV AUX S 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "MADI 4 OUT 16",
+      "macchina": "TV AUX S 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "MADI 4 OUT 17",
+      "macchina": "TV N-X 3 RF",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "MADI 4 OUT 18",
+      "macchina": "MD 1 IN TP 18",
+      "ch": "M",
+      "ms": "MONO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "MADI 4 OUT 19",
+      "macchina": "RB PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "RB"
+     },
+     {
+      "idx": 20,
+      "canale": "MADI 4 OUT 20",
+      "macchina": "RB PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "MADI 4 OUT 21",
+      "macchina": "RB AUX 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "MADI 4 OUT 22",
+      "macchina": "RB AUX 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "MADI 4 OUT 23",
+      "macchina": "RB ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "MADI 4 OUT 24",
+      "macchina": "RB ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "MADI 4 OUT 25",
+      "macchina": "RB CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "MADI 4 OUT 26",
+      "macchina": "RB CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "MADI 4 OUT 27",
+      "macchina": "RB CUFFIA OSPITI L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "MADI 4 OUT 28",
+      "macchina": "RB CUFFIA OSPITI R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "MADI 4 OUT 29",
+      "macchina": "RB TP N-X 10",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "MADI 4 OUT 30",
+      "macchina": "RB TP N-X 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "MADI 4 OUT 31",
+      "macchina": "RC PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "RC"
+     },
+     {
+      "idx": 32,
+      "canale": "MADI 4 OUT 32",
+      "macchina": "RC PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "MADI 4 OUT 33",
+      "macchina": "RC AUX 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "MADI 4 OUT 34",
+      "macchina": "RC AUX 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "MADI 4 OUT 35",
+      "macchina": "RC ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "MADI 4 OUT 36",
+      "macchina": "RC ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "MADI 4 OUT 37",
+      "macchina": "RC CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "MADI 4 OUT 38",
+      "macchina": "RC CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "MADI 4 OUT 39",
+      "macchina": "RC CUFFIA OSPITI L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "MADI 4 OUT 40",
+      "macchina": "RC CUFFIA OSPITI R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "MADI 4 OUT 41",
+      "macchina": "RC TP N-X 10",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "MADI 4 OUT 42",
+      "macchina": "RC TP N-X 10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "MADI 4 OUT 43",
+      "macchina": "MD 1 IN TP 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "MADI 4 OUT 44",
+      "macchina": "MD 1 IN TP 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "MADI 4 OUT 45",
+      "macchina": "MD 1 IN TP 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "MADI 4 OUT 46",
+      "macchina": "MD 1 IN TP 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "MADI 4 OUT 47",
+      "macchina": "MD 1 IN TP 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "MADI 4 OUT 48",
+      "macchina": "MD 1 IN TP 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "MADI 4 OUT 49",
+      "macchina": "MD 1 IN TP 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "MADI 4 OUT 50",
+      "macchina": "MD 1 IN TP 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "MADI 4 OUT 51",
+      "macchina": "MD 1 IN TP 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "MADI 4 OUT 52",
+      "macchina": "MD 1 IN TP 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "MADI 4 OUT 53",
+      "macchina": "MD 1 IN TP 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "MADI 4 OUT 54",
+      "macchina": "MD 1 IN TP 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "MADI 4 OUT 55",
+      "macchina": "MD 1 IN TP 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "MADI 4 OUT 56",
+      "macchina": "MD 1 IN TP 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "MADI 4 OUT 57",
+      "macchina": "MD 1 IN TP 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "MADI 4 OUT 58",
+      "macchina": "MD 1 IN TP 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "MADI 4 OUT 59",
+      "macchina": "MD 1 IN TP 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "MADI 4 OUT 60",
+      "macchina": "MD 1 IN TP 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "MADI 4 OUT 61",
+      "macchina": "MD 1 IN TP 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "MADI 4 OUT 62",
+      "macchina": "MD 1 IN TP 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "MADI 4 OUT 63",
+      "macchina": "MD 1 IN TP 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "MADI 4 OUT 64",
+      "macchina": "MD 1 IN TP 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_bealinx",
+    "nome": "BEALINX · a REGIA C",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "BEA OUT 1",
+      "macchina": "SEL. ENTRANTI 1/2",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 2,
+      "canale": "BEA OUT 2",
+      "macchina": "SEL. ENTRANTI 1/2",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "BEA OUT 3",
+      "macchina": "SEL. ENTRANTI 3/4",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "BEA OUT 4",
+      "macchina": "SEL. ENTRANTI 3/4",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "BEA OUT 5",
+      "macchina": "RM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "CCRF"
+     },
+     {
+      "idx": 6,
+      "canale": "BEA OUT 6",
+      "macchina": "RM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "BEA OUT 7",
+      "macchina": "RM 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "BEA OUT 8",
+      "macchina": "RM 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "BEA OUT 9",
+      "macchina": "RM 3 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "BEA OUT 10",
+      "macchina": "RM 3 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "BEA OUT 11",
+      "macchina": "FD 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "BEA OUT 12",
+      "macchina": "FD 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "BEA OUT 13",
+      "macchina": "MI 27",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "BEA OUT 14",
+      "macchina": "MI 28",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "BEA OUT 15",
+      "macchina": "TS 11",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "BEA OUT 16",
+      "macchina": "TS 12",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "BEA OUT 17",
+      "macchina": "HARMAN R1 FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "BEA OUT 18",
+      "macchina": "HARMAN R1 FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "BEA OUT 19",
+      "macchina": "HARMAN RIS FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "BEA OUT 20",
+      "macchina": "HARMAN RIS FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "BEA OUT 21",
+      "macchina": "HARMAN R2 FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "BEA OUT 22",
+      "macchina": "HARMAN R2 FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "BEA OUT 23",
+      "macchina": "HARMAN R3 FM L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "BEA OUT 24",
+      "macchina": "HARMAN R3 FM R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "BEA OUT 25",
+      "macchina": "ISDN 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "BEA OUT 26",
+      "macchina": "ISDN 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "BEA OUT 27",
+      "macchina": "ISDN 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "BEA OUT 28",
+      "macchina": "ISDN 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "BEA OUT 29",
+      "macchina": "RB PGM 1 OUT L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "RB"
+     },
+     {
+      "idx": 30,
+      "canale": "BEA OUT 30",
+      "macchina": "RB PGM 1 OUT R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "BEA OUT 31",
+      "macchina": "RB AUX 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "BEA OUT 32",
+      "macchina": "RB AUX 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "BEA OUT 33",
+      "macchina": "RB ASC. STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "BEA OUT 34",
+      "macchina": "RB ASC. STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "BEA OUT 35",
+      "macchina": "RB CUFFIA COND. L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "BEA OUT 36",
+      "macchina": "RB CUFFIA COND. R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "BEA OUT 37",
+      "macchina": "RB CUFFIA OSPITI L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "BEA OUT 38",
+      "macchina": "RB CUFFIA OSPITI R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "BEA OUT 39",
+      "macchina": "RB RC N-X 9",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "BEA OUT 40",
+      "macchina": "RB RC N-X 9",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "BEA OUT 41",
+      "macchina": "TV PGM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "TV"
+     },
+     {
+      "idx": 42,
+      "canale": "BEA OUT 42",
+      "macchina": "TV PGM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "BEA OUT 43",
+      "macchina": "TV AUX S 4 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "BEA OUT 44",
+      "macchina": "TV AUX S 4 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "BEA OUT 45",
+      "macchina": "TV ASCOLTO STUDIO L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "BEA OUT 46",
+      "macchina": "TV ASCOLTO STUDIO R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "BEA OUT 47",
+      "macchina": "TV ASCOLTO AURICOLARE L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "BEA OUT 48",
+      "macchina": "TV ASCOLTO AURICOLARE R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "BEA OUT 49",
+      "macchina": "TV N-X 3 RF",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "BEA OUT 50",
+      "macchina": "TV N-X 3 RF",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "BEA OUT 51",
+      "macchina": "BEA RC 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "BEA OUT 52",
+      "macchina": "BEA RC 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "BEA OUT 53",
+      "macchina": "BEA RC 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "BEA OUT 54",
+      "macchina": "BEA RC 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "BEA OUT 55",
+      "macchina": "BEA RC 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "BEA OUT 56",
+      "macchina": "BEA RC 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "BEA OUT 57",
+      "macchina": "BEA RC 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "BEA OUT 58",
+      "macchina": "BEA RC 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "BEA OUT 59",
+      "macchina": "BEA RC 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "BEA OUT 60",
+      "macchina": "BEA RC 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "BEA OUT 61",
+      "macchina": "BEA RC 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "BEA OUT 62",
+      "macchina": "BEA RC 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "BEA OUT 63",
+      "macchina": "BEA RC 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "BEA OUT 64",
+      "macchina": "BEA RC 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_dante1",
+    "nome": "OUT DANTE 1",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "DANTE OUT 1",
+      "macchina": "VE SA 1",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "TX VERSO RAIWAY",
+      "slot": "FERROFISH CCRF 1"
+     },
+     {
+      "idx": 2,
+      "canale": "DANTE OUT 2",
+      "macchina": "VE SB 1",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "DANTE OUT 3",
+      "macchina": "VE SA 2",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "DANTE OUT 4",
+      "macchina": "VE SB 2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "DANTE OUT 5",
+      "macchina": "VE SA 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "DANTE OUT 6",
+      "macchina": "VE SB 3",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "DANTE OUT 7",
+      "macchina": "VE 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "DANTE OUT 8",
+      "macchina": "VE 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "DANTE OUT 9",
+      "macchina": "VE 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "DANTE OUT 10",
+      "macchina": "VE 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "DANTE OUT 11",
+      "macchina": "DANTE OUT 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "DANTE OUT 12",
+      "macchina": "DANTE OUT 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "DANTE OUT 13",
+      "macchina": "SONIFEX HIGH",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "REGISTRAZIONI DOCUMENTO",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "DANTE OUT 14",
+      "macchina": "SONIFEX HIGH",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "DANTE OUT 15",
+      "macchina": "SONIFEX LOW",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "DANTE OUT 16",
+      "macchina": "SONIFEX LOW",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "DANTE OUT 17",
+      "macchina": "QUANTUM 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "QUANTUM 1",
+      "slot": "QUANTUM 1"
+     },
+     {
+      "idx": 18,
+      "canale": "DANTE OUT 18",
+      "macchina": "QUANTUM 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "DANTE OUT 19",
+      "macchina": "QUANTUM 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "QUANTUM 2",
+      "slot": "QUANTUM 2"
+     },
+     {
+      "idx": 20,
+      "canale": "DANTE OUT 20",
+      "macchina": "QUANTUM 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "DANTE OUT 21",
+      "macchina": "DANTE 1 OUT 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "DANTE OUT 22",
+      "macchina": "DANTE 1 OUT 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "DANTE OUT 23",
+      "macchina": "DANTE 1 OUT 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "DANTE OUT 24",
+      "macchina": "DANTE 1 OUT 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "DANTE OUT 25",
+      "macchina": "DANTE 1 OUT 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "DANTE OUT 26",
+      "macchina": "DANTE 1 OUT 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "DANTE OUT 27",
+      "macchina": "DANTE 1 OUT 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "DANTE OUT 28",
+      "macchina": "DANTE 1 OUT 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "DANTE OUT 29",
+      "macchina": "DANTE 1 OUT 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "DANTE OUT 30",
+      "macchina": "DANTE 1 OUT 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "DANTE OUT 31",
+      "macchina": "DANTE 1 OUT 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "DANTE OUT 32",
+      "macchina": "DANTE 1 OUT 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "DANTE OUT 33",
+      "macchina": "DANTE 1 OUT 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "DANTE OUT 34",
+      "macchina": "DANTE 1 OUT 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "DANTE OUT 35",
+      "macchina": "DANTE 1 OUT 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "DANTE OUT 36",
+      "macchina": "DANTE 1 OUT 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "DANTE OUT 37",
+      "macchina": "DANTE 1 OUT 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "DANTE OUT 38",
+      "macchina": "DANTE 1 OUT 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "DANTE OUT 39",
+      "macchina": "DANTE 1 OUT 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "DANTE OUT 40",
+      "macchina": "DANTE 1 OUT 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "DANTE OUT 41",
+      "macchina": "DANTE 1 OUT 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "DANTE OUT 42",
+      "macchina": "DANTE 1 OUT 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "DANTE OUT 43",
+      "macchina": "DANTE 1 OUT 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "DANTE OUT 44",
+      "macchina": "DANTE 1 OUT 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "DANTE OUT 45",
+      "macchina": "DANTE 1 OUT 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "DANTE OUT 46",
+      "macchina": "DANTE 1 OUT 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "DANTE OUT 47",
+      "macchina": "DANTE 1 OUT 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "DANTE OUT 48",
+      "macchina": "DANTE 1 OUT 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "DANTE OUT 49",
+      "macchina": "DANTE 1 OUT 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "DANTE OUT 50",
+      "macchina": "DANTE 1 OUT 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "DANTE OUT 51",
+      "macchina": "DANTE 1 OUT 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "DANTE OUT 52",
+      "macchina": "DANTE 1 OUT 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "DANTE OUT 53",
+      "macchina": "DANTE 1 OUT 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "DANTE OUT 54",
+      "macchina": "DANTE 1 OUT 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "DANTE OUT 55",
+      "macchina": "DANTE 1 OUT 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "DANTE OUT 56",
+      "macchina": "DANTE 1 OUT 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "DANTE OUT 57",
+      "macchina": "DANTE 1 OUT 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "DANTE OUT 58",
+      "macchina": "DANTE 1 OUT 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "DANTE OUT 59",
+      "macchina": "DANTE 1 OUT 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "DANTE OUT 60",
+      "macchina": "DANTE 1 OUT 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "DANTE OUT 61",
+      "macchina": "DANTE 1 OUT 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "DANTE OUT 62",
+      "macchina": "DANTE 1 OUT 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "DANTE OUT 63",
+      "macchina": "DANTE 1 OUT 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "DANTE OUT 64",
+      "macchina": "DANTE 1 OUT 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_dante2",
+    "nome": "OUT DANTE 2",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "DANTE OUT 1",
+      "macchina": "VE SA 1",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "TX VERSO RAIWAY",
+      "slot": "FERROFISH CCRF 2"
+     },
+     {
+      "idx": 2,
+      "canale": "DANTE OUT 2",
+      "macchina": "VE SB 1",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 3,
+      "canale": "DANTE OUT 3",
+      "macchina": "VE SA 2",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 4,
+      "canale": "DANTE OUT 4",
+      "macchina": "VE SB 2",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 5,
+      "canale": "DANTE OUT 5",
+      "macchina": "VE SA 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 6,
+      "canale": "DANTE OUT 6",
+      "macchina": "VE SB 3",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 7,
+      "canale": "DANTE OUT 7",
+      "macchina": "VE 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 8,
+      "canale": "DANTE OUT 8",
+      "macchina": "VE 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 9,
+      "canale": "DANTE OUT 9",
+      "macchina": "VE 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 10,
+      "canale": "DANTE OUT 10",
+      "macchina": "VE 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 11,
+      "canale": "DANTE OUT 11",
+      "macchina": "DANTE OUT 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 12,
+      "canale": "DANTE OUT 12",
+      "macchina": "DANTE OUT 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 13,
+      "canale": "DANTE OUT 13",
+      "macchina": "SONIFEX HIGH",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "REGISTRAZIONI DOCUMENTO",
+      "slot": ""
+     },
+     {
+      "idx": 14,
+      "canale": "DANTE OUT 14",
+      "macchina": "SONIFEX HIGH",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 15,
+      "canale": "DANTE OUT 15",
+      "macchina": "SONIFEX LOW",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 16,
+      "canale": "DANTE OUT 16",
+      "macchina": "SONIFEX LOW",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 17,
+      "canale": "DANTE OUT 17",
+      "macchina": "DANTE 2 OUT 17",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 18,
+      "canale": "DANTE OUT 18",
+      "macchina": "DANTE 2 OUT 18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 19,
+      "canale": "DANTE OUT 19",
+      "macchina": "DANTE 2 OUT 19",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 20,
+      "canale": "DANTE OUT 20",
+      "macchina": "DANTE 2 OUT 20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 21,
+      "canale": "DANTE OUT 21",
+      "macchina": "DANTE 2 OUT 21",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 22,
+      "canale": "DANTE OUT 22",
+      "macchina": "DANTE 2 OUT 22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 23,
+      "canale": "DANTE OUT 23",
+      "macchina": "DANTE 2 OUT 23",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 24,
+      "canale": "DANTE OUT 24",
+      "macchina": "DANTE 2 OUT 24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 25,
+      "canale": "DANTE OUT 25",
+      "macchina": "DANTE 2 OUT 25",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 26,
+      "canale": "DANTE OUT 26",
+      "macchina": "DANTE 2 OUT 26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 27,
+      "canale": "DANTE OUT 27",
+      "macchina": "DANTE 2 OUT 27",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 28,
+      "canale": "DANTE OUT 28",
+      "macchina": "DANTE 2 OUT 28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 29,
+      "canale": "DANTE OUT 29",
+      "macchina": "DANTE 2 OUT 29",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 30,
+      "canale": "DANTE OUT 30",
+      "macchina": "DANTE 2 OUT 30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 31,
+      "canale": "DANTE OUT 31",
+      "macchina": "DANTE 2 OUT 31",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 32,
+      "canale": "DANTE OUT 32",
+      "macchina": "DANTE 2 OUT 32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 33,
+      "canale": "DANTE OUT 33",
+      "macchina": "DANTE 2 OUT 33",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 34,
+      "canale": "DANTE OUT 34",
+      "macchina": "DANTE 2 OUT 34",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 35,
+      "canale": "DANTE OUT 35",
+      "macchina": "DANTE 2 OUT 35",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 36,
+      "canale": "DANTE OUT 36",
+      "macchina": "DANTE 2 OUT 36",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 37,
+      "canale": "DANTE OUT 37",
+      "macchina": "DANTE 2 OUT 37",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 38,
+      "canale": "DANTE OUT 38",
+      "macchina": "DANTE 2 OUT 38",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 39,
+      "canale": "DANTE OUT 39",
+      "macchina": "DANTE 2 OUT 39",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 40,
+      "canale": "DANTE OUT 40",
+      "macchina": "DANTE 2 OUT 40",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 41,
+      "canale": "DANTE OUT 41",
+      "macchina": "DANTE 2 OUT 41",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 42,
+      "canale": "DANTE OUT 42",
+      "macchina": "DANTE 2 OUT 42",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 43,
+      "canale": "DANTE OUT 43",
+      "macchina": "DANTE 2 OUT 43",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 44,
+      "canale": "DANTE OUT 44",
+      "macchina": "DANTE 2 OUT 44",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 45,
+      "canale": "DANTE OUT 45",
+      "macchina": "DANTE 2 OUT 45",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 46,
+      "canale": "DANTE OUT 46",
+      "macchina": "DANTE 2 OUT 46",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 47,
+      "canale": "DANTE OUT 47",
+      "macchina": "DANTE 2 OUT 47",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 48,
+      "canale": "DANTE OUT 48",
+      "macchina": "DANTE 2 OUT 48",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 49,
+      "canale": "DANTE OUT 49",
+      "macchina": "DANTE 2 OUT 49",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 50,
+      "canale": "DANTE OUT 50",
+      "macchina": "DANTE 2 OUT 50",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 51,
+      "canale": "DANTE OUT 51",
+      "macchina": "DANTE 2 OUT 51",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 52,
+      "canale": "DANTE OUT 52",
+      "macchina": "DANTE 2 OUT 52",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 53,
+      "canale": "DANTE OUT 53",
+      "macchina": "DANTE 2 OUT 53",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 54,
+      "canale": "DANTE OUT 54",
+      "macchina": "DANTE 2 OUT 54",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 55,
+      "canale": "DANTE OUT 55",
+      "macchina": "DANTE 2 OUT 55",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 56,
+      "canale": "DANTE OUT 56",
+      "macchina": "DANTE 2 OUT 56",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 57,
+      "canale": "DANTE OUT 57",
+      "macchina": "DANTE 2 OUT 57",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 58,
+      "canale": "DANTE OUT 58",
+      "macchina": "DANTE 2 OUT 58",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 59,
+      "canale": "DANTE OUT 59",
+      "macchina": "DANTE 2 OUT 59",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 60,
+      "canale": "DANTE OUT 60",
+      "macchina": "DANTE 2 OUT 60",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 61,
+      "canale": "DANTE OUT 61",
+      "macchina": "DANTE 2 OUT 61",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 62,
+      "canale": "DANTE OUT 62",
+      "macchina": "DANTE 2 OUT 62",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 63,
+      "canale": "DANTE OUT 63",
+      "macchina": "DANTE 2 OUT 63",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     },
+     {
+      "idx": 64,
+      "canale": "DANTE OUT 64",
+      "macchina": "DANTE 2 OUT 64",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": ""
+     }
+    ]
+   },
+   {
+    "id": "out_aes",
+    "nome": "LOCAL AES OUT",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "1",
+      "macchina": "ISDN 1",
+      "ch": "L",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": "Slot ? In 1"
+     },
+     {
+      "idx": 2,
+      "canale": "",
+      "macchina": "ISDN 1",
+      "ch": "R",
+      "ms": "MONO/STEREO",
+      "note": "",
+      "slot": "Slot ? In 2"
+     },
+     {
+      "idx": 3,
+      "canale": "2",
+      "macchina": "QUANTUM 1 AES",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 3"
+     },
+     {
+      "idx": 4,
+      "canale": "",
+      "macchina": "QUANTUM 1 AES",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 4"
+     },
+     {
+      "idx": 5,
+      "canale": "3",
+      "macchina": "QUANTUM 2 AES",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 5"
+     },
+     {
+      "idx": 6,
+      "canale": "",
+      "macchina": "QUANTUM 2 AES",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 6"
+     },
+     {
+      "idx": 7,
+      "canale": "4",
+      "macchina": "OUT 7/8",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 7"
+     },
+     {
+      "idx": 8,
+      "canale": "",
+      "macchina": "OUT 7/8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 8"
+     },
+     {
+      "idx": 9,
+      "canale": "5",
+      "macchina": "OUT 9/10",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 9"
+     },
+     {
+      "idx": 10,
+      "canale": "",
+      "macchina": "OUT 9/10",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 10"
+     },
+     {
+      "idx": 11,
+      "canale": "6",
+      "macchina": "OUT 11/12",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 11"
+     },
+     {
+      "idx": 12,
+      "canale": "",
+      "macchina": "OUT 11/12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 12"
+     },
+     {
+      "idx": 13,
+      "canale": "7",
+      "macchina": "OUT 13/14",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 13"
+     },
+     {
+      "idx": 14,
+      "canale": "",
+      "macchina": "OUT 13/14",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 14"
+     },
+     {
+      "idx": 15,
+      "canale": "8",
+      "macchina": "OUT 15/16",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 15"
+     },
+     {
+      "idx": 16,
+      "canale": "",
+      "macchina": "OUT 15/16",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 16"
+     },
+     {
+      "idx": 17,
+      "canale": "1",
+      "macchina": "OUT 17/18",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 1"
+     },
+     {
+      "idx": 18,
+      "canale": "",
+      "macchina": "OUT 17/18",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 2"
+     },
+     {
+      "idx": 19,
+      "canale": "2",
+      "macchina": "OUT 19/20",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 3"
+     },
+     {
+      "idx": 20,
+      "canale": "",
+      "macchina": "OUT 19/20",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 4"
+     },
+     {
+      "idx": 21,
+      "canale": "3",
+      "macchina": "OUT 21/22",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 5"
+     },
+     {
+      "idx": 22,
+      "canale": "",
+      "macchina": "OUT 21/22",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 6"
+     },
+     {
+      "idx": 23,
+      "canale": "4",
+      "macchina": "OUT 23/24",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 7"
+     },
+     {
+      "idx": 24,
+      "canale": "",
+      "macchina": "OUT 23/24",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 8"
+     },
+     {
+      "idx": 25,
+      "canale": "5",
+      "macchina": "OUT 25/26",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 9"
+     },
+     {
+      "idx": 26,
+      "canale": "",
+      "macchina": "OUT 25/26",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 10"
+     },
+     {
+      "idx": 27,
+      "canale": "6",
+      "macchina": "OUT 27/28",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 11"
+     },
+     {
+      "idx": 28,
+      "canale": "",
+      "macchina": "OUT 27/28",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 12"
+     },
+     {
+      "idx": 29,
+      "canale": "7",
+      "macchina": "OUT 29/30",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 13"
+     },
+     {
+      "idx": 30,
+      "canale": "",
+      "macchina": "OUT 29/30",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 14"
+     },
+     {
+      "idx": 31,
+      "canale": "8",
+      "macchina": "OUT 31/32",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 15"
+     },
+     {
+      "idx": 32,
+      "canale": "",
+      "macchina": "OUT 31/32",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 16"
+     }
+    ]
+   },
+   {
+    "id": "out_analog",
+    "nome": "LOCAL ANALOG OUT",
+    "canali": [
+     {
+      "idx": 1,
+      "canale": "1",
+      "macchina": "ASCOLTO MONITOR L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 1"
+     },
+     {
+      "idx": 2,
+      "canale": "2",
+      "macchina": "ASCOLTO MONITOR R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 2"
+     },
+     {
+      "idx": 3,
+      "canale": "3",
+      "macchina": "OUT 3",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 3"
+     },
+     {
+      "idx": 4,
+      "canale": "4",
+      "macchina": "OUT 4",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 4"
+     },
+     {
+      "idx": 5,
+      "canale": "5",
+      "macchina": "OUT 5",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 5"
+     },
+     {
+      "idx": 6,
+      "canale": "6",
+      "macchina": "OUT 6",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 6"
+     },
+     {
+      "idx": 7,
+      "canale": "7",
+      "macchina": "OUT 7",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 7"
+     },
+     {
+      "idx": 8,
+      "canale": "8",
+      "macchina": "OUT 8",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 8"
+     },
+     {
+      "idx": 9,
+      "canale": "9",
+      "macchina": "ISDN 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 9"
+     },
+     {
+      "idx": 10,
+      "canale": "10",
+      "macchina": "ISDN 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 10"
+     },
+     {
+      "idx": 11,
+      "canale": "11",
+      "macchina": "OUT 11",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 11"
+     },
+     {
+      "idx": 12,
+      "canale": "12",
+      "macchina": "OUT 12",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 12"
+     },
+     {
+      "idx": 13,
+      "canale": "13",
+      "macchina": "ORBAN 1 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 13"
+     },
+     {
+      "idx": 14,
+      "canale": "14",
+      "macchina": "ORBAN 1 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 14"
+     },
+     {
+      "idx": 15,
+      "canale": "15",
+      "macchina": "ORBAN 2 L",
+      "ch": "L",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 15"
+     },
+     {
+      "idx": 16,
+      "canale": "16",
+      "macchina": "ORBAN 2 R",
+      "ch": "R",
+      "ms": "STEREO",
+      "note": "",
+      "slot": "Slot ? In 16"
+     }
+    ]
+   }
+  ],
+  "incroci": {}
+ }
+}
