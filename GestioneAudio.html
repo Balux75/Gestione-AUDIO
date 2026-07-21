@@ -1284,9 +1284,13 @@ function importCanali(s,reload){
     try{ let rows; const nm=f.name.toLowerCase();
       if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
       if(!rows||rows.length<1){ toast('File vuoto'); return; }
-      const headers=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
-      const idxOf=(...names)=>{ for(let i=0;i<headers.length;i++){ if(names.some(n=>headers[i]===n||headers[i].includes(n))) return i; } return -1; };
-      const map={canale:idxOf('canale'),macchina:idxOf('macchina','segnale'),ch:idxOf('ch'),ms:idxOf('mono','stereo'),note:idxOf('note'),slot:idxOf('slot')};
+      const H=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
+      const find=pred=>{ for(let i=0;i<H.length;i++) if(pred(H[i])) return i; return -1; };
+      const eq=(...v)=>find(h=>v.includes(h));      // corrispondenza esatta (evita che 'ch' matchi 'macchina')
+      const inc=(...v)=>find(h=>v.some(x=>h.includes(x)));
+      let cCanale=eq('canale','canale l','canale l/r'); if(cCanale<0) cCanale=find(h=>h.startsWith('canale'));
+      const map={ canale:cCanale, macchina:inc('macchina','segnale'), ch:eq('ch','l/r','l-r','lr','canale l/r'),
+                  ms:inc('mono','stereo'), note:inc('note'), slot:inc('slot') };
       const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
       const parsed=data.map(r=>newCh({canale:map.canale>=0?String(r[map.canale]||'').trim():'',macchina:map.macchina>=0?String(r[map.macchina]||'').trim():'',
         ch:map.ch>=0?String(r[map.ch]||'').trim():'',ms:map.ms>=0?String(r[map.ms]||'').trim():'',note:map.note>=0?String(r[map.note]||'').trim():'',slot:map.slot>=0?String(r[map.slot]||'').trim():''}));
