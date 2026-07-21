@@ -805,6 +805,7 @@ const CH_COLS=[
   {key:'macchina',label:'Macchina / Segnale'},
   {key:'ch',label:'CH',w:'46px'},
   {key:'ms',label:'Mono/Stereo',list:'ccrfMS',w:'120px'},
+  {key:'patch',label:'Patch',list:'patchList',w:'150px'},
   {key:'note',label:'Note'},
   {key:'slot',label:'Slot',w:'130px'},
 ];
@@ -830,7 +831,16 @@ const CCRF_COLS=[
 ];
 
 /* -------------------- helper modello -------------------- */
-function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',note:'',slot:''}, o||{}); }
+function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',patch:'',note:'',slot:''}, o||{}); }
+// apre il pannello patch della stanza collegato a un canale (match per nome pannello o per porta)
+function openPatchFrom(u, text){
+  text=String(text||'').trim(); if(!text){ toast('Nessuna patch indicata in questo canale'); return; }
+  const low=text.toLowerCase(); const pats=u.patch||[];
+  let hit=pats.find(pp=>{ const n=String(pp.nome||'').toLowerCase(); return n && (low.includes(n)||n.includes(low)); });
+  if(!hit){ for(const pp of pats){ if((pp.porte||[]).some(po=>[po.cavo,po.segnale,po.provenienza,po.numero].some(v=>{ v=String(v||'').toLowerCase(); return v && (low.includes(v)||v===low); }))){ hit=pp; break; } } }
+  if(!hit){ toast('Patch «'+text+'» non trovata nella stanza'); return; }
+  location.hash='patch/'+u._id+'/'+hit._id;
+}
 function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
 function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
 function findUnita(id){ return (DB.unita||[]).find(u=>u._id===id)||null; }
@@ -1191,9 +1201,9 @@ function headerMap(headerRow, spec){
 function xcell(r,i){ return i>=0?String(r[i]==null?'':r[i]).trim():''; }
 function exportUnitaXLSX(u){
   const sheets=[];
-  const chRows=dir=>{ const rows=[['Macchina','Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Note','Slot']];
+  const chRows=dir=>{ const rows=[['Macchina','Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Patch','Note','Slot']];
     for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir)continue;
-      (s.canali||[]).forEach((ch,i)=>rows.push([m.nome,s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot])); }
+      (s.canali||[]).forEach((ch,i)=>rows.push([m.nome,s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.patch,ch.note,ch.slot])); }
     return rows; };
   sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
   const prows=[['Pannello','Porta','Provenienza','n° cavo e coppia','N°','Tipologia','Segnale']];
@@ -1212,14 +1222,14 @@ function importUnitaXLSX(u, reload){
       if(!rIn&&!rOut&&!rPat){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch)'); return; }
       const chSpec={ dev:{eq:['macchina']}, scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']},
         canale:{eq:['canale']}, segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']},
-        ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, note:{inc:['note']}, slot:{inc:['slot']} };
+        ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, patch:{eq:['patch']}, note:{inc:['note']}, slot:{inc:['slot']} };
       const macMap={}; const order=[];
       const build=(rows,dir)=>{ if(!rows||rows.length<2)return; const map=headerMap(rows[0],chSpec);
         for(const r of rows.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const dev=xcell(r,map.dev)||'Macchina'; const sn=xcell(r,map.scheda)||(dir==='in'?'Ingressi':'Uscite'); const tp=labelToTipo(xcell(r,map.tipo))||'analogico';
           let m=macMap[dev]; if(!m){ m={_id:uid('mac_'),nome:dev,schede:[]}; macMap[dev]=m; order.push(dev); }
           let s=m.schede.find(x=>x.dir===dir&&x.nome===sn); if(!s){ s=newScheda(dir,sn,tp,[]); m.schede.push(s); } else if(tp) s.tipo=tp;
-          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
+          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),patch:xcell(r,map.patch),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
       build(rIn,'in'); build(rOut,'out');
       // patch
       const pSpec={ pannello:{eq:['pannello'],inc:['pannello']}, provenienza:{inc:['provenien','pnl']}, cavo:{inc:['cavo','coppia']},
@@ -1314,6 +1324,11 @@ function viewScheda(c, uid_, mid, sid){
   $('#viewTitle').textContent='Scheda · '+(s.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='macchina/'+u._id+'/'+m._id},'‹ '+(m.nome||'Macchina')));
   c.append(el('datalist',{id:'ccrfMS'}, ...['Mono','Stereo','Mono/Stereo'].map(v=>el('option',{value:v}))));
+  // suggerimenti per il campo Patch: pannelli e porte della stanza
+  const dlPatch=el('datalist',{id:'patchList'});
+  for(const pp of (u.patch||[])){ dlPatch.append(el('option',{value:pp.nome}));
+    for(const po of (pp.porte||[])){ const lab=pp.nome+(po.cavo?(' · '+po.cavo):(po.numero?(' · '+po.numero):''))+(po.segnale?(' · '+po.segnale):''); dlPatch.append(el('option',{value:lab})); } }
+  c.append(dlPatch);
   const titleInp=el('input',{value:s.nome||'',style:'font-size:16px;font-weight:600;max-width:300px',
     onchange:e=>{ s.nome=e.target.value.trim()||meta.label; markDirty(); $('#viewTitle').textContent='Scheda · '+s.nome; }});
   const tipoSel=el('select',{style:'width:auto;min-width:130px',title:'Tipologia di segnale',onchange:e=>{ s.tipo=e.target.value; markDirty(); }},
@@ -1323,10 +1338,10 @@ function viewScheda(c, uid_, mid, sid){
     el('span',{class:'muted',style:'font-size:12px;margin-left:6px'},'Tipologia:'), tipoSel, el('div',{class:'sp',style:'flex:1'}),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la scheda «'+(s.nome||'')+'»?')){ purgeIncroci(collectChIds(s)); m.schede=m.schede.filter(x=>x!==s); markDirty(); location.hash='macchina/'+u._id+'/'+m._id; } }},'🗑 Elimina scheda')));
   const area=el('div'); c.append(area);
-  const reload=()=>{ area.innerHTML=''; area.append(chTable(s, ()=>{ reload(); buildNav(); })); };
+  const reload=()=>{ area.innerHTML=''; area.append(chTable(s, u, ()=>{ reload(); buildNav(); })); };
   reload();
 }
-function chTable(s, reload){
+function chTable(s, u, reload){
   s.canali=s.canali||[];
   const wrap=el('div');
   wrap.append(el('div',{class:'toolbar'},
@@ -1334,15 +1349,24 @@ function chTable(s, reload){
     el('button',{class:'btn sm',onclick:()=>importCanali(s,reload)},'⤒ Importa'),
     el('button',{class:'btn sm',onclick:()=>exportCanali(s)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printCanali(s)},'🖨 Stampa'),
-    el('span',{class:'muted',style:'font-size:12px;margin-left:auto'},(s.canali.length)+' canali')));
+    el('span',{class:'muted',style:'font-size:12px;margin-left:auto'},(s.canali.length)+' canali · doppio clic sul campo Patch per aprire la patch')));
   const tw=el('div',{class:'tablewrap'}); const tbl=el('table');
   tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...CH_COLS.map(col=>el('th',{},col.label)), el('th',{},s.dir==='out'?'◂ Ingressi alimentati':'→ Uscita'), el('th',{},''))));
   const tb=el('tbody');
   if(!s.canali.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(CH_COLS.length+3)},'Nessun canale — «➕ Aggiungi canale» o «⤒ Importa».')));
   s.canali.forEach((row,i)=>{
     const tr=el('tr'); tr.append(el('td',{},String(i+1)));
-    for(const col of CH_COLS){ const inp=el('input',{value:row[col.key]||'',list:col.list||null,style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
-      tr.append(el('td',{style:col.w?'max-width:'+col.w:''},inp)); }
+    for(const col of CH_COLS){
+      const inp=el('input',{value:row[col.key]||'',list:col.list||null,style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
+      if(col.key==='patch'){
+        inp.title='doppio clic per aprire la patch';
+        inp.addEventListener('dblclick',()=>openPatchFrom(u,row.patch));
+        tr.append(el('td',{style:'white-space:nowrap'+(col.w?';max-width:'+col.w:'')}, inp,
+          el('button',{class:'pill',style:'margin-left:4px',title:'Apri patch',onmousedown:e=>{ e.preventDefault(); openPatchFrom(u,row.patch); }},'↗')));
+      } else {
+        tr.append(el('td',{style:col.w?'max-width:'+col.w:''},inp));
+      }
+    }
     if(s.dir==='in'){ const dst=DB.incroci[row._id]; const f=dst?chFind(dst):null;
       tr.append(el('td',{class:dst?'':'empty',style:'white-space:normal;max-width:220px'}, dst&&f?(f.u.nome+' · '+f.m.nome+' · '+chLabel(f.c)):'—')); }
     else { const ins=[]; for(const k in DB.incroci){ if(DB.incroci[k]===row._id){ const f=chFind(k); if(f)ins.push(f.m.nome+' · '+chLabel(f.c)); } }
@@ -1380,10 +1404,10 @@ function importCanali(s,reload){
       const inc=(...v)=>find(h=>v.some(x=>h.includes(x)));
       let cCanale=eq('canale','canale l','canale l/r'); if(cCanale<0) cCanale=find(h=>h.startsWith('canale'));
       const map={ canale:cCanale, macchina:inc('macchina','segnale'), ch:eq('ch','l/r','l-r','lr','canale l/r'),
-                  ms:inc('mono','stereo'), note:inc('note'), slot:inc('slot') };
+                  ms:inc('mono','stereo'), patch:eq('patch'), note:inc('note'), slot:inc('slot') };
       const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
       const parsed=data.map(r=>newCh({canale:map.canale>=0?String(r[map.canale]||'').trim():'',macchina:map.macchina>=0?String(r[map.macchina]||'').trim():'',
-        ch:map.ch>=0?String(r[map.ch]||'').trim():'',ms:map.ms>=0?String(r[map.ms]||'').trim():'',note:map.note>=0?String(r[map.note]||'').trim():'',slot:map.slot>=0?String(r[map.slot]||'').trim():''}));
+        ch:map.ch>=0?String(r[map.ch]||'').trim():'',ms:map.ms>=0?String(r[map.ms]||'').trim():'',patch:map.patch>=0?String(r[map.patch]||'').trim():'',note:map.note>=0?String(r[map.note]||'').trim():'',slot:map.slot>=0?String(r[map.slot]||'').trim():''}));
       if(!parsed.length){ toast('Nessuna riga valida'); return; }
       const rep=confirm(parsed.length+' canali letti da «'+f.name+'».\n\nOK = SOSTITUISCI i canali attuali\nAnnulla = AGGIUNGI in coda');
       if(rep){ for(const ch of s.canali){ delete DB.incroci[ch._id]; for(const k in DB.incroci) if(DB.incroci[k]===ch._id) delete DB.incroci[k]; } s.canali=parsed; }
@@ -1615,9 +1639,9 @@ function importJSON(){
 }
 function exportTuttoXLSX(){
   const sheets=[];
-  const chRows=dir=>{ const rows=[['Unità','Macchina','Scheda','Tipologia','Canale','Macchina/Segnale','CH','Mono/Stereo','Note','Slot']];
+  const chRows=dir=>{ const rows=[['Unità','Macchina','Scheda','Tipologia','Canale','Macchina/Segnale','CH','Mono/Stereo','Patch','Note','Slot']];
     for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir) continue;
-      for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.note,ch.slot]); } return rows; };
+      for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.patch,ch.note,ch.slot]); } return rows; };
   sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
   sheets.push({name:'Incroci',rows:[INCROCI_HEAD,...incrociRows()]});
   downloadBytes('gestione_audio_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

@@ -82,9 +82,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   ingresso** e **🔊 Schede di uscita**. Con **➕ Nuova scheda ingresso/uscita** aggiungi le schede
   (una per dispositivo: MADI 1, MADI 2, Dante 1…).
 - **🎚️ Dettaglio scheda** — nome e **tipologia** modificabili; tabella dei **canali** editabile in
-  linea (canale, macchina/segnale, CH, mono/stereo, note, slot) con l'indicazione
+  linea (canale, macchina/segnale, CH, mono/stereo, **patch**, note, slot) con l'indicazione
   dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
-  (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**.
+  (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**. Il campo **Patch** collega il canale a un
+  pannello patch della stanza: **doppio clic** sul campo (o il pulsante **↗**) apre la patch
+  relativa; il campo ha i suggerimenti dei pannelli/porte della stanza.
 - **📊 Dashboard** — riepilogo di incroci attivi, unità, macchine e canali.
 - **💽 Backup / Ripristino** — esporta/importa l'intero database in **JSON**, esporta tutto in
   **Excel** (Ingressi, Uscite, Incroci), **⤓ Scarica app (HTML)** per salvare una copia autonoma
