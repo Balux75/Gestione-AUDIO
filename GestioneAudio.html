@@ -193,6 +193,9 @@ table.patch tr.hl-row td{background:#39320f}
 table.patch tr.hl-row td input{color:#f2e39a;font-weight:600}
 table.patch tr.prov td{background:#122033}
 table.patch tr.prov td input{font-weight:600}
+table.patch th.porthead.hlcol{box-shadow:inset 0 0 0 2px var(--accent2);background:#123a22}
+table.patch td.hlcol{box-shadow:inset 0 0 0 2px var(--accent2)}
+table.patch td.hlcol input{background:rgba(34,197,94,.12)}
 </style>
 </head>
 <body>
@@ -832,14 +835,30 @@ const CCRF_COLS=[
 
 /* -------------------- helper modello -------------------- */
 function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',patch:'',note:'',slot:''}, o||{}); }
-// apre il pannello patch della stanza collegato a un canale (match per nome pannello o per porta)
+// evidenziazione temporanea della porta al momento dell'apertura del pannello
+let pendingPatchHL=null;
+// risolve un riferimento patch di un canale nel pannello + porta specifica
+function resolvePatch(u, text){
+  text=String(text||'').trim(); if(!text) return null; const low=text.toLowerCase();
+  // 1) porta esatta (etichetta composta «Pannello · cavo · segnale» o campo distintivo)
+  for(const pp of (u.patch||[])) for(const po of (pp.porte||[])){
+    const comp=(String(pp.nome||'')+(po.cavo?(' · '+po.cavo):(po.numero?(' · '+po.numero):''))+(po.segnale?(' · '+po.segnale):'')).toLowerCase();
+    if(comp===low) return {pp,po};
+    if([po.cavo,po.segnale].some(v=>{ v=String(v||'').toLowerCase(); return v && (low===v||low.includes(v)); })) return {pp,po};
+  }
+  // 2) solo nome pannello
+  for(const pp of (u.patch||[])){ const n=String(pp.nome||'').toLowerCase(); if(n && (low.includes(n)||n.includes(low))) return {pp,po:null}; }
+  // 3) altri campi porta
+  for(const pp of (u.patch||[])) for(const po of (pp.porte||[])){ if([po.provenienza,po.numero].some(v=>{ v=String(v||'').toLowerCase(); return v && low.includes(v); })) return {pp,po}; }
+  return null;
+}
+// apre il pannello patch della stanza collegato a un canale, evidenziando la porta
 function openPatchFrom(u, text){
-  text=String(text||'').trim(); if(!text){ toast('Nessuna patch indicata in questo canale'); return; }
-  const low=text.toLowerCase(); const pats=u.patch||[];
-  let hit=pats.find(pp=>{ const n=String(pp.nome||'').toLowerCase(); return n && (low.includes(n)||n.includes(low)); });
-  if(!hit){ for(const pp of pats){ if((pp.porte||[]).some(po=>[po.cavo,po.segnale,po.provenienza,po.numero].some(v=>{ v=String(v||'').toLowerCase(); return v && (low.includes(v)||v===low); }))){ hit=pp; break; } } }
-  if(!hit){ toast('Patch «'+text+'» non trovata nella stanza'); return; }
-  location.hash='patch/'+u._id+'/'+hit._id;
+  if(!String(text||'').trim()){ toast('Nessuna patch indicata in questo canale'); return; }
+  const r=resolvePatch(u,text);
+  if(!r){ toast('Patch «'+String(text).trim()+'» non trovata nella stanza'); return; }
+  pendingPatchHL = r.po? {patchId:r.pp._id, portId:r.po._id} : null;
+  location.hash='patch/'+u._id+'/'+r.pp._id;
 }
 function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
 function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
@@ -1456,22 +1475,26 @@ function viewPatch(c, uid_, pid){
     el('button',{class:'btn sm',onclick:()=>exportPatch(pp)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printPatch(pp)},'🖨 Stampa'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la patch «'+(pp.nome||'')+'»?')){ u.patch=u.patch.filter(x=>x!==pp); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina patch')));
+  // porta da evidenziare (arrivando da un doppio clic sul campo Patch di un canale)
+  const hl = (pendingPatchHL && pendingPatchHL.patchId===pp._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
   const area=el('div'); c.append(area);
   function render(){
     area.innerHTML='';
     area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pp.porte.length)+' porte · sviluppo orizzontale'));
     if(!pp.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna porta — «➕ Aggiungi porta».')); return; }
+    const hlIdx = hl? pp.porte.findIndex(x=>x._id===hl) : -1;
     const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
     const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Porta'));
-    pp.porte.forEach((po,i)=>{ hr.append(el('th',{class:'porthead'},
+    pp.porte.forEach((po,i)=>{ hr.append(el('th',{class:'porthead'+(i===hlIdx?' hlcol':'')},
       el('div',{class:'pn'},String(i+1)),
       el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina porta',onclick:()=>{ pp.porte.splice(i,1); markDirty(); render(); }},'🗑'))); });
     thead.append(hr); tbl.append(thead);
     const tb=el('tbody');
     for(const r of PATCH_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
-      pp.porte.forEach(po=>{ tr.append(el('td',{}, el('input',{value:po[r.key]||'',list:r.list||null,onchange:e=>{ po[r.key]=e.target.value; markDirty(); }}))); });
+      pp.porte.forEach((po,i)=>{ tr.append(el('td',{class:(i===hlIdx?'hlcol':'')}, el('input',{value:po[r.key]||'',list:r.list||null,onchange:e=>{ po[r.key]=e.target.value; markDirty(); }}))); });
       tb.append(tr); }
     tbl.append(tb); wrap.append(tbl); area.append(wrap);
+    if(hlIdx>=0){ const thh=tbl.querySelectorAll('thead th.porthead')[hlIdx]; if(thh) setTimeout(()=>{ try{ thh.scrollIntoView({inline:'center',block:'nearest'}); }catch(e){} },30); }
   }
   render();
 }
