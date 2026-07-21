@@ -78,6 +78,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   coppia**, **N°**, **Tipologia**, **Segnale**). Aggiungi/elimina porte (o **+8** in blocco),
   con **Importa** (Excel/CSV), **Esporta** e **Stampa** (layout orizzontale). Le patch
   **non entrano** nel Quadro Incroci: servono a documentare i pannelli/cablaggi della stanza.
+- **🔀 Switch** — dopo le patch, ogni stanza può contenere degli **switch di rete**: tabella
+  verticale delle porte con **Porta, Patch/Stanza, Descrizione, IP, MAC, Subnet, Gateway, VLAN,
+  Note, Colore** (schema del file Excel di configurazione). Creando uno switch scegli il numero
+  di porte; ogni porta ha un **colore** (bordo colorato). Per ogni switch: **Aggiungi porta**,
+  **Importa** (Excel/CSV, riconosce le intestazioni del file switch), **Esporta** e **Stampa**.
 - **🎛️ Dettaglio macchina** — nome modificabile e due sezioni distinte per colore: **🎙️ Schede di
   ingresso** e **🔊 Schede di uscita**. Con **➕ Nuova scheda ingresso/uscita** aggiungi le schede
   (una per dispositivo: MADI 1, MADI 2, Dante 1…).

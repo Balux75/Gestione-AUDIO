@@ -837,19 +837,28 @@ const CCRF_COLS=[
 function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',patch:'',note:'',slot:''}, o||{}); }
 // evidenziazione temporanea della porta al momento dell'apertura del pannello
 let pendingPatchHL=null;
-// risolve un riferimento patch di un canale nel pannello + porta specifica
+// risolve un riferimento patch di un canale nel pannello + porta specifica.
+// Il valore memorizzato è del tipo «Nome Pannello · cavo · segnale»: si individua
+// PRIMA il pannello (per nome, prefisso più lungo), POI la porta al suo interno.
 function resolvePatch(u, text){
   text=String(text||'').trim(); if(!text) return null; const low=text.toLowerCase();
-  // 1) porta esatta (etichetta composta «Pannello · cavo · segnale» o campo distintivo)
-  for(const pp of (u.patch||[])) for(const po of (pp.porte||[])){
-    const comp=(String(pp.nome||'')+(po.cavo?(' · '+po.cavo):(po.numero?(' · '+po.numero):''))+(po.segnale?(' · '+po.segnale):'')).toLowerCase();
-    if(comp===low) return {pp,po};
-    if([po.cavo,po.segnale].some(v=>{ v=String(v||'').toLowerCase(); return v && (low===v||low.includes(v)); })) return {pp,po};
+  const pats=u.patch||[];
+  // 1) pannello il cui nome corrisponde/è prefisso del testo (match più lungo)
+  let panel=null, panelLen=-1;
+  for(const pp of pats){ const n=String(pp.nome||'').trim().toLowerCase(); if(!n) continue;
+    if(low===n || low.startsWith(n)){ if(n.length>panelLen){ panel=pp; panelLen=n.length; } } }
+  // 1b) se nessun prefisso, pannello il cui nome è contenuto nel testo (o viceversa)
+  if(!panel){ for(const pp of pats){ const n=String(pp.nome||'').trim().toLowerCase(); if(n && (low.includes(n)||n.includes(low))){ if(n.length>panelLen){ panel=pp; panelLen=n.length; } } } }
+  if(panel){
+    let port=null;
+    for(const po of (panel.porte||[])){
+      const comp=(String(panel.nome||'')+(po.cavo?(' · '+po.cavo):(po.numero?(' · '+po.numero):''))+(po.segnale?(' · '+po.segnale):'')).toLowerCase();
+      if(comp===low){ port=po; break; } }
+    if(!port){ for(const po of (panel.porte||[])){ if([po.cavo,po.segnale,po.numero].some(v=>{ v=String(v||'').trim().toLowerCase(); return v && (low===v || low.endsWith(' '+v) || low.includes(' '+v+' ') || low.includes('· '+v)); })){ port=po; break; } } }
+    return {pp:panel, po:port};
   }
-  // 2) solo nome pannello
-  for(const pp of (u.patch||[])){ const n=String(pp.nome||'').toLowerCase(); if(n && (low.includes(n)||n.includes(low))) return {pp,po:null}; }
-  // 3) altri campi porta
-  for(const pp of (u.patch||[])) for(const po of (pp.porte||[])){ if([po.provenienza,po.numero].some(v=>{ v=String(v||'').toLowerCase(); return v && low.includes(v); })) return {pp,po}; }
+  // 2) ultima risorsa: porta con cavo/segnale esattamente uguale al testo
+  for(const pp of pats) for(const po of (pp.porte||[])){ if([po.cavo,po.segnale].some(v=>{ v=String(v||'').trim().toLowerCase(); return v && low===v; })) return {pp,po}; }
   return null;
 }
 // apre il pannello patch della stanza collegato a un canale, evidenziando la porta
@@ -895,7 +904,7 @@ function buildNav(){
   const nav=$('#nav'); nav.innerHTML='';
   const cur=location.hash.slice(1)||'dashboard';
   const mkLink=(id,ico,label,extra,pad)=>{ const cnt=extra?null:navCount(id);
-    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')));
+    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')||cur.startsWith('switch/')));
     return el('a',{href:'#'+id, class:(active?'active':''), style:pad?'padding-left:'+pad:''},
       el('span',{class:'ico'},ico), el('span',{},label), cnt!=null?el('span',{class:'cnt'},String(cnt)):null); };
   for(const it of VIEWS){
@@ -903,7 +912,7 @@ function buildNav(){
     nav.append(mkLink(it.id,it.ico,it.label));
     if(it.id==='unita'){
       for(const u of (DB.unita||[])){
-        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/');
+        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/')||cur.startsWith('switch/'+u._id+'/');
         nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
           el('span',{class:'ico'},'🏢'), el('span',{},u.nome||'Unità'),
           el('span',{class:'cnt'},String((u.macchine||[]).length))));
@@ -929,6 +938,7 @@ function route(){
   else if(hash==='nuova-unita'){ nuovaUnita(); }
   else if(hash.startsWith('scheda/')){ const [,uid_,mid,sid]=hash.split('/'); viewScheda(c, uid_, mid, sid); }
   else if(hash.startsWith('patch/')){ const [,uid_,pid]=hash.split('/'); viewPatch(c, uid_, pid); }
+  else if(hash.startsWith('switch/')){ const [,uid_,sid]=hash.split('/'); viewSwitch(c, uid_, sid); }
   else if(hash.startsWith('macchina/')){ const [,uid_,mid]=hash.split('/'); viewMacchina(c, uid_, mid); }
   else if(hash.startsWith('unita/')){ viewUnitaDetail(c, hash.slice(6)); }
   else if(hash==='backup'){ $('#viewTitle').textContent='Backup / Ripristino'; viewBackup(c); }
@@ -1196,12 +1206,37 @@ function viewUnitaDetail(c, id){
     }
     c.append(pc);
   }
+  // ---- Switch (rete) ----
+  u.switches=u.switches||[];
+  c.append(el('div',{class:'section-h',style:'margin-top:22px'},'🔀 Switch'));
+  c.append(el('div',{class:'toolbar'}, el('button',{class:'btn sm',onclick:()=>nuovaSwitch(u)},'➕ Nuovo switch'),
+    el('span',{class:'muted',style:'font-size:12px'},'switch di rete della stanza (porte, IP, MAC, VLAN…)')));
+  if(!u.switches.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessuno switch.')); }
+  else {
+    const sc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const sw of u.switches){
+      const occ=(sw.porte||[]).filter(po=>po.descrizione||po.ip||po.mac||po.patch).length;
+      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #06b6d4'}); card.onclick=()=>location.hash='switch/'+u._id+'/'+sw._id;
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔀 '+(sw.nome||'Switch')), el('div',{class:'b'},(sw.porte||[]).length+' porte')),
+        el('div',{class:'sub',style:'margin-top:8px'}, occ+' porte occupate'));
+      sc.append(card);
+    }
+    c.append(sc);
+  }
 }
 function nuovaPatch(u){
   const nome=prompt('Nome del pannello patch (es. C11 PNL, Patch MIC…):','Patch');
   if(nome===null) return;
   const pp={_id:uid('pat_'), nome:(nome.trim()||'Patch'), porte:[]};
   (u.patch=u.patch||[]).push(pp); markDirty(); location.hash='patch/'+u._id+'/'+pp._id;
+}
+function nuovaSwitch(u){
+  const nome=prompt('Nome dello switch (es. switch_RF_DANTE_PRIMARIO_REGIA_B):','Switch');
+  if(nome===null) return;
+  let n=parseInt(prompt('Numero di porte:','16'),10); if(!(n>0)) n=16; if(n>256)n=256;
+  const porte=[]; for(let i=1;i<=n;i++) porte.push(newSwPort({porta:String(i)}));
+  const sw={_id:uid('sw_'), nome:(nome.trim()||'Switch'), porte};
+  (u.switches=u.switches||[]).push(sw); markDirty(); location.hash='switch/'+u._id+'/'+sw._id;
 }
 
 /* -------- Export / Import / Stampa a livello di UNITÀ OPERATIVA -------- */
@@ -1228,6 +1263,9 @@ function exportUnitaXLSX(u){
   const prows=[['Pannello','Porta','Provenienza','n° cavo e coppia','N°','Tipologia','Segnale']];
   for(const pp of (u.patch||[])) (pp.porte||[]).forEach((po,i)=>prows.push([pp.nome,i+1,po.provenienza,po.cavo,po.numero,po.tipologia,po.segnale]));
   sheets.push({name:'Patch',rows:prows});
+  const srows=[['Switch',...SWITCH_HEAD]];
+  for(const sw of (u.switches||[])) (sw.porte||[]).forEach(po=>srows.push([sw.nome,...SWITCH_COLS.map(c=>po[c.key]||'')]));
+  sheets.push({name:'Switch',rows:srows});
   downloadBytes('unita_'+String(u.nome||'unita').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Unità esportata in Excel');
 }
@@ -1237,8 +1275,8 @@ function importUnitaXLSX(u, reload){
     try{
       const bytes=new Uint8Array(await f.arrayBuffer()); const names=await XLSX.sheetNames(bytes);
       const getSheet=async re=>{ const n=names.find(x=>re.test(String(x))); return n? (await XLSX.readSheet(bytes,n)).rows : null; };
-      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i), rPat=await getSheet(/patch/i);
-      if(!rIn&&!rOut&&!rPat){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch)'); return; }
+      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i), rPat=await getSheet(/patch/i), rSw=await getSheet(/switch/i);
+      if(!rIn&&!rOut&&!rPat&&!rSw){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch, Switch)'); return; }
       const chSpec={ dev:{eq:['macchina']}, scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']},
         canale:{eq:['canale']}, segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']},
         ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, patch:{eq:['patch']}, note:{inc:['note']}, slot:{inc:['slot']} };
@@ -1258,13 +1296,23 @@ function importUnitaXLSX(u, reload){
         for(const r of rPat.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const pn=xcell(r,map.pannello)||'Patch'; let pp=patMap[pn]; if(!pp){ pp={_id:uid('pat_'),nome:pn,porte:[]}; patMap[pn]=pp; patOrder.push(pn); }
           pp.porte.push(newPorta({provenienza:xcell(r,map.provenienza),cavo:xcell(r,map.cavo),numero:xcell(r,map.numero),tipologia:xcell(r,map.tipologia),segnale:xcell(r,map.segnale)})); } }
-      const newMac=order.map(k=>macMap[k]); const newPat=patOrder.map(k=>patMap[k]);
+      // switch
+      const swSpec={ sw:{eq:['switch']}, porta:{eq:['porta']}, patch:{inc:['patch','stanza']}, descrizione:{inc:['descriz']},
+        ip:{eq:['ip'],inc:['indirizzo ip']}, mac:{eq:['mac'],inc:['mac address']}, subnet:{inc:['subnet','netmask']},
+        gateway:{inc:['gateway']}, vlan:{eq:['vlan']}, note:{inc:['note']}, colore:{inc:['colore','color']} };
+      const swMap={}; const swOrder=[];
+      if(rSw&&rSw.length>1){ const map=headerMap(rSw[0],swSpec);
+        for(const r of rSw.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
+          const sn=xcell(r,map.sw)||'Switch'; let sw=swMap[sn]; if(!sw){ sw={_id:uid('sw_'),nome:sn,porte:[]}; swMap[sn]=sw; swOrder.push(sn); }
+          sw.porte.push(newSwPort({porta:xcell(r,map.porta),patch:xcell(r,map.patch),descrizione:xcell(r,map.descrizione),ip:xcell(r,map.ip),mac:xcell(r,map.mac),subnet:xcell(r,map.subnet),gateway:xcell(r,map.gateway),vlan:xcell(r,map.vlan),note:xcell(r,map.note),colore:xcell(r,map.colore)})); } }
+      const newMac=order.map(k=>macMap[k]); const newPat=patOrder.map(k=>patMap[k]); const newSw=swOrder.map(k=>swMap[k]);
       const nCan=newMac.reduce((a,m)=>a+m.schede.reduce((b,s)=>b+s.canali.length,0),0);
-      if(!confirm('Import unità «'+(u.nome||'')+'»:\n· '+newMac.length+' macchine, '+nCan+' canali\n· '+newPat.length+' patch\n\nSostituisce macchine e patch dell\'unità (gli incroci dell\'unità verranno azzerati). Procedere?')) return;
+      if(!confirm('Import unità «'+(u.nome||'')+'»:\n· '+newMac.length+' macchine, '+nCan+' canali\n· '+newPat.length+' patch\n· '+newSw.length+' switch\n\nSostituisce macchine, patch e switch dell\'unità (gli incroci dell\'unità verranno azzerati). Procedere?')) return;
       purgeIncroci(collectChIds(u));
       if(rIn||rOut) u.macchine=newMac;
       if(rPat) u.patch=newPat;
-      markDirty(); reload(); toast('Unità importata ('+newMac.length+' macchine, '+newPat.length+' patch)');
+      if(rSw) u.switches=newSw;
+      markDirty(); reload(); toast('Unità importata ('+newMac.length+' macchine, '+newPat.length+' patch, '+newSw.length+' switch)');
     }catch(err){ console.error(err); toast('Errore import: '+err.message); }
   }}); document.body.append(inp); inp.click(); inp.remove();
 }
@@ -1286,6 +1334,11 @@ function printUnita(u){
       const head='<th>Porta</th>'+porte.map((po,i)=>'<th>'+(i+1)+'</th>').join('');
       const rowsH=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esctd(po[r.key])+'</td>').join('')+'</tr>').join('');
       html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsH+'</tbody></table>'; } }
+  if((u.switches||[]).length){ html+='<h2>🔀 Switch</h2>';
+    for(const sw of u.switches){ const porte=sw.porte||[]; html+='<h4>'+esc(sw.nome)+' <small>('+porte.length+' porte)</small></h4>';
+      const th=SWITCH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+      const trs=porte.map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esctd(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esctd(po[c.key])+'</td>')).join('')+'</tr>').join('');
+      html+='<table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table>'; } }
   html+='</body></html>';
   w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
@@ -1532,6 +1585,95 @@ function printPatch(pp){
 }
 
 /* ============================================================
+   SWITCH (rete) — tabella verticale delle porte (schema Excel:
+   Porta, Patch/Stanza, Descrizione, IP, MAC, Subnet, Gateway,
+   VLAN, Note, Colore). Non entra nel Quadro Incroci.
+   ============================================================ */
+const SWITCH_COLS=[
+  {key:'porta',label:'Porta',w:'60px'},
+  {key:'patch',label:'Patch/Stanza',w:'140px'},
+  {key:'descrizione',label:'Descrizione'},
+  {key:'ip',label:'IP',w:'120px'},
+  {key:'mac',label:'MAC',w:'150px'},
+  {key:'subnet',label:'Subnet',w:'120px'},
+  {key:'gateway',label:'Gateway',w:'120px'},
+  {key:'vlan',label:'VLAN',w:'64px'},
+  {key:'note',label:'Note'},
+  {key:'colore',label:'Colore',type:'color',w:'64px'},
+];
+function newSwPort(o){ return Object.assign({_id:uid('sp_'),porta:'',patch:'',descrizione:'',ip:'',mac:'',subnet:'',gateway:'',vlan:'',note:'',colore:''}, o||{}); }
+function findSwitch(u, sid){ return (u.switches||[]).find(x=>x._id===sid)||null; }
+function viewSwitch(c, uid_, sid){
+  const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
+  const sw=findSwitch(u,sid); if(!sw){ location.hash='unita/'+uid_; return; }
+  sw.porte=sw.porte||[];
+  $('#viewTitle').textContent='Switch · '+(sw.nome||'');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
+  const titleInp=el('input',{value:sw.nome||'',style:'font-size:16px;font-weight:600;max-width:360px',
+    onchange:e=>{ sw.nome=e.target.value.trim()||'Switch'; markDirty(); buildNav(); $('#viewTitle').textContent='Switch · '+sw.nome; }});
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🔀'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>{ sw.porte.push(newSwPort({porta:String(sw.porte.length+1)})); markDirty(); render(); }},'➕ Aggiungi porta'),
+    el('button',{class:'btn sm',onclick:()=>importSwitch(sw,render)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportSwitch(sw)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printSwitch(sw)},'🖨 Stampa'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare lo switch «'+(sw.nome||'')+'»?')){ u.switches=u.switches.filter(x=>x!==sw); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina switch')));
+  const area=el('div'); c.append(area);
+  function render(){
+    area.innerHTML='';
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(sw.porte.length)+' porte'));
+    const tw=el('div',{class:'tablewrap'}); const tbl=el('table');
+    tbl.append(el('thead',{},el('tr',{}, ...SWITCH_COLS.map(col=>el('th',{},col.label)), el('th',{},''))));
+    const tb=el('tbody');
+    if(!sw.porte.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(SWITCH_COLS.length+1)},'Nessuna porta — «➕ Aggiungi porta» o «⤒ Importa».')));
+    sw.porte.forEach((po,i)=>{
+      const tr=el('tr');
+      for(const col of SWITCH_COLS){
+        let inp;
+        if(col.type==='color'){ inp=el('input',{type:'color',value:po.colore||'#26385a',style:'width:44px;height:30px;padding:2px',onchange:e=>{ po.colore=e.target.value; markDirty(); }}); }
+        else inp=el('input',{value:po[col.key]||'',style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ po[col.key]=e.target.value; markDirty(); }});
+        const td=el('td',{style:col.w?'max-width:'+col.w:''}, inp);
+        if(col.key==='porta' && po.colore) td.style.borderLeft='4px solid '+po.colore;
+        tr.append(td);
+      }
+      tr.append(el('td',{},el('button',{class:'btn sm danger rowbtn',title:'Elimina porta',onclick:()=>{ sw.porte.splice(i,1); markDirty(); render(); }},'🗑')));
+      tb.append(tr);
+    });
+    tbl.append(tb); tw.append(tbl); area.append(tw);
+  }
+  render();
+}
+const SWITCH_HEAD=['Porta','Patch/Stanza','Descrizione','IP','MAC','Subnet','Gateway','VLAN','Note','Colore'];
+function swRows(sw){ const rows=[SWITCH_HEAD.slice()]; for(const po of (sw.porte||[])) rows.push(SWITCH_COLS.map(c=>po[c.key]||'')); return rows; }
+function exportSwitch(sw){
+  downloadBytes(String(sw.nome||'switch').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build([{name:'Porte',rows:swRows(sw)}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Switch esportato');
+}
+function importSwitch(sw,reload){
+  const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{ let rows; const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
+      if(!rows||rows.length<1){ toast('File vuoto'); return; }
+      const map=headerMap(rows[0], { porta:{eq:['porta']}, patch:{inc:['patch','stanza']}, descrizione:{inc:['descriz']}, ip:{eq:['ip'],inc:['indirizzo ip']},
+        mac:{eq:['mac'],inc:['mac address']}, subnet:{inc:['subnet','netmask']}, gateway:{inc:['gateway']}, vlan:{eq:['vlan']}, note:{inc:['note']}, colore:{inc:['colore','color']} });
+      const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
+      const parsed=data.map(r=>newSwPort({porta:xcell(r,map.porta),patch:xcell(r,map.patch),descrizione:xcell(r,map.descrizione),ip:xcell(r,map.ip),
+        mac:xcell(r,map.mac),subnet:xcell(r,map.subnet),gateway:xcell(r,map.gateway),vlan:xcell(r,map.vlan),note:xcell(r,map.note),colore:xcell(r,map.colore)}));
+      if(!parsed.length){ toast('Nessuna riga valida'); return; }
+      const rep=confirm(parsed.length+' porte lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
+      sw.porte=rep?parsed:(sw.porte||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' porte');
+    }catch(err){ console.error(err); toast('Errore import: '+err.message); }
+  }}); document.body.append(inp); inp.click(); inp.remove();
+}
+function printSwitch(sw){
+  const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const th=SWITCH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+  const trs=(sw.porte||[]).map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esc(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esc(po[c.key]==null?'':po[c.key])+'</td>')).join('')+'</tr>').join('');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(sw.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>'+esc(sw.nome)+' — switch</h2><p>'+(sw.porte||[]).length+' porte · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
+  w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
+}
+
+/* ============================================================
    Import massivo dal foglio "MATRICE CCRF": crea/aggiorna l'unità
    CCRF con la macchina "MATRICE CENTRALIZZATA" e le sue schede.
    ============================================================ */
@@ -1630,6 +1772,9 @@ function ensureModel(){
     // patch audio della stanza (pannelli a sviluppo orizzontale)
     if(!Array.isArray(u.patch)){ u.patch=[]; changed=true; }
     for(const pp of u.patch){ pp.porte=pp.porte||[]; for(const po of pp.porte) if(!po._id){ po._id=uid('po_'); changed=true; } }
+    // switch di rete della stanza
+    if(!Array.isArray(u.switches)){ u.switches=[]; changed=true; }
+    for(const sw of u.switches){ sw.porte=sw.porte||[]; for(const po of sw.porte) if(!po._id){ po._id=uid('sp_'); changed=true; } }
     // CCRF con macchine appaiate (modello precedente) -> una MATRICE CENTRALIZZATA con schede
     if(u._ccrf && u.macchine.length && u.macchine.every(m=>!m.schede) && u.macchine.some(m=>m.ingressi||m.uscite)){
       const schede=[];
