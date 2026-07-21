@@ -68,7 +68,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   incrociati (con i rispettivi #). Tutto ciò che modifichi nelle schede si riflette qui automaticamente.
 - **🏢 Unità operative** — elenco delle stanze. Con **➕ Nuova unità operativa** crei una stanza;
   aprendola vedi le sue **macchine** e con **➕ Nuova macchina** ne aggiungi. Rinomina/elimina
-  unità e macchine (con pulizia automatica degli incroci collegati).
+  unità e macchine (con pulizia automatica degli incroci collegati). A livello di unità sono
+  disponibili **⤒ Importa**, **⤓ Esporta** e **🖨 Stampa** dell'**intera stanza**: l'export Excel
+  ha i fogli *Ingressi*, *Uscite* (con Macchina, Scheda, Tipologia, #, canale…) e *Patch*;
+  l'import ricostruisce macchine, schede e patch dallo stesso formato; la stampa produce un
+  documento completo (tutte le schede e i pannelli patch).
 - **🔌 Patch audio** — dentro ogni stanza puoi creare dei **pannelli patch** a **sviluppo
   orizzontale** (le porte sono le colonne, gli attributi le righe: **Provenienza**, **n° cavo e
   coppia**, **N°**, **Tipologia**, **Segnale**). Aggiungi/elimina porte (o **+8** in blocco),
