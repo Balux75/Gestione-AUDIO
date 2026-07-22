@@ -992,22 +992,29 @@ function chMatch(c,q){ return [c.canale,c.macchina,c.ch,c.note,c.slot].some(v=>S
 
 /* Instradamenti per export/stampa: PRIMA le uscite, poi gli ingressi incrociati,
    con il numero # di canale per uscita e ingresso. */
-const INCROCI_HEAD=['# Uscita','Uscita','Stanza · Macchina · Scheda (uscita)','CH','# Ingresso','Ingresso','Stanza · Macchina · Scheda (ingresso)','CH'];
-function incrociRows(){
+const INCROCI_HEAD=['# Uscita','Uscita','Tipologia uscita','Ubicazione uscita','CH','# Ingresso','Ingresso','Tipologia ingresso','Ubicazione ingresso','CH'];
+function hexRgba(hex,a){ hex=String(hex||'').replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join(''); const n=parseInt(hex,16); if(isNaN(n))return 'transparent'; return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+function tipoHex(t){ const d=tipoDef(t); return d?d.color:'#999'; }
+function incrociData(){
   const srcByOut={}; for(const iid in (DB.incroci||{})){ const o=DB.incroci[iid]; if(!o)continue; (srcByOut[o]=srcByOut[o]||[]).push(iid); }
-  const rows=[];
+  const list=[];
   for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!=='out')continue;
     (s.canali||[]).forEach((oc,oi)=>{ const ins=srcByOut[oc._id]; if(!ins||!ins.length)return;
       for(const iid of ins){ const f=chFind(iid);
-        rows.push([ oi+1, (oc.macchina||oc.canale||''), u.nome+' · '+m.nome+' · '+s.nome, oc.ch||'',
-          f?(f.s.canali.indexOf(f.c)+1):'', f?(f.c.macchina||f.c.canale||''):'', f?(f.u.nome+' · '+f.m.nome+' · '+f.s.nome):'', f?(f.c.ch||''):'' ]); } }); }
-  return rows;
+        list.push({ out:{n:oi+1, nome:oc.macchina||oc.canale||'', loc:u.nome+' · '+m.nome+' · '+s.nome, ch:oc.ch||'', tipo:s.tipo||''},
+          in: f?{n:f.s.canali.indexOf(f.c)+1, nome:f.c.macchina||f.c.canale||'', loc:f.u.nome+' · '+f.m.nome+' · '+f.s.nome, ch:f.c.ch||'', tipo:f.s.tipo||''}:{n:'',nome:'',loc:'',ch:'',tipo:''} }); } }); }
+  return list;
 }
+function incrociRows(){ return incrociData().map(r=>[r.out.n,r.out.nome,tipoLabel(r.out.tipo),r.out.loc,r.out.ch, r.in.n,r.in.nome,tipoLabel(r.in.tipo),r.in.loc,r.in.ch]); }
 function buildIncrociHTML(){
-  const rows=incrociRows();
+  const data=incrociData();
   const th=INCROCI_HEAD.map(h=>'<th>'+esc(h)+'</th>').join('');
-  const trs=rows.map(r=>'<tr>'+r.map(v=>'<td>'+esc(v==null?'':v)+'</td>').join('')+'</tr>').join('');
-  return '<!doctype html><html><head><meta charset="utf-8"><title>Quadro Incroci</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>Quadro Incroci — instradamenti (uscite → ingressi)</h2><p>'+rows.length+' incroci · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>';
+  const tcell=t=>'<td style="background:'+tipoHex(t)+';color:#fff;text-align:center;font-weight:600;white-space:nowrap">'+esc(tipoLabel(t))+'</td>';
+  const ntd=(v,t)=>'<td style="background:'+hexRgba(tipoHex(t),0.18)+'">'+esc(v==null?'':v)+'</td>';
+  const trs=data.map(r=>'<tr><td>'+esc(r.out.n)+'</td>'+ntd(r.out.nome,r.out.tipo)+tcell(r.out.tipo)+'<td>'+esc(r.out.loc)+'</td><td>'+esc(r.out.ch)+'</td>'+
+    '<td>'+esc(r.in.n)+'</td>'+ntd(r.in.nome,r.in.tipo)+tcell(r.in.tipo)+'<td>'+esc(r.in.loc)+'</td><td>'+esc(r.in.ch)+'</td></tr>').join('');
+  const legend=TIPOLOGIE.map(t=>'<span style="display:inline-block;margin-right:14px;white-space:nowrap"><span style="display:inline-block;width:13px;height:13px;background:'+t.color+';border:1px solid #777;vertical-align:middle;margin-right:5px"></span>'+esc(t.label)+'</span>').join('');
+  return '<!doctype html><html><head><meta charset="utf-8"><title>Quadro Incroci</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 8px;font-size:12px}.leg{margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}@media print{body{padding:0}}</style></head><body><h2>Quadro Incroci — instradamenti (uscite → ingressi)</h2><p>'+data.length+' incroci · stampato il '+new Date().toLocaleString('it-IT')+'</p><div class="leg"><b>Tipologie:</b> '+legend+'</div><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>';
 }
 function exportIncroci(){ const rows=incrociRows(); if(!rows.length){ toast('Nessun incrocio attivo'); return; }
   downloadBytes('quadro_incroci_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build([{name:'Incroci',rows:[INCROCI_HEAD,...rows]}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
