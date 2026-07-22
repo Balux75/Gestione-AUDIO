@@ -94,16 +94,27 @@ tr:hover td .rowbtn{opacity:1}
 
 /* Switch port grid */
 .swhead{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
-.portgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;max-width:900px}
-.port{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;cursor:pointer;min-height:42px}
-.port:hover{border-color:var(--accent)}
+.sw-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,#2c2a18,#1b1a0f);border:1px solid #4d4622;border-radius:12px;padding:15px 18px;margin-bottom:14px}
+.sw-hero .h-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
+.sw-hero .h-sub{color:#cabf8f;font-size:12.5px;margin-top:6px}
+.sw-hero .h-sub b{color:#e7dcae;font-weight:600}
+.sw-hero .h-actions{display:flex;gap:8px;flex-wrap:wrap}
+.portgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;max-width:960px}
+.port{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;cursor:pointer;min-height:48px}
+.port:hover{border-color:var(--accent);background:var(--panel2)}
 .port.occ{background:#122a45;border-color:#2a5a8a}
-.port .num{font-weight:700;background:var(--panel2);border-radius:6px;min-width:30px;text-align:center;padding:3px 4px;font-size:12px}
-.port.occ .num{background:var(--accent);color:#fff}
-.port .info{overflow:hidden}
-.port .info .d{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
-.port .info .s{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
-.legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin:8px 0 16px}
+.port .num{font-weight:700;background:var(--panel2);border-radius:7px;min-width:32px;height:30px;display:flex;align-items:center;justify-content:center;padding:0 6px;font-size:12.5px;color:var(--muted);flex-shrink:0}
+.port.occ .num{color:#1a1205}
+.port .info{overflow:hidden;min-width:0}
+.port .info .d{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.port.occ .info .d{font-weight:600;color:var(--txt)}
+.port .info .s{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.port .info .free{font-size:12px;color:#5f7397;font-style:italic}
+.legend{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted);margin:6px 0 16px}
+.legend .lg{display:inline-flex;align-items:center;gap:7px}
+.legend .lg i{width:14px;height:14px;border-radius:4px;display:inline-block}
+.legend .lg i.occ{background:#122a45;border:1px solid #2a5a8a}
+.legend .lg i.free{background:var(--panel);border:1px solid var(--line)}
 .sw-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;cursor:pointer}
 .sw-card:hover{border-color:var(--accent)}
 .sw-card h4{margin:0 0 6px;font-size:14px}
@@ -764,9 +775,10 @@ function el(tag, attrs={}, ...kids){
 function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 let toastTimer;
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2600); }
-function openModal(node,wide){ const m=$('#modal'); m.className='modal'+(wide?' wide':''); m.innerHTML=''; m.append(node); $('#overlay').classList.add('show'); }
+let modalOpenedAt=0;
+function openModal(node,wide){ const m=$('#modal'); m.className='modal'+(wide?' wide':''); m.innerHTML=''; m.append(node); $('#overlay').classList.add('show'); modalOpenedAt=Date.now(); }
 function closeModal(){ $('#overlay').classList.remove('show'); }
-$('#overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeModal(); });
+$('#overlay').addEventListener('click',e=>{ if(e.target.id==='overlay' && Date.now()-modalOpenedAt>300) closeModal(); });
 
 function renderDbStat(){
   const s=$('#dbstat'), t=$('#dbstatText');
@@ -1215,7 +1227,7 @@ function viewUnitaDetail(c, id){
   else {
     const sc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
     for(const sw of u.switches){
-      const occ=(sw.porte||[]).filter(po=>po.descrizione||po.ip||po.mac||po.patch).length;
+      const occ=(sw.porte||[]).filter(swPortOccupata).length;
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #06b6d4'}); card.onclick=()=>location.hash='switch/'+u._id+'/'+sw._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔀 '+(sw.nome||'Switch')), el('div',{class:'b'},(sw.porte||[]).length+' porte')),
         el('div',{class:'sub',style:'margin-top:8px'}, occ+' porte occupate'));
@@ -1602,45 +1614,155 @@ const SWITCH_COLS=[
   {key:'colore',label:'Colore',type:'color',w:'64px'},
 ];
 function newSwPort(o){ return Object.assign({_id:uid('sp_'),porta:'',patch:'',descrizione:'',ip:'',mac:'',subnet:'',gateway:'',vlan:'',note:'',colore:''}, o||{}); }
+/* Una porta è "occupata" se ha almeno un campo di contenuto valorizzato. */
+function swPortOccupata(po){ return !!(po && (String(po.descrizione||'').trim()||String(po.patch||'').trim()||String(po.ip||'').trim()||String(po.mac||'').trim()||String(po.note||'').trim())); }
 function findSwitch(u, sid){ return (u.switches||[]).find(x=>x._id===sid)||null; }
 function viewSwitch(c, uid_, sid){
   const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
   const sw=findSwitch(u,sid); if(!sw){ location.hash='unita/'+uid_; return; }
   sw.porte=sw.porte||[];
   $('#viewTitle').textContent='Switch · '+(sw.nome||'');
-  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
-  const titleInp=el('input',{value:sw.nome||'',style:'font-size:16px;font-weight:600;max-width:360px',
-    onchange:e=>{ sw.nome=e.target.value.trim()||'Switch'; markDirty(); buildNav(); $('#viewTitle').textContent='Switch · '+sw.nome; }});
-  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🔀'), titleInp, el('div',{class:'sp',style:'flex:1'}),
-    el('button',{class:'btn sm',onclick:()=>{ sw.porte.push(newSwPort({porta:String(sw.porte.length+1)})); markDirty(); render(); }},'➕ Aggiungi porta'),
-    el('button',{class:'btn sm',onclick:()=>importSwitch(sw,render)},'⤒ Importa'),
-    el('button',{class:'btn sm',onclick:()=>exportSwitch(sw)},'⤓ Esporta'),
-    el('button',{class:'btn sm',onclick:()=>printSwitch(sw)},'🖨 Stampa'),
-    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare lo switch «'+(sw.nome||'')+'»?')){ u.switches=u.switches.filter(x=>x!==sw); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina switch')));
-  const area=el('div'); c.append(area);
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ Torna agli switch'));
+  const wrap=el('div'); c.append(wrap);
   function render(){
-    area.innerHTML='';
-    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(sw.porte.length)+' porte'));
-    const tw=el('div',{class:'tablewrap'}); const tbl=el('table');
-    tbl.append(el('thead',{},el('tr',{}, ...SWITCH_COLS.map(col=>el('th',{},col.label)), el('th',{},''))));
-    const tb=el('tbody');
-    if(!sw.porte.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(SWITCH_COLS.length+1)},'Nessuna porta — «➕ Aggiungi porta» o «⤒ Importa».')));
+    wrap.innerHTML='';
+    const tot=sw.porte.length, occN=sw.porte.filter(swPortOccupata).length;
+    // ---- intestazione (hero) ----
+    const sub=el('div',{class:'h-sub'});
+    if(String(sw.categoria||'').trim()){ sub.append('📁 ', el('b',{},sw.categoria), ' · '); }
+    if(String(sw.piano||'').trim()){ sub.append('🏢 PIANO ', el('b',{},String(sw.piano)), ' · '); }
+    if(String(sw.armadio||'').trim()){ sub.append('Armadio ', el('b',{},sw.armadio), ' · '); }
+    sub.append(tot+' porte · ', el('b',{},occN+' occupate'));
+    wrap.append(el('div',{class:'sw-hero'},
+      el('div',{},
+        el('div',{class:'h-title'},'🔀 '+(sw.nome||'Switch')),
+        sub),
+      el('div',{class:'h-actions'},
+        el('button',{class:'btn sm',onclick:()=>importSwitch(sw,render)},'⤒ Importa (Excel/log)'),
+        el('button',{class:'btn sm',onclick:()=>printSwitch(sw)},'🖨 Stampa'),
+        el('button',{class:'btn sm',onclick:()=>switchProps(sw,u,render)},'✎ Proprietà'),
+        el('button',{class:'btn sm',onclick:()=>exportSwitch(sw)},'⤓ Excel'))));
+    // ---- legenda ----
+    wrap.append(el('div',{class:'legend'},
+      el('span',{class:'lg'}, el('i',{class:'occ'}), 'porta occupata'),
+      el('span',{class:'lg'}, el('i',{class:'free'}), 'porta libera'),
+      el('span',{},'Doppio click / click su una porta per modificarla')));
+    // ---- griglia porte ----
+    if(!tot){ wrap.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessuna porta — apri «✎ Proprietà» per impostare il numero di porte, oppure «⤒ Importa».')); return; }
+    const grid=el('div',{class:'portgrid'});
     sw.porte.forEach((po,i)=>{
-      const tr=el('tr');
-      for(const col of SWITCH_COLS){
-        let inp;
-        if(col.type==='color'){ inp=el('input',{type:'color',value:po.colore||'#26385a',style:'width:44px;height:30px;padding:2px',onchange:e=>{ po.colore=e.target.value; markDirty(); }}); }
-        else inp=el('input',{value:po[col.key]||'',style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ po[col.key]=e.target.value; markDirty(); }});
-        const td=el('td',{style:col.w?'max-width:'+col.w:''}, inp);
-        if(col.key==='porta' && po.colore) td.style.borderLeft='4px solid '+po.colore;
-        tr.append(td);
+      const occ=swPortOccupata(po);
+      const card=el('div',{class:'port'+(occ?' occ':''),title:'Doppio click / click per modificare',
+        onclick:()=>editSwPort(sw,po,render)});
+      const num=el('div',{class:'num'}, po.porta||String(i+1));
+      if(occ){ num.style.background=po.colore||'#f59e0b'; num.style.color='#1a1205'; }
+      else if(String(po.colore||'').trim()){ num.style.background=po.colore; }
+      const info=el('div',{class:'info'});
+      if(occ){
+        let d1='', d2='';
+        if(String(po.descrizione||'').trim()){ d1=po.descrizione; d2=po.patch||po.ip||po.mac||''; }
+        else if(String(po.patch||'').trim()){ d1=po.patch; d2=po.ip||po.mac||''; }
+        else { d1=po.ip||po.mac||po.note||''; d2=(po.ip&&po.mac)?po.mac:''; }
+        info.append(el('div',{class:'d'}, d1));
+        if(d2) info.append(el('div',{class:'s'}, d2));
+      } else {
+        info.append(el('div',{class:'free'},'libera'));
       }
-      tr.append(el('td',{},el('button',{class:'btn sm danger rowbtn',title:'Elimina porta',onclick:()=>{ sw.porte.splice(i,1); markDirty(); render(); }},'🗑')));
-      tb.append(tr);
+      card.append(num, info);
+      grid.append(card);
     });
-    tbl.append(tb); tw.append(tbl); area.append(tw);
+    wrap.append(grid);
   }
   render();
+}
+/* Editor di una singola porta (click / doppio click sulla porta). */
+function editSwPort(sw, po, onSaved){
+  const iDesc=el('input',{value:po.descrizione||''});
+  const iPatch=el('input',{value:po.patch||''});
+  const iIp=el('input',{value:po.ip||''});
+  const iMac=el('input',{value:po.mac||''});
+  const iSub=el('input',{value:po.subnet||''});
+  const iGw=el('input',{value:po.gateway||''});
+  const iVlan=el('input',{value:po.vlan||''});
+  const iNote=el('textarea',{}, po.note||'');
+  const iColore=el('input',{type:'color',value:po.colore||'#f59e0b',style:'width:54px;height:34px;padding:2px'});
+  const fld=(label,inputEl)=>el('div',{class:'fld'}, el('label',{},label), inputEl);
+  const body=el('div',{class:'mb'},
+    el('div',{class:'grid2'},
+      fld('Descrizione', iDesc),
+      fld('Patch / Stanza', iPatch),
+      fld('IP', iIp),
+      fld('MAC', iMac),
+      fld('Subnet', iSub),
+      fld('Gateway', iGw),
+      fld('VLAN', iVlan),
+      fld('Colore', iColore)),
+    el('div',{class:'fld',style:'margin-top:12px'}, el('label',{},'Note'), iNote));
+  function save(){
+    po.descrizione=iDesc.value.trim(); po.patch=iPatch.value.trim();
+    po.ip=iIp.value.trim(); po.mac=iMac.value.trim(); po.subnet=iSub.value.trim();
+    po.gateway=iGw.value.trim(); po.vlan=iVlan.value.trim(); po.note=iNote.value.trim();
+    if(!swPortOccupata(po)) po.colore='';
+    else po.colore=iColore.value||'#f59e0b';
+    markDirty(); closeModal(); onSaved&&onSaved();
+  }
+  function svuota(){
+    po.descrizione=po.patch=po.ip=po.mac=po.subnet=po.gateway=po.vlan=po.note=po.colore='';
+    markDirty(); closeModal(); onSaved&&onSaved();
+  }
+  const node=el('div',{},
+    el('div',{class:'mh'}, el('h3',{},'🔌 Porta '+(po.porta||'')), el('button',{class:'x',onclick:closeModal},'×')),
+    body,
+    el('div',{class:'mf'},
+      el('button',{class:'btn danger',onclick:svuota},'Svuota porta'),
+      el('div',{style:'flex:1'}),
+      el('button',{class:'btn',onclick:closeModal},'Annulla'),
+      el('button',{class:'btn primary',onclick:save},'Salva')));
+  openModal(node);
+  setTimeout(()=>iDesc.focus(),30);
+}
+/* Proprietà dello switch (nome, categoria, piano, armadio, numero di porte). */
+function switchProps(sw, u, onSaved){
+  const iNome=el('input',{value:sw.nome||''});
+  const iCat=el('input',{value:sw.categoria||'',placeholder:'es. RF DANTE'});
+  const iPiano=el('input',{value:sw.piano||'',placeholder:'es. 2'});
+  const iArm=el('input',{value:sw.armadio||'',placeholder:'es. REGIA B'});
+  const iPorte=el('input',{type:'number',min:'0',max:'256',value:String(sw.porte.length)});
+  const fld=(label,inputEl)=>el('div',{class:'fld'}, el('label',{},label), inputEl);
+  const body=el('div',{class:'mb'},
+    el('div',{class:'fld',style:'margin-bottom:12px'}, el('label',{},'Nome switch'), iNome),
+    el('div',{class:'grid3'},
+      fld('Categoria / Tipo', iCat),
+      fld('Piano', iPiano),
+      fld('Armadio', iArm)),
+    el('div',{class:'fld',style:'margin-top:12px;max-width:200px'}, el('label',{},'Numero di porte'), iPorte));
+  function save(){
+    sw.nome=iNome.value.trim()||'Switch';
+    sw.categoria=iCat.value.trim(); sw.piano=iPiano.value.trim(); sw.armadio=iArm.value.trim();
+    let n=parseInt(iPorte.value,10); if(!(n>=0)) n=sw.porte.length; if(n>256) n=256;
+    if(n<sw.porte.length){
+      const lost=sw.porte.slice(n).filter(swPortOccupata).length;
+      if(lost>0 && !confirm('Riducendo a '+n+' porte perderai '+lost+' porta/e occupata/e. Continuare?')) return;
+      sw.porte=sw.porte.slice(0,n);
+    } else if(n>sw.porte.length){
+      for(let i=sw.porte.length;i<n;i++) sw.porte.push(newSwPort({porta:String(i+1)}));
+    }
+    sw.porte.forEach((p,i)=>{ if(!String(p.porta||'').trim()) p.porta=String(i+1); });
+    markDirty(); buildNav(); $('#viewTitle').textContent='Switch · '+sw.nome; closeModal(); onSaved&&onSaved();
+  }
+  function elimina(){
+    if(confirm('Eliminare lo switch «'+(sw.nome||'')+'»?')){ u.switches=u.switches.filter(x=>x!==sw); markDirty(); closeModal(); location.hash='unita/'+u._id; }
+  }
+  const node=el('div',{},
+    el('div',{class:'mh'}, el('h3',{},'⚙ Proprietà switch'), el('button',{class:'x',onclick:closeModal},'×')),
+    body,
+    el('div',{class:'mf'},
+      el('button',{class:'btn danger',onclick:elimina},'🗑 Elimina switch'),
+      el('div',{style:'flex:1'}),
+      el('button',{class:'btn',onclick:closeModal},'Annulla'),
+      el('button',{class:'btn primary',onclick:save},'Salva')));
+  openModal(node);
+  setTimeout(()=>iNome.focus(),30);
 }
 const SWITCH_HEAD=['Porta','Patch/Stanza','Descrizione','IP','MAC','Subnet','Gateway','VLAN','Note','Colore'];
 function swRows(sw){ const rows=[SWITCH_HEAD.slice()]; for(const po of (sw.porte||[])) rows.push(SWITCH_COLS.map(c=>po[c.key]||'')); return rows; }
@@ -1649,19 +1771,34 @@ function exportSwitch(sw){
   toast('Switch esportato');
 }
 function importSwitch(sw,reload){
-  const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
+  const inp=el('input',{type:'file',accept:'.xlsx,.csv,.txt,.log,.cfg',style:'display:none',onchange:async e=>{
     const f=e.target.files[0]; if(!f)return;
-    try{ let rows; const nm=f.name.toLowerCase();
-      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
-      if(!rows||rows.length<1){ toast('File vuoto'); return; }
-      const map=headerMap(rows[0], { porta:{eq:['porta']}, patch:{inc:['patch','stanza']}, descrizione:{inc:['descriz']}, ip:{eq:['ip'],inc:['indirizzo ip']},
-        mac:{eq:['mac'],inc:['mac address']}, subnet:{inc:['subnet','netmask']}, gateway:{inc:['gateway']}, vlan:{eq:['vlan']}, note:{inc:['note']}, colore:{inc:['colore','color']} });
-      const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
-      const parsed=data.map(r=>newSwPort({porta:xcell(r,map.porta),patch:xcell(r,map.patch),descrizione:xcell(r,map.descrizione),ip:xcell(r,map.ip),
-        mac:xcell(r,map.mac),subnet:xcell(r,map.subnet),gateway:xcell(r,map.gateway),vlan:xcell(r,map.vlan),note:xcell(r,map.note),colore:xcell(r,map.colore)}));
-      if(!parsed.length){ toast('Nessuna riga valida'); return; }
-      const rep=confirm(parsed.length+' porte lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
-      sw.porte=rep?parsed:(sw.porte||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' porte');
+    try{ const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')||nm.endsWith('.csv')){
+        // ---- Import da Excel/CSV (schema: Porta, Patch/Stanza, Descrizione, IP, MAC, Subnet, Gateway, VLAN, Note, Colore) ----
+        let rows; if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
+        if(!rows||rows.length<1){ toast('File vuoto'); return; }
+        const map=headerMap(rows[0], { porta:{eq:['porta']}, patch:{inc:['patch','stanza']}, descrizione:{inc:['descriz']}, ip:{eq:['ip'],inc:['indirizzo ip']},
+          mac:{eq:['mac'],inc:['mac address']}, subnet:{inc:['subnet','netmask']}, gateway:{inc:['gateway']}, vlan:{eq:['vlan']}, note:{inc:['note']}, colore:{inc:['colore','color']} });
+        const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
+        const parsed=data.map(r=>newSwPort({porta:xcell(r,map.porta),patch:xcell(r,map.patch),descrizione:xcell(r,map.descrizione),ip:xcell(r,map.ip),
+          mac:xcell(r,map.mac),subnet:xcell(r,map.subnet),gateway:xcell(r,map.gateway),vlan:xcell(r,map.vlan),note:xcell(r,map.note),colore:xcell(r,map.colore)}));
+        if(!parsed.length){ toast('Nessuna riga valida'); return; }
+        // le porte occupate senza colore prendono l'ambra (coerente con lo schema)
+        parsed.forEach(p=>{ if(swPortOccupata(p)&&!String(p.colore||'').trim()) p.colore='#f59e0b'; });
+        const rep=confirm(parsed.length+' porte lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
+        sw.porte=rep?parsed:(sw.porte||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' porte');
+      } else {
+        // ---- Import da log Cisco (show int status/description/mac-address-table/cdp): riempie le porte esistenti ----
+        const parsed=SWLOG.parse(await f.text());
+        if(!parsed || !Object.keys(parsed.ports).length){ toast('Nessuna porta riconosciuta nel log'); return; }
+        const member=parseInt(prompt('Log «'+(parsed.swName||f.name)+'».\nNumero membro dello stack per questo switch:','1'),10)||1;
+        const overwrite=!confirm('OK = riempi solo i campi vuoti\nAnnulla = sovrascrivi i campi esistenti');
+        sw.porte.forEach(p=>{ p.numero=parseInt(p.porta,10); });          // bridge: SWLOG cerca per .numero
+        const st=SWLOG.applyOne(sw, parsed, member, overwrite);
+        sw.porte.forEach(p=>{ delete p.numero; if(swPortOccupata(p)&&!String(p.colore||'').trim()) p.colore='#f59e0b'; });
+        markDirty(); reload(); toast('Log applicato: '+st.porte+' porte, '+st.campi+' campi'+(st.porte?'':' (nessuna corrispondenza — controlla il membro)'));
+      }
     }catch(err){ console.error(err); toast('Errore import: '+err.message); }
   }}); document.body.append(inp); inp.click(); inp.remove();
 }
@@ -1669,7 +1806,10 @@ function printSwitch(sw){
   const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
   const th=SWITCH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
   const trs=(sw.porte||[]).map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esc(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esc(po[c.key]==null?'':po[c.key])+'</td>')).join('')+'</tr>').join('');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(sw.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>'+esc(sw.nome)+' — switch</h2><p>'+(sw.porte||[]).length+' porte · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
+  const meta=[]; if(String(sw.categoria||'').trim())meta.push(esc(sw.categoria)); if(String(sw.piano||'').trim())meta.push('Piano '+esc(sw.piano)); if(String(sw.armadio||'').trim())meta.push('Armadio '+esc(sw.armadio));
+  const occN=(sw.porte||[]).filter(swPortOccupata).length;
+  const subp=(meta.length?meta.join(' · ')+' · ':'')+(sw.porte||[]).length+' porte · '+occN+' occupate · stampato il '+new Date().toLocaleString('it-IT');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(sw.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>'+esc(sw.nome)+' — switch</h2><p>'+subp+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
 }
 
