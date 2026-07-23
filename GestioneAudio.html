@@ -228,6 +228,7 @@ table.patch td.destcell .destgo{display:inline-flex;align-items:center;vertical-
 .boxfig .conn.f .xlr{border-color:#ef4444;color:#ffd7d7}
 .boxfig .conn.m .xlr{border-color:#3b82f6;color:#d7e6ff}
 .boxfig .conn.free{opacity:.42}
+.boxfig .conn.hl{box-shadow:0 0 0 2px var(--accent2);border-color:var(--accent2);opacity:1}
 .boxfig .conn .sig{font-size:11px;font-weight:600;color:#e8eefc;word-break:break-word;min-height:14px}
 .boxfig .conn .cw{width:100%;height:6px;border-radius:3px;margin-top:6px;background:#2a3550}
 .boxfig .conn .cp{font-size:10px;color:var(--muted);margin-top:4px;word-break:break-word}
@@ -905,35 +906,41 @@ function openPatchFrom(u, text){
   pendingPatchHL = r.po? {patchId:r.pp._id, portId:r.po._id} : null;
   location.hash='patch/'+u._id+'/'+r.pp._id;
 }
-// trova un pannello di destinazione tra Patch e Pannelli, dato il nome -> {kind:'patch'|'pannello', obj}
-function findDestPanel(u, name){
+// destinazioni collegabili di una stanza (Patch, Pannelli, Box) -> [{kind, obj, label}]
+function destPanels(u, excludeId){
+  const out=[];
+  for(const p of (u.pannelli||[])) out.push({kind:'pannello',obj:p,label:'Pannello'});
+  for(const p of (u.patch||[])) out.push({kind:'patch',obj:p,label:'Patch'});
+  for(const p of (u.box||[])){ if(p._id===excludeId) continue; out.push({kind:'box',obj:p,label:'Box'}); }
+  return out;
+}
+// trova una destinazione tra Patch, Pannelli e Box, dato il nome -> {kind:'patch'|'pannello'|'box', obj}
+function findDestPanel(u, name, excludeId){
   name=String(name||'').trim(); if(!name) return null; const low=name.toLowerCase();
-  const cands=[];
-  for(const p of (u.patch||[])) cands.push({kind:'patch',obj:p});
-  for(const p of (u.pannelli||[])) cands.push({kind:'pannello',obj:p});
+  const cands=destPanels(u, excludeId);
   for(const c of cands){ if(String(c.obj.nome||'').trim().toLowerCase()===low) return c; } // corrispondenza esatta
   let best=null, bestLen=-1;
   for(const c of cands){ const n=String(c.obj.nome||'').trim().toLowerCase();
     if(n && (low.startsWith(n)||n.startsWith(low)||low.includes(n)||n.includes(low))){ if(n.length>bestLen){ best=c; bestLen=n.length; } } }
   return best;
 }
-// individua la porta del pannello alla "posizione" indicata (per N°, poi per ordinale, poi per segnale)
+// individua la porta/coppia della destinazione alla "posizione" indicata (per N°, poi ordinale, poi segnale)
 function findPanelPortByPos(panel, pos, segnale){
-  const porte=panel.porte||[]; pos=String(pos==null?'':pos).trim();
+  const porte=panel.porte||panel.coppie||[]; pos=String(pos==null?'':pos).trim();
   if(pos){ let p=porte.find(x=>String(x.numero||'').trim()===pos); if(p) return p;
     const idx=parseInt(pos,10); if(idx>=1&&idx<=porte.length) return porte[idx-1]; }
   if(segnale){ const s=String(segnale).trim().toLowerCase(); if(s){ const p=porte.find(x=>String(x.segnale||'').trim().toLowerCase()===s); if(p) return p; } }
   return null;
 }
-// apre il pannello di destinazione di una coppia del box, evidenziando la posizione indicata
-function openBoxDest(u, cp){
+// apre la destinazione (patch/pannello/box) di una coppia del box, evidenziando la posizione indicata
+function openBoxDest(u, box, cp){
   const name=String(cp.destPannello||'').trim();
-  if(!name){ toast('Nessun pannello di destinazione indicato'); return; }
-  const d=findDestPanel(u, name);
-  if(!d){ toast('Pannello «'+name+'» non trovato nella stanza'); return; }
+  if(!name){ toast('Nessuna destinazione indicata'); return; }
+  const d=findDestPanel(u, name, box&&box._id);
+  if(!d){ toast('Destinazione «'+name+'» non trovata nella stanza'); return; }
   const port=findPanelPortByPos(d.obj, cp.destPosizione, cp.segnale);
   pendingPatchHL = port? {patchId:d.obj._id, portId:port._id} : null;
-  location.hash=(d.kind==='patch'?'patch/':'pannello/')+u._id+'/'+d.obj._id;
+  location.hash=(d.kind==='patch'?'patch/':d.kind==='box'?'box/':'pannello/')+u._id+'/'+d.obj._id;
 }
 function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
 function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
@@ -2107,7 +2114,7 @@ function nuovaBox(u){
 function boxTipoClass(t){ t=String(t||'').trim().toUpperCase(); if(t.includes('F'))return 'f'; if(t.includes('M'))return 'm'; return 'free'; }
 function boxConnLabel(t){ t=String(t||'').trim().toUpperCase(); if(t.includes('F'))return 'F'; if(t.includes('M'))return 'M'; return '—'; }
 // raffigurazione del pannello frontale della cassetta (elemento DOM)
-function boxFigura(box, u){
+function boxFigura(box, u, hlIdx){
   const fig=el('div',{class:'boxfig'});
   const panel=el('div',{class:'panel'});
   panel.append(el('div',{class:'top'},
@@ -2118,7 +2125,7 @@ function boxFigura(box, u){
   const conns=el('div',{class:'conns'});
   (box.coppie||[]).forEach((cp,i)=>{
     const cls=boxTipoClass(cp.tipoXlr);
-    const conn=el('div',{class:'conn '+cls});
+    const conn=el('div',{class:'conn '+cls+(i===hlIdx?' hl':'')});
     conn.append(el('div',{class:'num'},'Coppia '+(i+1)),
       el('div',{class:'xlr'},boxConnLabel(cp.tipoXlr)),
       el('div',{class:'sig'}, cp.segnale||(cls==='free'?'LIBERO':'')),
@@ -2137,8 +2144,7 @@ function viewBox(c, uid_, bid){
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
   c.append(el('datalist',{id:'boxXlr'}, ...['XLR F','XLR M','LIBERO'].map(v=>el('option',{value:v}))));
   const dlPnl=el('datalist',{id:'pannelliList'});
-  for(const pl of (u.pannelli||[])) dlPnl.append(el('option',{value:pl.nome,label:'Pannello'}));
-  for(const pp of (u.patch||[])) dlPnl.append(el('option',{value:pp.nome,label:'Patch'}));
+  for(const d of destPanels(u, box._id)) dlPnl.append(el('option',{value:d.obj.nome,label:d.label}));
   c.append(dlPnl);
   const titleInp=el('input',{value:box.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
     onchange:e=>{ box.nome=e.target.value.trim()||'Cassetta'; markDirty(); buildNav(); $('#viewTitle').textContent='Box · '+box.nome; }});
@@ -2148,36 +2154,40 @@ function viewBox(c, uid_, bid){
     el('button',{class:'btn sm',onclick:()=>exportBox(box)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printBox(box)},'🖨 Stampa'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il box «'+(box.nome||'')+'»?')){ u.box=u.box.filter(x=>x!==box); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina box')));
+  // coppia da evidenziare (arrivando da una destinazione «box» di un'altra cassetta)
+  const hl = (pendingPatchHL && pendingPatchHL.patchId===box._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
   const area=el('div'); c.append(area);
   function render(){
     area.innerHTML='';
+    const hlIdx = hl? box.coppie.findIndex(x=>x._id===hl) : -1;
     area.append(el('div',{class:'section-h'},'🔻 Raffigurazione pannello frontale'));
-    area.append(boxFigura(box, u));
+    area.append(boxFigura(box, u, hlIdx));
     area.append(el('div',{class:'section-h',style:'margin-top:14px'},'🔧 Coppie e destinazioni'));
-    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(box.coppie.length)+' coppie · doppio clic su «Pannello destinazione» (o ↗) per aprire la patch/pannello alla posizione indicata'));
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(box.coppie.length)+' coppie · doppio clic su «Pannello destinazione» (o ↗) per aprire la destinazione (patch / pannello / box) alla posizione indicata'));
     if(!box.coppie.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna coppia — «➕ Aggiungi coppia».')); return; }
     const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
     const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Coppia'));
-    box.coppie.forEach((cp,i)=>{ hr.append(el('th',{class:'porthead',style:cp.colore?('border-top:3px solid '+cp.colore):null},
+    box.coppie.forEach((cp,i)=>{ hr.append(el('th',{class:'porthead'+(i===hlIdx?' hlcol':''),style:cp.colore?('border-top:3px solid '+cp.colore):null},
       el('div',{class:'pn'},String(i+1)),
       el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina coppia',onclick:()=>{ box.coppie.splice(i,1); markDirty(); render(); }},'🗑'))); });
     thead.append(hr); tbl.append(thead);
     const tb=el('tbody');
     for(const r of BOX_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
-      box.coppie.forEach(cp=>{
+      box.coppie.forEach((cp,i)=>{ const hlc=(i===hlIdx?' hlcol':'');
         if(r.type==='color'){
-          tr.append(el('td',{class:'colcell'}, el('input',{type:'color',value:cp.colore||'#cccccc',onchange:e=>{ cp.colore=e.target.value; markDirty(); render(); }})));
+          tr.append(el('td',{class:'colcell'+hlc}, el('input',{type:'color',value:cp.colore||'#cccccc',onchange:e=>{ cp.colore=e.target.value; markDirty(); render(); }})));
         } else if(r.key==='destPannello'){
-          const inp=el('input',{value:cp[r.key]||'',list:'pannelliList',title:'doppio clic per aprire il pannello/patch di destinazione',onchange:e=>{ cp[r.key]=e.target.value; markDirty(); }});
-          inp.addEventListener('dblclick',()=>openBoxDest(u,cp));
-          tr.append(el('td',{class:'destcell'}, inp,
-            el('button',{class:'pill destgo',title:'Apri pannello di destinazione',onmousedown:e=>{ e.preventDefault(); openBoxDest(u,cp); }},'↗')));
+          const inp=el('input',{value:cp[r.key]||'',list:'pannelliList',title:'doppio clic per aprire la destinazione (patch / pannello / box)',onchange:e=>{ cp[r.key]=e.target.value; markDirty(); }});
+          inp.addEventListener('dblclick',()=>openBoxDest(u,box,cp));
+          tr.append(el('td',{class:'destcell'+hlc}, inp,
+            el('button',{class:'pill destgo',title:'Apri destinazione',onmousedown:e=>{ e.preventDefault(); openBoxDest(u,box,cp); }},'↗')));
         } else {
-          tr.append(el('td',{}, el('input',{value:cp[r.key]||'',list:r.list||null,onchange:e=>{ cp[r.key]=e.target.value; markDirty(); if(r.key==='tipoXlr'||r.key==='segnale') render(); }})));
+          tr.append(el('td',{class:hlc.trim()||null}, el('input',{value:cp[r.key]||'',list:r.list||null,onchange:e=>{ cp[r.key]=e.target.value; markDirty(); if(r.key==='tipoXlr'||r.key==='segnale') render(); }})));
         }
       });
       tb.append(tr); }
     tbl.append(tb); wrap.append(tbl); area.append(wrap);
+    if(hlIdx>=0){ const thh=tbl.querySelectorAll('thead th.porthead')[hlIdx]; if(thh) setTimeout(()=>{ try{ thh.scrollIntoView({inline:'center',block:'nearest'}); }catch(e){} },30); }
   }
   render();
 }
