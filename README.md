@@ -70,9 +70,10 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   aprendola vedi le sue **macchine** e con **➕ Nuova macchina** ne aggiungi. Rinomina/elimina
   unità e macchine (con pulizia automatica degli incroci collegati). A livello di unità sono
   disponibili **⤒ Importa**, **⤓ Esporta** e **🖨 Stampa** dell'**intera stanza**: l'export Excel
-  ha i fogli *Ingressi*, *Uscite* (con Macchina, Scheda, Tipologia, #, canale…) e *Patch*;
-  l'import ricostruisce macchine, schede e patch dallo stesso formato; la stampa produce un
-  documento completo (tutte le schede e i pannelli patch).
+  ha i fogli *Ingressi*, *Uscite* (con Macchina, Scheda, Tipologia, #, canale…), *Patch*, *Switch*,
+  *Pannelli* e *Box*; l'import ricostruisce macchine, schede, patch, switch, pannelli e box dallo
+  stesso formato; la stampa produce un documento completo (tutte le schede, i pannelli patch, gli
+  switch, i pannelli colorati e le cassette/box).
 - **🔌 Patch audio** — dentro ogni stanza puoi creare dei **pannelli patch** a **sviluppo
   orizzontale** (le porte sono le colonne, gli attributi le righe: **Provenienza**, **n° cavo e
   coppia**, **N°**, **Tipologia**, **Segnale**). Aggiungi/elimina porte (o **+8** in blocco),
@@ -83,6 +84,17 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   Note, Colore** (schema del file Excel di configurazione). Creando uno switch scegli il numero
   di porte; ogni porta ha un **colore** (bordo colorato). Per ogni switch: **Aggiungi porta**,
   **Importa** (Excel/CSV, riconosce le intestazioni del file switch), **Esporta** e **Stampa**.
+- **🎛 Pannelli** — come le **Patch audio** (sviluppo orizzontale: **Provenienza**, **n° cavo e
+  coppia**, **N°**, **Tipologia**, **Segnale**) ma con in più un **Colore** selezionabile per ogni
+  porta (color picker; il colore evidenzia anche la testata della colonna). Aggiungi/elimina porte
+  (o **+8**), con **Importa** (Excel/CSV), **Esporta** e **Stampa**. Anche i pannelli **non entrano**
+  nel Quadro Incroci. Il campo **Patch** dei canali e la destinazione dei **Box** rimandano ai pannelli.
+- **📦 Box / Cassette** — cassette secondo lo schema *esempio_cassetta*: creando un box scegli il
+  numero di **coppie**; ogni coppia ha **Tipologia XLR** (XLR F / XLR M / LIBERO), **Nome Segnale**,
+  **Colore cavo** e la **destinazione** (**Pannello** + **Posizione pannello**). La vista mostra una
+  **raffigurazione del pannello frontale** (interruttore, spia alimentazione, prese rete/UPS e i
+  connettori XLR F/M con segnale e colore del cavo) più la tabella orizzontale delle coppie. Per ogni
+  box: **Aggiungi coppia**, **Importa** (Excel/CSV), **Esporta** e **Stampa** (con la raffigurazione).
 - **🎛️ Dettaglio macchina** — nome modificabile e due sezioni distinte per colore: **🎙️ Schede di
   ingresso** e **🔊 Schede di uscita**. Con **➕ Nuova scheda ingresso/uscita** aggiungi le schede
   (una per dispositivo: MADI 1, MADI 2, Dante 1…).

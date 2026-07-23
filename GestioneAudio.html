@@ -207,6 +207,27 @@ table.patch tr.prov td input{font-weight:600}
 table.patch th.porthead.hlcol{box-shadow:inset 0 0 0 2px var(--accent2);background:#123a22}
 table.patch td.hlcol{box-shadow:inset 0 0 0 2px var(--accent2)}
 table.patch td.hlcol input{background:rgba(34,197,94,.12)}
+table.patch td.colcell{padding:3px}
+table.patch td.colcell input[type=color]{width:100%;min-width:70px;height:26px;padding:0;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer}
+.boxfig{border:1px solid var(--line);border-radius:10px;background:#0f1520;padding:14px;margin:12px 0;max-width:100%;overflow-x:auto}
+.boxfig .panel{background:linear-gradient(#1b2536,#151d29);border:1px solid #2a3550;border-radius:8px;padding:12px;min-width:520px}
+.boxfig .top{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:12px;border-bottom:1px dashed #33405e}
+.boxfig .ctl{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.boxfig .sw{width:28px;height:15px;border-radius:8px;background:#2a3550;border:1px solid #3a4870;position:relative;flex:none}
+.boxfig .sw::after{content:'';position:absolute;top:1px;left:1px;width:12px;height:11px;border-radius:6px;background:#8aa0c8}
+.boxfig .led{width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;flex:none}
+.boxfig .plug{width:24px;height:24px;border-radius:4px;background:#0c1420;border:2px solid #3a4870;position:relative;flex:none}
+.boxfig .plug::after{content:'';position:absolute;inset:5px;border:1px solid #3a4870;border-radius:2px}
+.boxfig .conns{display:flex;gap:10px;flex-wrap:wrap}
+.boxfig .conn{width:100px;border:1px solid #33405e;border-radius:8px;background:#111a27;padding:8px 6px;text-align:center}
+.boxfig .conn .num{font-size:10px;color:var(--muted)}
+.boxfig .conn .xlr{width:42px;height:42px;border-radius:50%;margin:3px auto 6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:2px solid #4a5a80;background:#0c1420;color:#cfe0ff}
+.boxfig .conn.f .xlr{border-color:#ef4444;color:#ffd7d7}
+.boxfig .conn.m .xlr{border-color:#3b82f6;color:#d7e6ff}
+.boxfig .conn.free{opacity:.42}
+.boxfig .conn .sig{font-size:11px;font-weight:600;color:#e8eefc;word-break:break-word;min-height:14px}
+.boxfig .conn .cw{width:100%;height:6px;border-radius:3px;margin-top:6px;background:#2a3550}
+.boxfig .conn .cp{font-size:10px;color:var(--muted);margin-top:4px;word-break:break-word}
 </style>
 </head>
 <body>
@@ -921,7 +942,7 @@ function buildNav(){
   const nav=$('#nav'); nav.innerHTML='';
   const cur=location.hash.slice(1)||'dashboard';
   const mkLink=(id,ico,label,extra,pad)=>{ const cnt=extra?null:navCount(id);
-    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')||cur.startsWith('switch/')));
+    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')||cur.startsWith('pannello/')||cur.startsWith('box/')||cur.startsWith('switch/')));
     return el('a',{href:'#'+id, class:(active?'active':''), style:pad?'padding-left:'+pad:''},
       el('span',{class:'ico'},ico), el('span',{},label), cnt!=null?el('span',{class:'cnt'},String(cnt)):null); };
   for(const it of VIEWS){
@@ -929,7 +950,7 @@ function buildNav(){
     nav.append(mkLink(it.id,it.ico,it.label));
     if(it.id==='unita'){
       for(const u of (DB.unita||[])){
-        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/')||cur.startsWith('switch/'+u._id+'/');
+        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/')||cur.startsWith('pannello/'+u._id+'/')||cur.startsWith('box/'+u._id+'/')||cur.startsWith('switch/'+u._id+'/');
         nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
           el('span',{class:'ico'},'🏢'), el('span',{},u.nome||'Unità'),
           el('span',{class:'cnt'},String((u.macchine||[]).length))));
@@ -956,6 +977,8 @@ function route(){
   else if(hash==='nuova-unita'){ nuovaUnita(); }
   else if(hash.startsWith('scheda/')){ const [,uid_,mid,sid]=hash.split('/'); viewScheda(c, uid_, mid, sid); }
   else if(hash.startsWith('patch/')){ const [,uid_,pid]=hash.split('/'); viewPatch(c, uid_, pid); }
+  else if(hash.startsWith('pannello/')){ const [,uid_,pid]=hash.split('/'); viewPannello(c, uid_, pid); }
+  else if(hash.startsWith('box/')){ const [,uid_,bid]=hash.split('/'); viewBox(c, uid_, bid); }
   else if(hash.startsWith('switch/')){ const [,uid_,sid]=hash.split('/'); viewSwitch(c, uid_, sid); }
   else if(hash.startsWith('macchina/')){ const [,uid_,mid]=hash.split('/'); viewMacchina(c, uid_, mid); }
   else if(hash.startsWith('unita/')){ viewUnitaDetail(c, hash.slice(6)); }
@@ -1278,6 +1301,38 @@ function viewUnitaDetail(c, id){
     }
     c.append(sc);
   }
+  // ---- Pannelli (come patch, con colore per porta) ----
+  u.pannelli=u.pannelli||[];
+  c.append(el('div',{class:'section-h',style:'margin-top:22px'},'🎛 Pannelli'));
+  c.append(el('div',{class:'toolbar'}, el('button',{class:'btn sm',onclick:()=>nuovaPannello(u)},'➕ Nuovo pannello'),
+    el('span',{class:'muted',style:'font-size:12px'},'come le patch audio, ma con colore selezionabile per porta')));
+  if(!u.pannelli.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessun pannello.')); }
+  else {
+    const plc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const pl of u.pannelli){
+      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #14b8a6'}); card.onclick=()=>location.hash='pannello/'+u._id+'/'+pl._id;
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛 '+(pl.nome||'Pannello')), el('div',{class:'b'},(pl.porte||[]).length+' porte')));
+      plc.append(card);
+    }
+    c.append(plc);
+  }
+  // ---- Box / Cassette ----
+  u.box=u.box||[];
+  c.append(el('div',{class:'section-h',style:'margin-top:22px'},'📦 Box / Cassette'));
+  c.append(el('div',{class:'toolbar'}, el('button',{class:'btn sm',onclick:()=>nuovaBox(u)},'➕ Nuovo box'),
+    el('span',{class:'muted',style:'font-size:12px'},'cassette con coppie XLR e destinazioni sui pannelli')));
+  if(!u.box.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessun box.')); }
+  else {
+    const bc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const box of u.box){
+      const usate=(box.coppie||[]).filter(cp=>String(cp.tipoXlr||'').toUpperCase()!=='LIBERO'&&String(cp.tipoXlr||'').trim()).length;
+      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #eab308'}); card.onclick=()=>location.hash='box/'+u._id+'/'+box._id;
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'📦 '+(box.nome||'Box')), el('div',{class:'b'},(box.coppie||[]).length+' coppie')),
+        el('div',{class:'sub',style:'margin-top:8px'}, usate+' coppie attive'));
+      bc.append(card);
+    }
+    c.append(bc);
+  }
 }
 function nuovaPatch(u){
   const nome=prompt('Nome del pannello patch (es. C11 PNL, Patch MIC…):','Patch');
@@ -1321,6 +1376,12 @@ function exportUnitaXLSX(u){
   const srows=[['Switch',...SWITCH_HEAD]];
   for(const sw of (u.switches||[])) (sw.porte||[]).forEach(po=>srows.push([sw.nome,...SWITCH_COLS.map(c=>po[c.key]||'')]));
   sheets.push({name:'Switch',rows:srows});
+  const plrows=[['Pannello','Porta','Provenienza','n° cavo e coppia','N°','Tipologia','Segnale','Colore']];
+  for(const pl of (u.pannelli||[])) (pl.porte||[]).forEach((po,i)=>plrows.push([pl.nome,i+1,po.provenienza,po.cavo,po.numero,po.tipologia,po.segnale,po.colore]));
+  sheets.push({name:'Pannelli',rows:plrows});
+  const bxrows=[['Box','Coppia','Tipologia XLR','Nome Segnale','Colore cavo','Pannello destinazione','Posizione pannello']];
+  for(const box of (u.box||[])) (box.coppie||[]).forEach((cp,i)=>bxrows.push([box.nome,i+1,cp.tipoXlr,cp.segnale,cp.colore,cp.destPannello,cp.destPosizione]));
+  sheets.push({name:'Box',rows:bxrows});
   downloadBytes('unita_'+String(u.nome||'unita').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Unità esportata in Excel');
 }
@@ -1330,8 +1391,8 @@ function importUnitaXLSX(u, reload){
     try{
       const bytes=new Uint8Array(await f.arrayBuffer()); const names=await XLSX.sheetNames(bytes);
       const getSheet=async re=>{ const n=names.find(x=>re.test(String(x))); return n? (await XLSX.readSheet(bytes,n)).rows : null; };
-      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i), rPat=await getSheet(/patch/i), rSw=await getSheet(/switch/i);
-      if(!rIn&&!rOut&&!rPat&&!rSw){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch, Switch)'); return; }
+      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i), rPat=await getSheet(/patch/i), rSw=await getSheet(/switch/i), rPnl=await getSheet(/pannell/i), rBox=await getSheet(/box|cassett/i);
+      if(!rIn&&!rOut&&!rPat&&!rSw&&!rPnl&&!rBox){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch, Switch, Pannelli, Box)'); return; }
       const chSpec={ dev:{eq:['macchina']}, scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']},
         canale:{eq:['canale']}, segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']},
         ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, patch:{eq:['patch']}, note:{inc:['note']}, slot:{inc:['slot']} };
@@ -1360,14 +1421,33 @@ function importUnitaXLSX(u, reload){
         for(const r of rSw.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const sn=xcell(r,map.sw)||'Switch'; let sw=swMap[sn]; if(!sw){ sw={_id:uid('sw_'),nome:sn,porte:[]}; swMap[sn]=sw; swOrder.push(sn); }
           sw.porte.push(newSwPort({porta:xcell(r,map.porta),patch:xcell(r,map.patch),descrizione:xcell(r,map.descrizione),ip:xcell(r,map.ip),mac:xcell(r,map.mac),subnet:xcell(r,map.subnet),gateway:xcell(r,map.gateway),vlan:xcell(r,map.vlan),note:xcell(r,map.note),colore:xcell(r,map.colore)})); } }
+      // pannelli (patch + colore)
+      const plnSpec={ pannello:{eq:['pannello'],inc:['pannello']}, provenienza:{inc:['provenien','pnl']}, cavo:{inc:['cavo','coppia']},
+        numero:{eq:['n°','numero','num']}, tipologia:{inc:['tipolog','connett']}, segnale:{inc:['segnale']}, colore:{inc:['colore','color']} };
+      const plMap={}, plOrder=[];
+      if(rPnl&&rPnl.length>1){ const map=headerMap(rPnl[0],plnSpec);
+        for(const r of rPnl.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
+          const pn=xcell(r,map.pannello)||'Pannello'; let pl=plMap[pn]; if(!pl){ pl={_id:uid('pnl_'),nome:pn,porte:[]}; plMap[pn]=pl; plOrder.push(pn); }
+          pl.porte.push(newPnlPorta({provenienza:xcell(r,map.provenienza),cavo:xcell(r,map.cavo),numero:xcell(r,map.numero),tipologia:xcell(r,map.tipologia),segnale:xcell(r,map.segnale),colore:xcell(r,map.colore)})); } }
+      // box / cassette
+      const boxSpec={ box:{eq:['box'],inc:['cassett','box']}, tipoXlr:{inc:['tipologia xlr','xlr','connett']}, segnale:{inc:['segnale','signal']},
+        colore:{inc:['colore','color']}, destPannello:{inc:['pannello']}, destPosizione:{inc:['posizione','posiz']} };
+      const boxMap={}, boxOrder=[];
+      if(rBox&&rBox.length>1){ const map=headerMap(rBox[0],boxSpec);
+        for(const r of rBox.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
+          const bn=xcell(r,map.box)||'Box'; let bx=boxMap[bn]; if(!bx){ bx={_id:uid('box_'),nome:bn,coppie:[]}; boxMap[bn]=bx; boxOrder.push(bn); }
+          bx.coppie.push(newBoxCoppia({tipoXlr:xcell(r,map.tipoXlr),segnale:xcell(r,map.segnale),colore:xcell(r,map.colore),destPannello:xcell(r,map.destPannello),destPosizione:xcell(r,map.destPosizione)})); } }
       const newMac=order.map(k=>macMap[k]); const newPat=patOrder.map(k=>patMap[k]); const newSw=swOrder.map(k=>swMap[k]);
+      const newPnl=plOrder.map(k=>plMap[k]); const newBox=boxOrder.map(k=>boxMap[k]);
       const nCan=newMac.reduce((a,m)=>a+m.schede.reduce((b,s)=>b+s.canali.length,0),0);
-      if(!confirm('Import unità «'+(u.nome||'')+'»:\n· '+newMac.length+' macchine, '+nCan+' canali\n· '+newPat.length+' patch\n· '+newSw.length+' switch\n\nSostituisce macchine, patch e switch dell\'unità (gli incroci dell\'unità verranno azzerati). Procedere?')) return;
+      if(!confirm('Import unità «'+(u.nome||'')+'»:\n· '+newMac.length+' macchine, '+nCan+' canali\n· '+newPat.length+' patch\n· '+newSw.length+' switch\n· '+newPnl.length+' pannelli\n· '+newBox.length+' box\n\nSostituisce i contenuti importati dell\'unità (gli incroci dell\'unità verranno azzerati). Procedere?')) return;
       purgeIncroci(collectChIds(u));
       if(rIn||rOut) u.macchine=newMac;
       if(rPat) u.patch=newPat;
       if(rSw) u.switches=newSw;
-      markDirty(); reload(); toast('Unità importata ('+newMac.length+' macchine, '+newPat.length+' patch, '+newSw.length+' switch)');
+      if(rPnl) u.pannelli=newPnl;
+      if(rBox) u.box=newBox;
+      markDirty(); reload(); toast('Unità importata ('+newMac.length+' macchine, '+newPat.length+' patch, '+newSw.length+' switch, '+newPnl.length+' pannelli, '+newBox.length+' box)');
     }catch(err){ console.error(err); toast('Errore import: '+err.message); }
   }}); document.body.append(inp); inp.click(); inp.remove();
 }
@@ -1394,6 +1474,19 @@ function printUnita(u){
       const th=SWITCH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
       const trs=porte.map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esctd(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esctd(po[c.key])+'</td>')).join('')+'</tr>').join('');
       html+='<table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table>'; } }
+  if((u.pannelli||[]).length){ html+='<h2>🎛 Pannelli</h2>';
+    for(const pl of u.pannelli){ const porte=pl.porte||[]; html+='<h4>'+esc(pl.nome)+' <small>('+porte.length+' porte)</small></h4>';
+      const head='<th>Porta</th>'+porte.map((po,i)=>'<th'+(po.colore?(' style="border-top:4px solid '+esctd(po.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
+      const rowsH=PANNELLO_ROWS.map(r=>{ if(r.type==='color') return '<tr><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td style="background:'+esctd(po.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
+        return '<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esctd(po[r.key])+'</td>').join('')+'</tr>'; }).join('');
+      html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsH+'</tbody></table>'; } }
+  if((u.box||[]).length){ html+='<h2>📦 Box / Cassette</h2>';
+    for(const box of u.box){ const coppie=box.coppie||[]; html+='<h4>'+esc(box.nome)+' <small>('+coppie.length+' coppie)</small></h4>';
+      const head='<th>Coppia</th>'+coppie.map((cp,i)=>'<th'+(cp.colore?(' style="border-top:4px solid '+esctd(cp.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
+      const rd=[['Tipologia XLR','tipoXlr'],['Nome Segnale','segnale'],['Pannello destinazione','destPannello'],['Posizione pannello','destPosizione']];
+      let rowsB=rd.map(x=>'<tr><th>'+esc(x[0])+'</th>'+coppie.map(cp=>'<td>'+esctd(cp[x[1]])+'</td>').join('')+'</tr>').join('');
+      rowsB+='<tr><th>Colore cavo</th>'+coppie.map(cp=>'<td style="background:'+esctd(cp.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
+      html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsB+'</tbody></table>'; } }
   html+='</body></html>';
   w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
@@ -1857,6 +1950,236 @@ function printSwitch(sw){
 }
 
 /* ============================================================
+   PANNELLI — come le Patch audio (sviluppo orizzontale) ma con
+   la possibilità di scegliere un COLORE per ogni porta.
+   Non entrano nel Quadro Incroci.
+   ============================================================ */
+const PANNELLO_ROWS=[
+  {key:'provenienza',label:'Provenienza', cls:'prov'},
+  {key:'cavo',label:'n° cavo e coppia', cls:'hl-row'},
+  {key:'numero',label:'N°'},
+  {key:'tipologia',label:'Tipologia', list:'patchTipi'},
+  {key:'segnale',label:'Segnale'},
+  {key:'colore',label:'Colore', type:'color'},
+];
+function newPnlPorta(o){ return Object.assign({_id:uid('pl_'),provenienza:'',cavo:'',numero:'',tipologia:'',segnale:'',colore:''}, o||{}); }
+function nuovaPannello(u){
+  const nome=prompt('Nome del pannello (es. SEZ. 14, Pannello RIS…):','Pannello');
+  if(nome===null) return;
+  const pl={_id:uid('pnl_'), nome:(nome.trim()||'Pannello'), porte:[]};
+  (u.pannelli=u.pannelli||[]).push(pl); markDirty(); location.hash='pannello/'+u._id+'/'+pl._id;
+}
+function viewPannello(c, uid_, pid){
+  const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
+  u.pannelli=u.pannelli||[]; const pl=u.pannelli.find(x=>x._id===pid); if(!pl){ location.hash='unita/'+uid_; return; }
+  pl.porte=pl.porte||[];
+  $('#viewTitle').textContent='Pannello · '+(pl.nome||'');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
+  c.append(el('datalist',{id:'patchTipi'}, ...['XLR M','XLR F','Jack M','Jack F','RCA','BNC','Bantam','Speakon','RJ45'].map(v=>el('option',{value:v}))));
+  const titleInp=el('input',{value:pl.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
+    onchange:e=>{ pl.nome=e.target.value.trim()||'Pannello'; markDirty(); buildNav(); $('#viewTitle').textContent='Pannello · '+pl.nome; }});
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🎛'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>{ pl.porte.push(newPnlPorta()); markDirty(); render(); }},'➕ Aggiungi porta'),
+    el('button',{class:'btn sm',onclick:()=>{ for(let k=0;k<8;k++) pl.porte.push(newPnlPorta()); markDirty(); render(); }},'➕ +8'),
+    el('button',{class:'btn sm',onclick:()=>importPannello(pl,render)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportPannello(pl)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printPannello(pl)},'🖨 Stampa'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il pannello «'+(pl.nome||'')+'»?')){ u.pannelli=u.pannelli.filter(x=>x!==pl); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina pannello')));
+  const hl = (pendingPatchHL && pendingPatchHL.patchId===pl._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
+  const area=el('div'); c.append(area);
+  function render(){
+    area.innerHTML='';
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pl.porte.length)+' porte · sviluppo orizzontale · colore per porta'));
+    if(!pl.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna porta — «➕ Aggiungi porta».')); return; }
+    const hlIdx = hl? pl.porte.findIndex(x=>x._id===hl) : -1;
+    const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
+    const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Porta'));
+    pl.porte.forEach((po,i)=>{ hr.append(el('th',{class:'porthead'+(i===hlIdx?' hlcol':''),style:po.colore?('border-top:3px solid '+po.colore):null},
+      el('div',{class:'pn'},String(i+1)),
+      el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina porta',onclick:()=>{ pl.porte.splice(i,1); markDirty(); render(); }},'🗑'))); });
+    thead.append(hr); tbl.append(thead);
+    const tb=el('tbody');
+    for(const r of PANNELLO_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
+      pl.porte.forEach((po,i)=>{
+        if(r.type==='color'){
+          tr.append(el('td',{class:'colcell'+(i===hlIdx?' hlcol':'')}, el('input',{type:'color',value:po.colore||'#cccccc',onchange:e=>{ po.colore=e.target.value; markDirty(); render(); }})));
+        } else {
+          tr.append(el('td',{class:(i===hlIdx?'hlcol':'')}, el('input',{value:po[r.key]||'',list:r.list||null,onchange:e=>{ po[r.key]=e.target.value; markDirty(); }})));
+        }
+      });
+      tb.append(tr); }
+    tbl.append(tb); wrap.append(tbl); area.append(wrap);
+    if(hlIdx>=0){ const thh=tbl.querySelectorAll('thead th.porthead')[hlIdx]; if(thh) setTimeout(()=>{ try{ thh.scrollIntoView({inline:'center',block:'nearest'}); }catch(e){} },30); }
+  }
+  render();
+}
+function exportPannello(pl){
+  const keys=PANNELLO_ROWS.map(r=>r.key), labels=PANNELLO_ROWS.map(r=>r.label);
+  const rows=[['Porta',...labels]]; (pl.porte||[]).forEach((po,i)=>rows.push([i+1,...keys.map(k=>po[k]||'')]));
+  downloadBytes((pl.nome||'pannello').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build([{name:(pl.nome||'Pannello').slice(0,31),rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Pannello esportato');
+}
+function importPannello(pl,reload){
+  const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{ let rows; const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
+      if(!rows||rows.length<1){ toast('File vuoto'); return; }
+      const headers=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
+      const idxOf=(...names)=>{ for(let i=0;i<headers.length;i++){ if(names.some(n=>headers[i]===n||headers[i].includes(n))) return i; } return -1; };
+      const map={provenienza:idxOf('provenienza','pnl','pannello'),cavo:idxOf('cavo','coppia'),numero:idxOf('n°','numero','num'),tipologia:idxOf('tipologia','tipo','connettore'),segnale:idxOf('segnale','signal'),colore:idxOf('colore','color')};
+      const g=(r,i)=>i>=0?String(r[i]||'').trim():'';
+      const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
+      const parsed=data.map(r=>newPnlPorta({provenienza:g(r,map.provenienza),cavo:g(r,map.cavo),numero:g(r,map.numero),tipologia:g(r,map.tipologia),segnale:g(r,map.segnale),colore:g(r,map.colore)}));
+      if(!parsed.length){ toast('Nessuna riga valida'); return; }
+      const rep=confirm(parsed.length+' porte lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
+      pl.porte=rep?parsed:(pl.porte||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' porte');
+    }catch(err){ console.error(err); toast('Errore import: '+err.message); }
+  }}); document.body.append(inp); inp.click(); inp.remove();
+}
+function printPannello(pl){
+  const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const porte=pl.porte||[];
+  const head='<th>Porta</th>'+porte.map((po,i)=>'<th'+(po.colore?(' style="border-top:4px solid '+esc(po.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
+  const body=PANNELLO_ROWS.map(r=>{
+    if(r.type==='color') return '<tr><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td style="background:'+esc(po.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
+    return '<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esc(po[r.key]==null?'':po[r.key])+'</td>').join('')+'</tr>';
+  }).join('');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pl.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pl.nome)+' — pannello</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
+  w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
+}
+
+/* ============================================================
+   BOX / CASSETTE (schema «esempio_cassetta»): ogni box ha N coppie,
+   ciascuna con Tipologia XLR (XLR F / XLR M / LIBERO), Nome Segnale,
+   Colore del cavo e destinazione (Pannello + Posizione pannello).
+   Vista con tabella orizzontale + raffigurazione del pannello frontale.
+   ============================================================ */
+const BOX_ROWS=[
+  {key:'tipoXlr',label:'Tipologia XLR', list:'boxXlr'},
+  {key:'segnale',label:'Nome Segnale', cls:'prov'},
+  {key:'colore',label:'Colore cavo', type:'color'},
+  {key:'destPannello',label:'Pannello destinazione', list:'pannelliList'},
+  {key:'destPosizione',label:'Posizione pannello'},
+];
+function newBoxCoppia(o){ return Object.assign({_id:uid('bc_'),tipoXlr:'',segnale:'',colore:'',destPannello:'',destPosizione:''}, o||{}); }
+function nuovaBox(u){
+  const nome=prompt('Nome della cassetta/box (es. CASSETTA C6):','CASSETTA');
+  if(nome===null) return;
+  let n=parseInt(prompt('Numero di coppie:','8'),10); if(!(n>0)) n=8; if(n>64)n=64;
+  const coppie=[]; for(let i=0;i<n;i++) coppie.push(newBoxCoppia());
+  const box={_id:uid('box_'), nome:(nome.trim()||'Cassetta'), coppie};
+  (u.box=u.box||[]).push(box); markDirty(); location.hash='box/'+u._id+'/'+box._id;
+}
+function boxTipoClass(t){ t=String(t||'').trim().toUpperCase(); if(t.includes('F'))return 'f'; if(t.includes('M'))return 'm'; return 'free'; }
+function boxConnLabel(t){ t=String(t||'').trim().toUpperCase(); if(t.includes('F'))return 'F'; if(t.includes('M'))return 'M'; return '—'; }
+// raffigurazione del pannello frontale della cassetta (elemento DOM)
+function boxFigura(box, u){
+  const fig=el('div',{class:'boxfig'});
+  const panel=el('div',{class:'panel'});
+  panel.append(el('div',{class:'top'},
+    el('div',{class:'ctl'}, el('span',{class:'sw'}), 'Interruttore'),
+    el('div',{class:'ctl'}, el('span',{class:'led'}), 'Spia alimentazione'),
+    el('div',{class:'ctl'}, el('span',{class:'plug'}), 'Presa rete/UPS'),
+    el('div',{class:'ctl'}, el('span',{class:'plug'}), 'Presa rete/UPS')));
+  const conns=el('div',{class:'conns'});
+  (box.coppie||[]).forEach((cp,i)=>{
+    const cls=boxTipoClass(cp.tipoXlr);
+    const conn=el('div',{class:'conn '+cls});
+    conn.append(el('div',{class:'num'},'Coppia '+(i+1)),
+      el('div',{class:'xlr'},boxConnLabel(cp.tipoXlr)),
+      el('div',{class:'sig'}, cp.segnale||(cls==='free'?'LIBERO':'')),
+      el('div',{class:'cw',style:cp.colore?('background:'+cp.colore):null}),
+      el('div',{class:'cp'}, (cp.destPannello||'')+(cp.destPosizione?(' · pos '+cp.destPosizione):'')));
+    conns.append(conn);
+  });
+  panel.append(conns); fig.append(panel);
+  return fig;
+}
+function viewBox(c, uid_, bid){
+  const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
+  u.box=u.box||[]; const box=u.box.find(x=>x._id===bid); if(!box){ location.hash='unita/'+uid_; return; }
+  box.coppie=box.coppie||[];
+  $('#viewTitle').textContent='Box · '+(box.nome||'');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
+  c.append(el('datalist',{id:'boxXlr'}, ...['XLR F','XLR M','LIBERO'].map(v=>el('option',{value:v}))));
+  const dlPnl=el('datalist',{id:'pannelliList'}); for(const pl of (u.pannelli||[])) dlPnl.append(el('option',{value:pl.nome})); c.append(dlPnl);
+  const titleInp=el('input',{value:box.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
+    onchange:e=>{ box.nome=e.target.value.trim()||'Cassetta'; markDirty(); buildNav(); $('#viewTitle').textContent='Box · '+box.nome; }});
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'📦'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>{ box.coppie.push(newBoxCoppia()); markDirty(); render(); }},'➕ Aggiungi coppia'),
+    el('button',{class:'btn sm',onclick:()=>importBox(box,render)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportBox(box)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printBox(box)},'🖨 Stampa'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il box «'+(box.nome||'')+'»?')){ u.box=u.box.filter(x=>x!==box); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina box')));
+  const area=el('div'); c.append(area);
+  function render(){
+    area.innerHTML='';
+    area.append(el('div',{class:'section-h'},'🔻 Raffigurazione pannello frontale'));
+    area.append(boxFigura(box, u));
+    area.append(el('div',{class:'section-h',style:'margin-top:14px'},'🔧 Coppie e destinazioni'));
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(box.coppie.length)+' coppie'));
+    if(!box.coppie.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna coppia — «➕ Aggiungi coppia».')); return; }
+    const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
+    const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Coppia'));
+    box.coppie.forEach((cp,i)=>{ hr.append(el('th',{class:'porthead',style:cp.colore?('border-top:3px solid '+cp.colore):null},
+      el('div',{class:'pn'},String(i+1)),
+      el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina coppia',onclick:()=>{ box.coppie.splice(i,1); markDirty(); render(); }},'🗑'))); });
+    thead.append(hr); tbl.append(thead);
+    const tb=el('tbody');
+    for(const r of BOX_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
+      box.coppie.forEach(cp=>{
+        if(r.type==='color'){
+          tr.append(el('td',{class:'colcell'}, el('input',{type:'color',value:cp.colore||'#cccccc',onchange:e=>{ cp.colore=e.target.value; markDirty(); render(); }})));
+        } else {
+          tr.append(el('td',{}, el('input',{value:cp[r.key]||'',list:r.list||null,onchange:e=>{ cp[r.key]=e.target.value; markDirty(); if(r.key==='tipoXlr'||r.key==='segnale') render(); }})));
+        }
+      });
+      tb.append(tr); }
+    tbl.append(tb); wrap.append(tbl); area.append(wrap);
+  }
+  render();
+}
+function boxRowsMatrix(box){
+  const rows=[['Coppia','Tipologia XLR','Nome Segnale','Colore cavo','Pannello destinazione','Posizione pannello']];
+  (box.coppie||[]).forEach((cp,i)=>rows.push([i+1,cp.tipoXlr,cp.segnale,cp.colore,cp.destPannello,cp.destPosizione]));
+  return rows;
+}
+function exportBox(box){
+  downloadBytes((box.nome||'box').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build([{name:(box.nome||'Box').slice(0,31),rows:boxRowsMatrix(box)}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Box esportato');
+}
+function importBox(box,reload){
+  const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{ let rows; const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
+      if(!rows||rows.length<1){ toast('File vuoto'); return; }
+      const map=headerMap(rows[0], { tipoXlr:{inc:['tipologia xlr','xlr','connett'],eq:['tipologia']}, segnale:{inc:['segnale','signal']},
+        colore:{inc:['colore','color']}, destPannello:{inc:['pannello'],eq:['pannello']}, destPosizione:{inc:['posizione','posiz']} });
+      const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
+      const parsed=data.map(r=>newBoxCoppia({tipoXlr:xcell(r,map.tipoXlr),segnale:xcell(r,map.segnale),colore:xcell(r,map.colore),destPannello:xcell(r,map.destPannello),destPosizione:xcell(r,map.destPosizione)}));
+      if(!parsed.length){ toast('Nessuna riga valida'); return; }
+      const rep=confirm(parsed.length+' coppie lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
+      box.coppie=rep?parsed:(box.coppie||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' coppie');
+    }catch(err){ console.error(err); toast('Errore import: '+err.message); }
+  }}); document.body.append(inp); inp.click(); inp.remove();
+}
+function printBox(box){
+  const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const coppie=box.coppie||[];
+  const connHtml=coppie.map((cp,i)=>{ const t=String(cp.tipoXlr||'').toUpperCase(); const lbl=t.includes('F')?'F':(t.includes('M')?'M':'—');
+    const bc=t.includes('F')?'#ef4444':(t.includes('M')?'#3b82f6':'#999'); const op=lbl==='—'?';opacity:.5':'';
+    return '<div class="cn" style="'+op+'"><div class="nm">Coppia '+(i+1)+'</div><div class="xl" style="border-color:'+bc+'">'+lbl+'</div><div class="sg">'+esc(cp.segnale||(lbl==='—'?'LIBERO':''))+'</div><div class="cw" style="background:'+esc(cp.colore||'#ccc')+'"></div><div class="dst">'+esc((cp.destPannello||'')+(cp.destPosizione?(' · pos '+cp.destPosizione):''))+'</div></div>'; }).join('');
+  const th='<th>Coppia</th>'+coppie.map((cp,i)=>'<th'+(cp.colore?(' style="border-top:4px solid '+esc(cp.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
+  const rowDef=[['Tipologia XLR','tipoXlr'],['Nome Segnale','segnale'],['Pannello destinazione','destPannello'],['Posizione pannello','destPosizione']];
+  const bodyRows=rowDef.map(rd=>'<tr><th>'+esc(rd[0])+'</th>'+coppie.map(cp=>'<td>'+esc(cp[rd[1]]==null?'':cp[rd[1]])+'</td>').join('')+'</tr>').join('')
+    +'<tr><th>Colore cavo</th>'+coppie.map(cp=>'<td style="background:'+esc(cp.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(box.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}h3{margin:16px 0 6px;font-size:13px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}.fig{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #999;border-radius:8px;padding:12px;background:#f4f6fa}.cn{width:96px;border:1px solid #bbb;border-radius:8px;background:#fff;padding:8px 6px;text-align:center}.cn .nm{font-size:10px;color:#777}.cn .xl{width:38px;height:38px;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #666}.cn .sg{font-size:11px;font-weight:600}.cn .cw{height:6px;border-radius:3px;margin-top:5px}.cn .dst{font-size:9.5px;color:#666;margin-top:3px}</style></head><body><h2>📦 '+esc(box.nome)+' — cassetta/box</h2><p>'+coppie.length+' coppie · stampato il '+new Date().toLocaleString('it-IT')+'</p><h3>Pannello frontale</h3><div class="fig">'+connHtml+'</div><h3>Coppie e destinazioni</h3><table><thead><tr>'+th+'</tr></thead><tbody>'+bodyRows+'</tbody></table></body></html>');
+  w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
+}
+
+/* ============================================================
    Import massivo dal foglio "MATRICE CCRF": crea/aggiorna l'unità
    CCRF con la macchina "MATRICE CENTRALIZZATA" e le sue schede.
    ============================================================ */
@@ -1958,6 +2281,11 @@ function ensureModel(){
     // switch di rete della stanza
     if(!Array.isArray(u.switches)){ u.switches=[]; changed=true; }
     for(const sw of u.switches){ sw.porte=sw.porte||[]; for(const po of sw.porte) if(!po._id){ po._id=uid('sp_'); changed=true; } }
+    // pannelli (patch + colore) e box/cassette della stanza
+    if(!Array.isArray(u.pannelli)){ u.pannelli=[]; changed=true; }
+    for(const pl of u.pannelli){ pl.porte=pl.porte||[]; for(const po of pl.porte) if(!po._id){ po._id=uid('pl_'); changed=true; } }
+    if(!Array.isArray(u.box)){ u.box=[]; changed=true; }
+    for(const box of u.box){ box.coppie=box.coppie||[]; for(const cp of box.coppie) if(!cp._id){ cp._id=uid('bc_'); changed=true; } }
     // CCRF con macchine appaiate (modello precedente) -> una MATRICE CENTRALIZZATA con schede
     if(u._ccrf && u.macchine.length && u.macchine.every(m=>!m.schede) && u.macchine.some(m=>m.ingressi||m.uscite)){
       const schede=[];
