@@ -225,8 +225,15 @@ table.patch td.destcell .destgo{display:inline-flex;align-items:center;vertical-
 .boxfig .conn{width:100px;border:1px solid #33405e;border-radius:8px;background:#111a27;padding:8px 6px;text-align:center}
 .boxfig .conn .num{font-size:10px;color:var(--muted)}
 .boxfig .conn .xlr{width:42px;height:42px;border-radius:50%;margin:3px auto 6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:2px solid #4a5a80;background:#0c1420;color:#cfe0ff}
+.boxfig .conn .xlr{position:relative}
 .boxfig .conn.f .xlr{border-color:#ef4444;color:#ffd7d7}
 .boxfig .conn.m .xlr{border-color:#3b82f6;color:#d7e6ff}
+.boxfig .conn.gen .xlr{border-color:#8b93a7;color:#dfe4ee}
+/* RJ45: connettore rettangolare (ethernet) con linguetta */
+.boxfig .conn.rj45 .xlr{border-radius:5px;border-color:#14b8a6;color:#c7f5ec;font-size:10.5px;font-weight:700}
+.boxfig .conn.rj45 .xlr::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:14px;height:6px;background:#14b8a6;border-radius:0 0 3px 3px}
+/* BNC: connettore coassiale (circolare a doppio anello) */
+.boxfig .conn.bnc .xlr{border-color:#f59e0b;color:#ffe6bd;font-size:11px;font-weight:700;box-shadow:inset 0 0 0 4px rgba(245,158,11,.28)}
 .boxfig .conn.free{opacity:.42}
 .boxfig .conn.hl{box-shadow:0 0 0 2px var(--accent2);border-color:var(--accent2);opacity:1}
 .boxfig .conn .sig{font-size:11px;font-weight:600;color:#e8eefc;word-break:break-word;min-height:14px}
@@ -2013,18 +2020,26 @@ function nuovaPannello(u){
   const pl={_id:uid('pnl_'), nome:(nome.trim()||'Pannello'), porte:[]};
   (u.pannelli=u.pannelli||[]).push(pl); markDirty(); location.hash='pannello/'+u._id+'/'+pl._id;
 }
-// classe/etichetta del connettore in base alla tipologia della porta
-function pnlConnClass(po){ const t=String(po.tipologia||'').toUpperCase(); if(t.includes('F'))return 'f'; if(t.includes('M'))return 'm';
-  return (!String(po.tipologia||'').trim() && !String(po.segnale||'').trim())? 'free' : ''; }
-function pnlConnLabel(po){ const t=String(po.tipologia||'').trim().toUpperCase(); if(t.includes('F'))return 'F'; if(t.includes('M'))return 'M'; return t? t.slice(0,3) : '—'; }
-// raffigurazione dei connettori XLR del pannello (come per i box)
+// classifica il connettore in base alla tipologia -> {cls, label} (XLR F/M, RJ45, BNC, generico, libero)
+function connKind(tipo){
+  const t=String(tipo||'').trim().toUpperCase();
+  if(!t || t==='LIBERO') return {cls:'free', label:'—'};
+  if(t.includes('RJ45')||t.includes('RJ 45')||t.replace(/\s/g,'')==='RJ45') return {cls:'rj45', label:'RJ45'};
+  if(t.includes('BNC')) return {cls:'bnc', label:'BNC'};
+  if(t.includes('F')) return {cls:'f', label:'F'};
+  if(t.includes('M')) return {cls:'m', label:'M'};
+  return {cls:'gen', label:t.slice(0,4)};
+}
+// raffigurazione dei connettori del pannello (XLR / RJ45 / BNC …)
 function pannelloFigura(pl, hlIdx){
   const fig=el('div',{class:'boxfig'});
   const panel=el('div',{class:'panel'}); const conns=el('div',{class:'conns'});
   (pl.porte||[]).forEach((po,i)=>{
-    const conn=el('div',{class:'conn '+pnlConnClass(po)+(i===hlIdx?' hl':'')});
+    const k=connKind(po.tipologia); let cls=k.cls;
+    if(cls==='free' && String(po.segnale||'').trim()) cls='gen'; // ha segnale ma tipologia non indicata
+    const conn=el('div',{class:'conn '+cls+(i===hlIdx?' hl':'')});
     conn.append(el('div',{class:'num'},'Porta '+(i+1)),
-      el('div',{class:'xlr'},pnlConnLabel(po)),
+      el('div',{class:'xlr'},cls==='gen'&&k.cls==='free'?'?':k.label),
       el('div',{class:'sig'}, po.segnale||''),
       el('div',{class:'cw',style:po.colore?('background:'+po.colore):null}),
       el('div',{class:'cp'}, (po.provenienza||'')+(po.numero?(' · pos '+po.numero):'')));
@@ -2148,8 +2163,8 @@ function nuovaBox(u){
   const box={_id:uid('box_'), nome:(nome.trim()||'Cassetta'), coppie};
   (u.box=u.box||[]).push(box); markDirty(); location.hash='box/'+u._id+'/'+box._id;
 }
-function boxTipoClass(t){ t=String(t||'').trim().toUpperCase(); if(t.includes('F'))return 'f'; if(t.includes('M'))return 'm'; return 'free'; }
-function boxConnLabel(t){ t=String(t||'').trim().toUpperCase(); if(t.includes('F'))return 'F'; if(t.includes('M'))return 'M'; return '—'; }
+function boxTipoClass(t){ return connKind(t).cls; }
+function boxConnLabel(t){ return connKind(t).label; }
 // raffigurazione del pannello frontale della cassetta (elemento DOM)
 function boxFigura(box, u, hlIdx){
   const fig=el('div',{class:'boxfig'});
@@ -2179,7 +2194,7 @@ function viewBox(c, uid_, bid){
   box.coppie=box.coppie||[];
   $('#viewTitle').textContent='Box · '+(box.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
-  c.append(el('datalist',{id:'boxXlr'}, ...['XLR F','XLR M','LIBERO'].map(v=>el('option',{value:v}))));
+  c.append(el('datalist',{id:'boxXlr'}, ...['XLR F','XLR M','RJ45','BNC','LIBERO'].map(v=>el('option',{value:v}))));
   const dlPnl=el('datalist',{id:'pannelliList'});
   for(const d of destPanels(u, box._id)) dlPnl.append(el('option',{value:d.obj.nome,label:d.label}));
   c.append(dlPnl);
@@ -2256,14 +2271,15 @@ function importBox(box,reload){
 function printBox(box){
   const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
   const coppie=box.coppie||[];
-  const connHtml=coppie.map((cp,i)=>{ const t=String(cp.tipoXlr||'').toUpperCase(); const lbl=t.includes('F')?'F':(t.includes('M')?'M':'—');
-    const bc=t.includes('F')?'#ef4444':(t.includes('M')?'#3b82f6':'#999'); const op=lbl==='—'?';opacity:.5':'';
-    return '<div class="cn" style="'+op+'"><div class="nm">Coppia '+(i+1)+'</div><div class="xl" style="border-color:'+bc+'">'+lbl+'</div><div class="sg">'+esc(cp.segnale||(lbl==='—'?'LIBERO':''))+'</div><div class="cw" style="background:'+esc(cp.colore||'#ccc')+'"></div><div class="dst">'+esc((cp.destPannello||'')+(cp.destPosizione?(' · pos '+cp.destPosizione):''))+'</div></div>'; }).join('');
+  const connHtml=coppie.map((cp,i)=>{ const k=connKind(cp.tipoXlr);
+    const bc={f:'#ef4444',m:'#3b82f6',rj45:'#0d9488',bnc:'#d97706',gen:'#666',free:'#999'}[k.cls];
+    const op=k.cls==='free'?';opacity:.5':''; const xlCls='xl '+k.cls;
+    return '<div class="cn" style="'+op+'"><div class="nm">Coppia '+(i+1)+'</div><div class="'+xlCls+'" style="border-color:'+bc+'">'+esc(k.label)+'</div><div class="sg">'+esc(cp.segnale||(k.cls==='free'?'LIBERO':''))+'</div><div class="cw" style="background:'+esc(cp.colore||'#ccc')+'"></div><div class="dst">'+esc((cp.destPannello||'')+(cp.destPosizione?(' · pos '+cp.destPosizione):''))+'</div></div>'; }).join('');
   const th='<th>Coppia</th>'+coppie.map((cp,i)=>'<th'+(cp.colore?(' style="border-top:4px solid '+esc(cp.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
   const rowDef=[['Tipologia XLR','tipoXlr'],['Nome Segnale','segnale'],['Pannello destinazione','destPannello'],['Posizione pannello','destPosizione']];
   const bodyRows=rowDef.map(rd=>'<tr><th>'+esc(rd[0])+'</th>'+coppie.map(cp=>'<td>'+esc(cp[rd[1]]==null?'':cp[rd[1]])+'</td>').join('')+'</tr>').join('')
     +'<tr><th>Colore cavo</th>'+coppie.map(cp=>'<td style="background:'+esc(cp.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(box.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}h3{margin:16px 0 6px;font-size:13px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}.fig{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #999;border-radius:8px;padding:12px;background:#f4f6fa}.cn{width:96px;border:1px solid #bbb;border-radius:8px;background:#fff;padding:8px 6px;text-align:center}.cn .nm{font-size:10px;color:#777}.cn .xl{width:38px;height:38px;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #666}.cn .sg{font-size:11px;font-weight:600}.cn .cw{height:6px;border-radius:3px;margin-top:5px}.cn .dst{font-size:9.5px;color:#666;margin-top:3px}</style></head><body><h2>📦 '+esc(box.nome)+' — cassetta/box</h2><p>'+coppie.length+' coppie · stampato il '+new Date().toLocaleString('it-IT')+'</p><h3>Pannello frontale</h3><div class="fig">'+connHtml+'</div><h3>Coppie e destinazioni</h3><table><thead><tr>'+th+'</tr></thead><tbody>'+bodyRows+'</tbody></table></body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(box.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}h3{margin:16px 0 6px;font-size:13px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}.fig{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #999;border-radius:8px;padding:12px;background:#f4f6fa}.cn{width:96px;border:1px solid #bbb;border-radius:8px;background:#fff;padding:8px 6px;text-align:center}.cn .nm{font-size:10px;color:#777}.cn .xl{width:38px;height:38px;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #666;font-size:12px}.cn .xl.rj45{border-radius:5px;font-size:9px}.cn .xl.bnc{box-shadow:inset 0 0 0 4px rgba(217,119,6,.28);font-size:10px}.cn .sg{font-size:11px;font-weight:600}.cn .cw{height:6px;border-radius:3px;margin-top:5px}.cn .dst{font-size:9.5px;color:#666;margin-top:3px}</style></head><body><h2>📦 '+esc(box.nome)+' — cassetta/box</h2><p>'+coppie.length+' coppie · stampato il '+new Date().toLocaleString('it-IT')+'</p><h3>Pannello frontale</h3><div class="fig">'+connHtml+'</div><h3>Coppie e destinazioni</h3><table><thead><tr>'+th+'</tr></thead><tbody>'+bodyRows+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
 

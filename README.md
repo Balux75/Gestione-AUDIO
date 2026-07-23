@@ -87,17 +87,19 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
 - **🎛 Pannelli** — sviluppo orizzontale come le Patch audio, con i campi **Patch** (patch/pannello/box
   di destinazione), **n° cavo e coppia**, **Posizione patch** (la posizione sulla patch di
   destinazione), **Tipologia**, **Segnale** e un **Colore** selezionabile per ogni porta. In cima è
-  mostrata la **raffigurazione dei connettori XLR** (F rosso / M blu, con segnale e colore del cavo,
-  come per i Box). **Doppio clic sulla porta** (o sul campo **Patch**, o il pulsante **↗**) apre la
+  mostrata la **raffigurazione dei connettori** con forme distinte per tipo — **XLR F** (cerchio
+  rosso) / **XLR M** (cerchio blu) / **RJ45** (rettangolo ethernet) / **BNC** (coassiale a doppio
+  anello) — con segnale e colore del cavo, come per i Box. **Doppio clic sulla porta** (o sul campo **Patch**, o il pulsante **↗**) apre la
   **patch/pannello/box di destinazione** alla **Posizione patch** indicata, evidenziando la porta di
   arrivo. La lista a discesa del campo **Patch** include **Patch, Pannelli e Box** della stanza.
   Aggiungi/elimina porte (o **+8**), con **Importa** (Excel/CSV), **Esporta** e **Stampa**. I pannelli
   **non entrano** nel Quadro Incroci.
 - **📦 Box / Cassette** — cassette secondo lo schema *esempio_cassetta*: creando un box scegli il
-  numero di **coppie**; ogni coppia ha **Tipologia XLR** (XLR F / XLR M / LIBERO), **Nome Segnale**,
-  **Colore cavo** e la **destinazione** (**Pannello** + **Posizione pannello**). La vista mostra una
-  **raffigurazione del pannello frontale** (interruttore, spia alimentazione, prese rete/UPS e i
-  connettori XLR F/M con segnale e colore del cavo) più la tabella orizzontale delle coppie. Il campo
+  numero di **coppie**; ogni coppia ha **Tipologia** (XLR F / XLR M / RJ45 / BNC / LIBERO), **Nome
+  Segnale**, **Colore cavo** e la **destinazione** (**Pannello** + **Posizione pannello**). La vista
+  mostra una **raffigurazione del pannello frontale** (interruttore, spia alimentazione, prese
+  rete/UPS e i connettori con forme distinte per tipo — XLR F/M, RJ45 ethernet, BNC coassiale — con
+  segnale e colore del cavo) più la tabella orizzontale delle coppie. Il campo
   **Pannello destinazione** ha una lista a discesa con **Patch, Pannelli e Box** della stanza e, con
   **doppio clic** (o **↗**), apre la destinazione alla **Posizione pannello** indicata, evidenziando
   la coppia/porta di arrivo (colonna e connettore). Per ogni box: **Aggiungi coppia**, **Importa**
