@@ -909,8 +909,8 @@ function openPatchFrom(u, text){
 // destinazioni collegabili di una stanza (Patch, Pannelli, Box) -> [{kind, obj, label}]
 function destPanels(u, excludeId){
   const out=[];
-  for(const p of (u.pannelli||[])) out.push({kind:'pannello',obj:p,label:'Pannello'});
-  for(const p of (u.patch||[])) out.push({kind:'patch',obj:p,label:'Patch'});
+  for(const p of (u.pannelli||[])){ if(p._id===excludeId) continue; out.push({kind:'pannello',obj:p,label:'Pannello'}); }
+  for(const p of (u.patch||[])){ if(p._id===excludeId) continue; out.push({kind:'patch',obj:p,label:'Patch'}); }
   for(const p of (u.box||[])){ if(p._id===excludeId) continue; out.push({kind:'box',obj:p,label:'Box'}); }
   return out;
 }
@@ -932,16 +932,20 @@ function findPanelPortByPos(panel, pos, segnale){
   if(segnale){ const s=String(segnale).trim().toLowerCase(); if(s){ const p=porte.find(x=>String(x.segnale||'').trim().toLowerCase()===s); if(p) return p; } }
   return null;
 }
-// apre la destinazione (patch/pannello/box) di una coppia del box, evidenziando la posizione indicata
-function openBoxDest(u, box, cp){
-  const name=String(cp.destPannello||'').trim();
+// apre la destinazione (patch/pannello/box) indicata, evidenziando la posizione
+function openDest(u, srcId, name, pos, segnale){
+  name=String(name||'').trim();
   if(!name){ toast('Nessuna destinazione indicata'); return; }
-  const d=findDestPanel(u, name, box&&box._id);
+  const d=findDestPanel(u, name, srcId);
   if(!d){ toast('Destinazione «'+name+'» non trovata nella stanza'); return; }
-  const port=findPanelPortByPos(d.obj, cp.destPosizione, cp.segnale);
+  const port=findPanelPortByPos(d.obj, pos, segnale);
   pendingPatchHL = port? {patchId:d.obj._id, portId:port._id} : null;
   location.hash=(d.kind==='patch'?'patch/':d.kind==='box'?'box/':'pannello/')+u._id+'/'+d.obj._id;
 }
+// coppia del box -> destinazione
+function openBoxDest(u, box, cp){ openDest(u, box&&box._id, cp.destPannello, cp.destPosizione, cp.segnale); }
+// porta del pannello -> destinazione (campo «Patch» + «Posizione patch»)
+function openPnlDest(u, pl, po){ openDest(u, pl&&pl._id, po.provenienza, po.numero, po.segnale); }
 function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
 function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
 function findUnita(id){ return (DB.unita||[]).find(u=>u._id===id)||null; }
@@ -1416,7 +1420,7 @@ function exportUnitaXLSX(u){
   const srows=[['Switch',...SWITCH_HEAD]];
   for(const sw of (u.switches||[])) (sw.porte||[]).forEach(po=>srows.push([sw.nome,...SWITCH_COLS.map(c=>po[c.key]||'')]));
   sheets.push({name:'Switch',rows:srows});
-  const plrows=[['Pannello','Porta','Provenienza','n° cavo e coppia','N°','Tipologia','Segnale','Colore']];
+  const plrows=[['Pannello','Porta','Patch','n° cavo e coppia','Posizione patch','Tipologia','Segnale','Colore']];
   for(const pl of (u.pannelli||[])) (pl.porte||[]).forEach((po,i)=>plrows.push([pl.nome,i+1,po.provenienza,po.cavo,po.numero,po.tipologia,po.segnale,po.colore]));
   sheets.push({name:'Pannelli',rows:plrows});
   const bxrows=[['Box','Coppia','Tipologia XLR','Nome Segnale','Colore cavo','Pannello destinazione','Posizione pannello']];
@@ -1462,8 +1466,8 @@ function importUnitaXLSX(u, reload){
           const sn=xcell(r,map.sw)||'Switch'; let sw=swMap[sn]; if(!sw){ sw={_id:uid('sw_'),nome:sn,porte:[]}; swMap[sn]=sw; swOrder.push(sn); }
           sw.porte.push(newSwPort({porta:xcell(r,map.porta),patch:xcell(r,map.patch),descrizione:xcell(r,map.descrizione),ip:xcell(r,map.ip),mac:xcell(r,map.mac),subnet:xcell(r,map.subnet),gateway:xcell(r,map.gateway),vlan:xcell(r,map.vlan),note:xcell(r,map.note),colore:xcell(r,map.colore)})); } }
       // pannelli (patch + colore)
-      const plnSpec={ pannello:{eq:['pannello'],inc:['pannello']}, provenienza:{inc:['provenien','pnl']}, cavo:{inc:['cavo','coppia']},
-        numero:{eq:['n°','numero','num']}, tipologia:{inc:['tipolog','connett']}, segnale:{inc:['segnale']}, colore:{inc:['colore','color']} };
+      const plnSpec={ pannello:{eq:['pannello']}, provenienza:{eq:['patch','provenienza'],inc:['provenien']}, cavo:{inc:['cavo','coppia']},
+        numero:{eq:['posizione patch'],inc:['posizione','posiz']}, tipologia:{inc:['tipolog','connett']}, segnale:{inc:['segnale']}, colore:{inc:['colore','color']} };
       const plMap={}, plOrder=[];
       if(rPnl&&rPnl.length>1){ const map=headerMap(rPnl[0],plnSpec);
         for(const r of rPnl.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
@@ -1995,9 +1999,9 @@ function printSwitch(sw){
    Non entrano nel Quadro Incroci.
    ============================================================ */
 const PANNELLO_ROWS=[
-  {key:'provenienza',label:'Provenienza', cls:'prov'},
+  {key:'provenienza',label:'Patch', cls:'prov', dest:true},
   {key:'cavo',label:'n° cavo e coppia', cls:'hl-row'},
-  {key:'numero',label:'N°'},
+  {key:'numero',label:'Posizione patch'},
   {key:'tipologia',label:'Tipologia', list:'patchTipi'},
   {key:'segnale',label:'Segnale'},
   {key:'colore',label:'Colore', type:'color'},
@@ -2009,6 +2013,26 @@ function nuovaPannello(u){
   const pl={_id:uid('pnl_'), nome:(nome.trim()||'Pannello'), porte:[]};
   (u.pannelli=u.pannelli||[]).push(pl); markDirty(); location.hash='pannello/'+u._id+'/'+pl._id;
 }
+// classe/etichetta del connettore in base alla tipologia della porta
+function pnlConnClass(po){ const t=String(po.tipologia||'').toUpperCase(); if(t.includes('F'))return 'f'; if(t.includes('M'))return 'm';
+  return (!String(po.tipologia||'').trim() && !String(po.segnale||'').trim())? 'free' : ''; }
+function pnlConnLabel(po){ const t=String(po.tipologia||'').trim().toUpperCase(); if(t.includes('F'))return 'F'; if(t.includes('M'))return 'M'; return t? t.slice(0,3) : '—'; }
+// raffigurazione dei connettori XLR del pannello (come per i box)
+function pannelloFigura(pl, hlIdx){
+  const fig=el('div',{class:'boxfig'});
+  const panel=el('div',{class:'panel'}); const conns=el('div',{class:'conns'});
+  (pl.porte||[]).forEach((po,i)=>{
+    const conn=el('div',{class:'conn '+pnlConnClass(po)+(i===hlIdx?' hl':'')});
+    conn.append(el('div',{class:'num'},'Porta '+(i+1)),
+      el('div',{class:'xlr'},pnlConnLabel(po)),
+      el('div',{class:'sig'}, po.segnale||''),
+      el('div',{class:'cw',style:po.colore?('background:'+po.colore):null}),
+      el('div',{class:'cp'}, (po.provenienza||'')+(po.numero?(' · pos '+po.numero):'')));
+    conns.append(conn);
+  });
+  panel.append(conns); fig.append(panel);
+  return fig;
+}
 function viewPannello(c, uid_, pid){
   const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
   u.pannelli=u.pannelli||[]; const pl=u.pannelli.find(x=>x._id===pid); if(!pl){ location.hash='unita/'+uid_; return; }
@@ -2016,6 +2040,9 @@ function viewPannello(c, uid_, pid){
   $('#viewTitle').textContent='Pannello · '+(pl.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
   c.append(el('datalist',{id:'patchTipi'}, ...['XLR M','XLR F','Jack M','Jack F','RCA','BNC','Bantam','Speakon','RJ45'].map(v=>el('option',{value:v}))));
+  const dlDest=el('datalist',{id:'pnlDestList'});
+  for(const d of destPanels(u, pl._id)) dlDest.append(el('option',{value:d.obj.nome,label:d.label}));
+  c.append(dlDest);
   const titleInp=el('input',{value:pl.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
     onchange:e=>{ pl.nome=e.target.value.trim()||'Pannello'; markDirty(); buildNav(); $('#viewTitle').textContent='Pannello · '+pl.nome; }});
   c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🎛'), titleInp, el('div',{class:'sp',style:'flex:1'}),
@@ -2029,22 +2056,32 @@ function viewPannello(c, uid_, pid){
   const area=el('div'); c.append(area);
   function render(){
     area.innerHTML='';
-    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pl.porte.length)+' porte · sviluppo orizzontale · colore per porta'));
-    if(!pl.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna porta — «➕ Aggiungi porta».')); return; }
     const hlIdx = hl? pl.porte.findIndex(x=>x._id===hl) : -1;
+    area.append(el('div',{class:'section-h'},'🔻 Raffigurazione connettori'));
+    if(pl.porte.length) area.append(pannelloFigura(pl, hlIdx));
+    else area.append(el('div',{class:'empty',style:'padding:10px 2px'},'Nessuna porta.'));
+    area.append(el('div',{class:'section-h',style:'margin-top:14px'},'🔧 Porte e destinazioni'));
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pl.porte.length)+' porte · doppio clic sulla porta o su «Patch» (o ↗) per aprire la patch di destinazione alla «Posizione patch»'));
+    if(!pl.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Aggiungi una porta con «➕ Aggiungi porta».')); return; }
     const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
     const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Porta'));
-    pl.porte.forEach((po,i)=>{ hr.append(el('th',{class:'porthead'+(i===hlIdx?' hlcol':''),style:po.colore?('border-top:3px solid '+po.colore):null},
+    pl.porte.forEach((po,i)=>{ const th=el('th',{class:'porthead'+(i===hlIdx?' hlcol':''),style:po.colore?('border-top:3px solid '+po.colore):null,title:'doppio clic per aprire la patch di destinazione'},
       el('div',{class:'pn'},String(i+1)),
-      el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina porta',onclick:()=>{ pl.porte.splice(i,1); markDirty(); render(); }},'🗑'))); });
+      el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina porta',onclick:()=>{ pl.porte.splice(i,1); markDirty(); render(); }},'🗑'));
+      th.addEventListener('dblclick',()=>openPnlDest(u,pl,po)); hr.append(th); });
     thead.append(hr); tbl.append(thead);
     const tb=el('tbody');
     for(const r of PANNELLO_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
-      pl.porte.forEach((po,i)=>{
+      pl.porte.forEach((po,i)=>{ const hlc=(i===hlIdx?' hlcol':'');
         if(r.type==='color'){
-          tr.append(el('td',{class:'colcell'+(i===hlIdx?' hlcol':'')}, el('input',{type:'color',value:po.colore||'#cccccc',onchange:e=>{ po.colore=e.target.value; markDirty(); render(); }})));
+          tr.append(el('td',{class:'colcell'+hlc}, el('input',{type:'color',value:po.colore||'#cccccc',onchange:e=>{ po.colore=e.target.value; markDirty(); render(); }})));
+        } else if(r.dest){
+          const inp=el('input',{value:po[r.key]||'',list:'pnlDestList',title:'doppio clic per aprire la destinazione (patch / pannello / box)',onchange:e=>{ po[r.key]=e.target.value; markDirty(); }});
+          inp.addEventListener('dblclick',()=>openPnlDest(u,pl,po));
+          tr.append(el('td',{class:'destcell'+hlc}, inp,
+            el('button',{class:'pill destgo',title:'Apri destinazione',onmousedown:e=>{ e.preventDefault(); openPnlDest(u,pl,po); }},'↗')));
         } else {
-          tr.append(el('td',{class:(i===hlIdx?'hlcol':'')}, el('input',{value:po[r.key]||'',list:r.list||null,onchange:e=>{ po[r.key]=e.target.value; markDirty(); }})));
+          tr.append(el('td',{class:(hlc.trim()||null)}, el('input',{value:po[r.key]||'',list:r.list||null,onchange:e=>{ po[r.key]=e.target.value; markDirty(); if(r.key==='tipologia'||r.key==='segnale') render(); }})));
         }
       });
       tb.append(tr); }
@@ -2067,7 +2104,7 @@ function importPannello(pl,reload){
       if(!rows||rows.length<1){ toast('File vuoto'); return; }
       const headers=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
       const idxOf=(...names)=>{ for(let i=0;i<headers.length;i++){ if(names.some(n=>headers[i]===n||headers[i].includes(n))) return i; } return -1; };
-      const map={provenienza:idxOf('provenienza','pnl','pannello'),cavo:idxOf('cavo','coppia'),numero:idxOf('n°','numero','num'),tipologia:idxOf('tipologia','tipo','connettore'),segnale:idxOf('segnale','signal'),colore:idxOf('colore','color')};
+      const map={provenienza:idxOf('patch','provenienza','pnl'),cavo:idxOf('cavo','coppia'),numero:idxOf('posizione','posiz','pos patch'),tipologia:idxOf('tipologia','connettore','tipo'),segnale:idxOf('segnale','signal'),colore:idxOf('colore','color')};
       const g=(r,i)=>i>=0?String(r[i]||'').trim():'';
       const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
       const parsed=data.map(r=>newPnlPorta({provenienza:g(r,map.provenienza),cavo:g(r,map.cavo),numero:g(r,map.numero),tipologia:g(r,map.tipologia),segnale:g(r,map.segnale),colore:g(r,map.colore)}));
