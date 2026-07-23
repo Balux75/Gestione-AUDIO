@@ -209,6 +209,9 @@ table.patch td.hlcol{box-shadow:inset 0 0 0 2px var(--accent2)}
 table.patch td.hlcol input{background:rgba(34,197,94,.12)}
 table.patch td.colcell{padding:3px}
 table.patch td.colcell input[type=color]{width:100%;min-width:70px;height:26px;padding:0;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer}
+table.patch td.destcell{padding:0 2px;white-space:nowrap}
+table.patch td.destcell input{width:calc(100% - 26px);min-width:70px;display:inline-block;vertical-align:middle}
+table.patch td.destcell .destgo{display:inline-flex;align-items:center;vertical-align:middle;margin-left:2px;padding:1px 6px;border:none;font-size:12px}
 .boxfig{border:1px solid var(--line);border-radius:10px;background:#0f1520;padding:14px;margin:12px 0;max-width:100%;overflow-x:auto}
 .boxfig .panel{background:linear-gradient(#1b2536,#151d29);border:1px solid #2a3550;border-radius:8px;padding:12px;min-width:520px}
 .boxfig .top{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:12px;border-bottom:1px dashed #33405e}
@@ -901,6 +904,36 @@ function openPatchFrom(u, text){
   if(!r){ toast('Patch «'+String(text).trim()+'» non trovata nella stanza'); return; }
   pendingPatchHL = r.po? {patchId:r.pp._id, portId:r.po._id} : null;
   location.hash='patch/'+u._id+'/'+r.pp._id;
+}
+// trova un pannello di destinazione tra Patch e Pannelli, dato il nome -> {kind:'patch'|'pannello', obj}
+function findDestPanel(u, name){
+  name=String(name||'').trim(); if(!name) return null; const low=name.toLowerCase();
+  const cands=[];
+  for(const p of (u.patch||[])) cands.push({kind:'patch',obj:p});
+  for(const p of (u.pannelli||[])) cands.push({kind:'pannello',obj:p});
+  for(const c of cands){ if(String(c.obj.nome||'').trim().toLowerCase()===low) return c; } // corrispondenza esatta
+  let best=null, bestLen=-1;
+  for(const c of cands){ const n=String(c.obj.nome||'').trim().toLowerCase();
+    if(n && (low.startsWith(n)||n.startsWith(low)||low.includes(n)||n.includes(low))){ if(n.length>bestLen){ best=c; bestLen=n.length; } } }
+  return best;
+}
+// individua la porta del pannello alla "posizione" indicata (per N°, poi per ordinale, poi per segnale)
+function findPanelPortByPos(panel, pos, segnale){
+  const porte=panel.porte||[]; pos=String(pos==null?'':pos).trim();
+  if(pos){ let p=porte.find(x=>String(x.numero||'').trim()===pos); if(p) return p;
+    const idx=parseInt(pos,10); if(idx>=1&&idx<=porte.length) return porte[idx-1]; }
+  if(segnale){ const s=String(segnale).trim().toLowerCase(); if(s){ const p=porte.find(x=>String(x.segnale||'').trim().toLowerCase()===s); if(p) return p; } }
+  return null;
+}
+// apre il pannello di destinazione di una coppia del box, evidenziando la posizione indicata
+function openBoxDest(u, cp){
+  const name=String(cp.destPannello||'').trim();
+  if(!name){ toast('Nessun pannello di destinazione indicato'); return; }
+  const d=findDestPanel(u, name);
+  if(!d){ toast('Pannello «'+name+'» non trovato nella stanza'); return; }
+  const port=findPanelPortByPos(d.obj, cp.destPosizione, cp.segnale);
+  pendingPatchHL = port? {patchId:d.obj._id, portId:port._id} : null;
+  location.hash=(d.kind==='patch'?'patch/':'pannello/')+u._id+'/'+d.obj._id;
 }
 function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
 function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
@@ -2103,7 +2136,10 @@ function viewBox(c, uid_, bid){
   $('#viewTitle').textContent='Box · '+(box.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
   c.append(el('datalist',{id:'boxXlr'}, ...['XLR F','XLR M','LIBERO'].map(v=>el('option',{value:v}))));
-  const dlPnl=el('datalist',{id:'pannelliList'}); for(const pl of (u.pannelli||[])) dlPnl.append(el('option',{value:pl.nome})); c.append(dlPnl);
+  const dlPnl=el('datalist',{id:'pannelliList'});
+  for(const pl of (u.pannelli||[])) dlPnl.append(el('option',{value:pl.nome,label:'Pannello'}));
+  for(const pp of (u.patch||[])) dlPnl.append(el('option',{value:pp.nome,label:'Patch'}));
+  c.append(dlPnl);
   const titleInp=el('input',{value:box.nome||'',style:'font-size:16px;font-weight:600;max-width:320px',
     onchange:e=>{ box.nome=e.target.value.trim()||'Cassetta'; markDirty(); buildNav(); $('#viewTitle').textContent='Box · '+box.nome; }});
   c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'📦'), titleInp, el('div',{class:'sp',style:'flex:1'}),
@@ -2118,7 +2154,7 @@ function viewBox(c, uid_, bid){
     area.append(el('div',{class:'section-h'},'🔻 Raffigurazione pannello frontale'));
     area.append(boxFigura(box, u));
     area.append(el('div',{class:'section-h',style:'margin-top:14px'},'🔧 Coppie e destinazioni'));
-    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(box.coppie.length)+' coppie'));
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(box.coppie.length)+' coppie · doppio clic su «Pannello destinazione» (o ↗) per aprire la patch/pannello alla posizione indicata'));
     if(!box.coppie.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna coppia — «➕ Aggiungi coppia».')); return; }
     const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
     const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Coppia'));
@@ -2131,6 +2167,11 @@ function viewBox(c, uid_, bid){
       box.coppie.forEach(cp=>{
         if(r.type==='color'){
           tr.append(el('td',{class:'colcell'}, el('input',{type:'color',value:cp.colore||'#cccccc',onchange:e=>{ cp.colore=e.target.value; markDirty(); render(); }})));
+        } else if(r.key==='destPannello'){
+          const inp=el('input',{value:cp[r.key]||'',list:'pannelliList',title:'doppio clic per aprire il pannello/patch di destinazione',onchange:e=>{ cp[r.key]=e.target.value; markDirty(); }});
+          inp.addEventListener('dblclick',()=>openBoxDest(u,cp));
+          tr.append(el('td',{class:'destcell'}, inp,
+            el('button',{class:'pill destgo',title:'Apri pannello di destinazione',onmousedown:e=>{ e.preventDefault(); openBoxDest(u,cp); }},'↗')));
         } else {
           tr.append(el('td',{}, el('input',{value:cp[r.key]||'',list:r.list||null,onchange:e=>{ cp[r.key]=e.target.value; markDirty(); if(r.key==='tipoXlr'||r.key==='segnale') render(); }})));
         }
