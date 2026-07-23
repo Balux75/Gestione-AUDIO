@@ -913,12 +913,16 @@ function openPatchFrom(u, text){
   pendingPatchHL = r.po? {patchId:r.pp._id, portId:r.po._id} : null;
   location.hash='patch/'+u._id+'/'+r.pp._id;
 }
+// confronto per nome (locale IT, numerico: «SEZ. 2» prima di «SEZ. 10»)
+function byNome(a,b){ return String(a&&a.nome||'').localeCompare(String(b&&b.nome||''),'it',{numeric:true,sensitivity:'base'}); }
+// copia ordinata per nome (non muta l'array originale)
+function sortedByNome(arr){ return (arr||[]).slice().sort(byNome); }
 // destinazioni collegabili di una stanza (Patch, Pannelli, Box) -> [{kind, obj, label}]
 function destPanels(u, excludeId){
   const out=[];
-  for(const p of (u.pannelli||[])){ if(p._id===excludeId) continue; out.push({kind:'pannello',obj:p,label:'Pannello'}); }
-  for(const p of (u.patch||[])){ if(p._id===excludeId) continue; out.push({kind:'patch',obj:p,label:'Patch'}); }
-  for(const p of (u.box||[])){ if(p._id===excludeId) continue; out.push({kind:'box',obj:p,label:'Box'}); }
+  for(const p of sortedByNome(u.pannelli)){ if(p._id===excludeId) continue; out.push({kind:'pannello',obj:p,label:'Pannello'}); }
+  for(const p of sortedByNome(u.patch)){ if(p._id===excludeId) continue; out.push({kind:'patch',obj:p,label:'Patch'}); }
+  for(const p of sortedByNome(u.box)){ if(p._id===excludeId) continue; out.push({kind:'box',obj:p,label:'Box'}); }
   return out;
 }
 // trova una destinazione tra Patch, Pannelli e Box, dato il nome -> {kind:'patch'|'pannello'|'box', obj}
@@ -1328,7 +1332,7 @@ function viewUnitaDetail(c, id){
   if(!u.patch.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessuna patch.')); }
   else {
     const pc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
-    for(const pp of u.patch){
+    for(const pp of sortedByNome(u.patch)){
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #eab308'}); card.onclick=()=>location.hash='patch/'+u._id+'/'+pp._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔌 '+(pp.nome||'Patch')), el('div',{class:'b'},(pp.porte||[]).length+' porte')));
       pc.append(card);
@@ -1360,7 +1364,7 @@ function viewUnitaDetail(c, id){
   if(!u.pannelli.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessun pannello.')); }
   else {
     const plc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
-    for(const pl of u.pannelli){
+    for(const pl of sortedByNome(u.pannelli)){
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #14b8a6'}); card.onclick=()=>location.hash='pannello/'+u._id+'/'+pl._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛 '+(pl.nome||'Pannello')), el('div',{class:'b'},(pl.porte||[]).length+' porte')));
       plc.append(card);
@@ -1375,7 +1379,7 @@ function viewUnitaDetail(c, id){
   if(!u.box.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessun box.')); }
   else {
     const bc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
-    for(const box of u.box){
+    for(const box of sortedByNome(u.box)){
       const usate=(box.coppie||[]).filter(cp=>String(cp.tipoXlr||'').toUpperCase()!=='LIBERO'&&String(cp.tipoXlr||'').trim()).length;
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #eab308'}); card.onclick=()=>location.hash='box/'+u._id+'/'+box._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'📦 '+(box.nome||'Box')), el('div',{class:'b'},(box.coppie||[]).length+' coppie')),
@@ -1516,7 +1520,7 @@ function printUnita(u){
     if(outs.length){ html+='<h3>Schede di uscita</h3>'; outs.forEach(s=>html+=chTbl(s)); }
   }
   if((u.patch||[]).length){ html+='<h2>🔌 Patch audio</h2>';
-    for(const pp of u.patch){ const porte=pp.porte||[]; html+='<h4>'+esc(pp.nome)+' <small>('+porte.length+' porte)</small></h4>';
+    for(const pp of sortedByNome(u.patch)){ const porte=pp.porte||[]; html+='<h4>'+esc(pp.nome)+' <small>('+porte.length+' porte)</small></h4>';
       const head='<th>Porta</th>'+porte.map((po,i)=>'<th>'+(i+1)+'</th>').join('');
       const rowsH=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esctd(po[r.key])+'</td>').join('')+'</tr>').join('');
       html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsH+'</tbody></table>'; } }
@@ -1526,13 +1530,13 @@ function printUnita(u){
       const trs=porte.map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esctd(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esctd(po[c.key])+'</td>')).join('')+'</tr>').join('');
       html+='<table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table>'; } }
   if((u.pannelli||[]).length){ html+='<h2>🎛 Pannelli</h2>';
-    for(const pl of u.pannelli){ const porte=pl.porte||[]; html+='<h4>'+esc(pl.nome)+' <small>('+porte.length+' porte)</small></h4>';
+    for(const pl of sortedByNome(u.pannelli)){ const porte=pl.porte||[]; html+='<h4>'+esc(pl.nome)+' <small>('+porte.length+' porte)</small></h4>';
       const head='<th>Porta</th>'+porte.map((po,i)=>'<th'+(po.colore?(' style="border-top:4px solid '+esctd(po.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
       const rowsH=PANNELLO_ROWS.map(r=>{ if(r.type==='color') return '<tr><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td style="background:'+esctd(po.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
         return '<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esctd(po[r.key])+'</td>').join('')+'</tr>'; }).join('');
       html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsH+'</tbody></table>'; } }
   if((u.box||[]).length){ html+='<h2>📦 Box / Cassette</h2>';
-    for(const box of u.box){ const coppie=box.coppie||[]; html+='<h4>'+esc(box.nome)+' <small>('+coppie.length+' coppie)</small></h4>';
+    for(const box of sortedByNome(u.box)){ const coppie=box.coppie||[]; html+='<h4>'+esc(box.nome)+' <small>('+coppie.length+' coppie)</small></h4>';
       const head='<th>Coppia</th>'+coppie.map((cp,i)=>'<th'+(cp.colore?(' style="border-top:4px solid '+esctd(cp.colore)+'"'):'')+'>'+(i+1)+'</th>').join('');
       const rd=[['Tipologia XLR','tipoXlr'],['Nome Segnale','segnale'],['Pannello destinazione','destPannello'],['Posizione pannello','destPosizione']];
       let rowsB=rd.map(x=>'<tr><th>'+esc(x[0])+'</th>'+coppie.map(cp=>'<td>'+esctd(cp[x[1]])+'</td>').join('')+'</tr>').join('');
