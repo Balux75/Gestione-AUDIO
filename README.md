@@ -76,9 +76,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   switch, i pannelli colorati e le cassette/box).
 - **🔌 Patch audio** — dentro ogni stanza puoi creare dei **pannelli patch** a **sviluppo
   orizzontale** (le porte sono le colonne, gli attributi le righe: **Provenienza**, **n° cavo e
-  coppia**, **N°**, **Tipologia**, **Segnale**). Aggiungi/elimina porte (o **+8** in blocco),
-  con **Importa** (Excel/CSV), **Esporta** e **Stampa** (layout orizzontale). Le patch
-  **non entrano** nel Quadro Incroci: servono a documentare i pannelli/cablaggi della stanza.
+  coppia**, **N°**, **Tipologia**, **Segnale**). In cima è mostrata la **raffigurazione dei
+  connettori** (le stesse forme di Pannelli e Box — XLR F/M, RJ45 ethernet, BNC coassiale, con
+  segnale e provenienza/cavo). Aggiungi/elimina porte (o **+8** in blocco), con **Importa**
+  (Excel/CSV), **Esporta** e **Stampa** (layout orizzontale). Le patch **non entrano** nel Quadro
+  Incroci: servono a documentare i pannelli/cablaggi della stanza.
 - **🔀 Switch** — dopo le patch, ogni stanza può contenere degli **switch di rete**: tabella
   verticale delle porte con **Porta, Patch/Stanza, Descrizione, IP, MAC, Subnet, Gateway, VLAN,
   Note, Colore** (schema del file Excel di configurazione). Creando uno switch scegli il numero

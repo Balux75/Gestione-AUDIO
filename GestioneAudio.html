@@ -1736,9 +1736,13 @@ function viewPatch(c, uid_, pid){
   const area=el('div'); c.append(area);
   function render(){
     area.innerHTML='';
-    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pp.porte.length)+' porte · sviluppo orizzontale'));
-    if(!pp.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna porta — «➕ Aggiungi porta».')); return; }
     const hlIdx = hl? pp.porte.findIndex(x=>x._id===hl) : -1;
+    area.append(el('div',{class:'section-h'},'🔻 Raffigurazione connettori'));
+    if(pp.porte.length) area.append(patchFigura(pp, hlIdx));
+    else area.append(el('div',{class:'empty',style:'padding:10px 2px'},'Nessuna porta.'));
+    area.append(el('div',{class:'section-h',style:'margin-top:14px'},'🔧 Porte'));
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(pp.porte.length)+' porte · sviluppo orizzontale'));
+    if(!pp.porte.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Aggiungi una porta con «➕ Aggiungi porta».')); return; }
     const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
     const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Porta'));
     pp.porte.forEach((po,i)=>{ hr.append(el('th',{class:'porthead'+(i===hlIdx?' hlcol':'')},
@@ -2047,6 +2051,24 @@ function pannelloFigura(pl, hlIdx){
       el('div',{class:'sig'}, po.segnale||''),
       el('div',{class:'cw',style:po.colore?('background:'+po.colore):null}),
       el('div',{class:'cp'}, (po.provenienza||'')+(po.numero?(' · pos '+po.numero):'')));
+    conns.append(conn);
+  });
+  panel.append(conns); fig.append(panel);
+  return fig;
+}
+// raffigurazione dei connettori della patch (stessa resa di pannelli e box)
+function patchFigura(pp, hlIdx){
+  const fig=el('div',{class:'boxfig'});
+  const panel=el('div',{class:'panel'}); const conns=el('div',{class:'conns'});
+  (pp.porte||[]).forEach((po,i)=>{
+    const k=connKind(po.tipologia); let cls=k.cls;
+    if(cls==='free' && String(po.segnale||'').trim()) cls='gen'; // ha segnale ma tipologia non indicata
+    const conn=el('div',{class:'conn '+cls+(i===hlIdx?' hl':'')});
+    const sub=[po.provenienza, po.cavo].filter(v=>String(v||'').trim()).join(' · ');
+    conn.append(el('div',{class:'num'},'Porta '+(i+1)),
+      el('div',{class:'xlr'},cls==='gen'&&k.cls==='free'?'?':k.label),
+      el('div',{class:'sig'}, po.segnale||''),
+      el('div',{class:'cp'}, sub));
     conns.append(conn);
   });
   panel.append(conns); fig.append(panel);
