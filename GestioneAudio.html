@@ -55,6 +55,7 @@ textarea{resize:vertical;min-height:64px}
 /* Cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.meta-row{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:12px;max-width:920px;margin:2px 0 14px}
 .card-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .card-acts .btn.sm{padding:3px 8px;font-size:11px}
 .card .k{color:var(--muted);font-size:12px}
@@ -840,7 +841,10 @@ const TIPOLOGIE=[
   {id:'madi',      label:'MADI',      color:'#3b82f6'},
   {id:'bealinx',   label:'Bealinx',   color:'#ec4899'},
 ];
-function tipoDef(id){ return TIPOLOGIE.find(t=>t.id===id)||null; }
+// tipologia speciale per le porte Ethernet (fuori dal Quadro Incroci e dai filtri audio)
+const ETH_TIPO={id:'ethernet', label:'Ethernet', color:'#14b8a6'};
+function isEthScheda(s){ return !!s && s.tipo==='ethernet'; }
+function tipoDef(id){ return TIPOLOGIE.find(t=>t.id===id)||(id==='ethernet'?ETH_TIPO:null); }
 function tipoColor(t){ const d=tipoDef(t); return d?d.color:'var(--line)'; }
 function tipoLabel(t){ const d=tipoDef(t); return d?d.label:'—'; }
 function tipoDot(t){ return el('span',{style:'display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;background:'+tipoColor(t)}); }
@@ -976,12 +980,13 @@ function chLabelFull(id){ const f=chFind(id); if(!f)return ''; return f.u.nome+'
 // gruppi per il Quadro Incroci: una scheda = un gruppo
 function schedeGroups(dir){ const out=[];
   for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){
-    if(s.dir!==dir) continue; const canali=s.canali||[]; if(!canali.length) continue;
+    if(s.dir!==dir || isEthScheda(s)) continue; const canali=s.canali||[]; if(!canali.length) continue;   // le porte Ethernet non entrano nel Quadro Incroci
     out.push({id:s._id, nome:s.nome, unitNome:u.nome, macNome:m.nome, tipo:s.tipo||'', canali}); }
   return out; }
 // etichetta del raggruppamento nel Quadro Incroci: STANZA · MACCHINA · scheda
 function grpLabel(g){ return (g.unitNome? (g.unitNome+' · '):'')+(g.macNome? (g.macNome+' · '):'')+g.nome; }
-function schedeOf(m,dir){ return (m.schede||[]).filter(s=>s.dir===dir); }
+function schedeOf(m,dir){ return (m.schede||[]).filter(s=>s.dir===dir && !isEthScheda(s)); }   // solo schede audio (le Ethernet hanno la loro sezione)
+function ethOf(m,dir){ return (m.schede||[]).filter(s=>s.dir===dir && isEthScheda(s)); }
 function macCanali(m){ return (m.schede||[]).reduce((a,s)=>a+(s.canali||[]).length,0); }
 function unitChanCount(u){ return (u.macchine||[]).reduce((a,m)=>a+macCanali(m),0); }
 
@@ -1343,6 +1348,18 @@ function cardDupActions(u, kind, obj, reload){
     el('button',{class:'btn sm',onclick:stop(()=>duplicaLocale(u,kind,obj,reload))},'⧉ Duplica'),
     el('button',{class:'btn sm',onclick:stop(()=>duplicaAltraUnita(u,kind,obj,reload))},'⧉→ Altra unità'));
 }
+// riga con i 3 campi identificativi (Matricola inventario · Serial number · Telaio)
+function metaFieldsRow(obj){
+  const fld=(label,key)=>el('div',{class:'fld'}, el('label',{},label),
+    el('input',{value:obj[key]||'',placeholder:'—',onchange:e=>{ obj[key]=e.target.value; markDirty(); }}));
+  return el('div',{class:'meta-row'}, fld('Matricola inventario','matricola'), fld('Serial number','serial'), fld('Telaio','telaio'));
+}
+// riga meta per le stampe (Matricola/S.N./Telaio, se valorizzati)
+function metaLineHtml(obj){ const p=[];
+  if(String(obj.matricola||'').trim())p.push('Matricola: '+esc(obj.matricola));
+  if(String(obj.serial||'').trim())p.push('S/N: '+esc(obj.serial));
+  if(String(obj.telaio||'').trim())p.push('Telaio: '+esc(obj.telaio));
+  return p.length?(' · '+p.join(' · ')):''; }
 function viewUnitaDetail(c, id){
   const u=findUnita(id); if(!u){ location.hash='unita'; return; }
   u.macchine=u.macchine||[];
@@ -1463,6 +1480,7 @@ function nuovaSwitch(u){
 
 /* -------- Export / Import / Stampa a livello di UNITÀ OPERATIVA -------- */
 function labelToTipo(lbl){ lbl=String(lbl||'').trim().toLowerCase(); if(!lbl)return '';
+  if(lbl==='ethernet'||lbl==='eth') return 'ethernet';
   const t=TIPOLOGIE.find(x=>x.label.toLowerCase()===lbl||x.id===lbl); return t?t.id:''; }
 function headerMap(headerRow, spec){
   const H=(headerRow||[]).map(h=>String(h||'').trim().toLowerCase());
@@ -1643,10 +1661,11 @@ function printMacchina(m){
     const tr=(s.canali||[]).map((ch,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esctd(ch[c.key])+'</td>').join('')+'</tr>').join('');
     return '<h4>'+esc((s.dir==='in'?'🎙 ':'🔊 ')+s.nome)+' <small>('+tipoLabel(s.tipo)+' · '+(s.canali||[]).length+' canali)</small></h4><table><thead><tr>'+th+'</tr></thead><tbody>'+tr+'</tbody></table>'; };
   let html='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(m.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h1{margin:0 0 6px}h3{margin:12px 0 4px;color:#333}h4{margin:10px 0 4px;color:#444;font-weight:600}small{color:#777;font-weight:400}table{border-collapse:collapse;margin:2px 0 8px;font-size:10.5px}th,td{border:1px solid #999;padding:3px 6px;text-align:left}th{background:#eee}</style></head><body>';
-  html+='<h1>🎛 '+esc(m.nome||'Macchina')+'</h1><p style="color:#666;font-size:12px">'+macCanali(m)+' canali · stampato il '+new Date().toLocaleString('it-IT')+'</p>';
-  const ins=(m.schede||[]).filter(s=>s.dir==='in'), outs=(m.schede||[]).filter(s=>s.dir==='out');
+  html+='<h1>🎛 '+esc(m.nome||'Macchina')+'</h1><p style="color:#666;font-size:12px">'+macCanali(m)+' canali · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(m)+'</p>';
+  const ins=schedeOf(m,'in'), outs=schedeOf(m,'out'), eth=[...ethOf(m,'in'),...ethOf(m,'out')];
   if(ins.length){ html+='<h3>Schede di ingresso</h3>'; ins.forEach(s=>html+=chTbl(s)); }
   if(outs.length){ html+='<h3>Schede di uscita</h3>'; outs.forEach(s=>html+=chTbl(s)); }
+  if(eth.length){ html+='<h3>Porte Ethernet</h3>'; eth.forEach(s=>html+=chTbl(s)); }
   html+='</body></html>';
   w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
@@ -1677,6 +1696,13 @@ function viewMacchina(c, uid_, mid){
     el('button',{class:'btn sm',onclick:()=>printMacchina(m)},'🖨 Stampa'),
     detailDupBtns(u,'macchina',m,'macchina/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la macchina «'+(m.nome||'')+'»?')){ purgeIncroci(collectChIds(m)); u.macchine=u.macchine.filter(x=>x!==m); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina macchina')));
+  c.append(metaFieldsRow(m));
+  const schedaCard=(s,color)=>{ const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid '+color}); card.onclick=()=>location.hash='scheda/'+u._id+'/'+m._id+'/'+s._id;
+    card.append(
+      el('div',{class:'ccrf-dev'}, el('div',{class:'n'},s.nome||'Scheda'), el('div',{class:'b'},tipoDot(s.tipo))),
+      el('div',{style:'margin-top:6px'}, el('span',{class:'tag',style:'background:'+tipoColor(s.tipo)+'22;color:'+tipoColor(s.tipo)},tipoLabel(s.tipo))),
+      el('div',{class:'sub',style:'margin-top:8px'}, (s.canali||[]).length+' canali'));
+    return card; };
   for(const dir of ['in','out']){
     const meta=DIR_META[dir];
     c.append(el('div',{class:'section-h',style:'color:'+meta.color+';border-color:'+meta.color+'55'}, meta.ico+' '+meta.plural));
@@ -1684,21 +1710,30 @@ function viewMacchina(c, uid_, mid){
     const schede=schedeOf(m,dir);
     if(!schede.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px 12px'},'Nessuna scheda di '+meta.label.toLowerCase()+'.')); continue; }
     const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
-    for(const s of schede){
-      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid '+meta.color}); card.onclick=()=>location.hash='scheda/'+u._id+'/'+m._id+'/'+s._id;
-      card.append(
-        el('div',{class:'ccrf-dev'}, el('div',{class:'n'},s.nome||meta.label), el('div',{class:'b'},tipoDot(s.tipo))),
-        el('div',{style:'margin-top:6px'}, el('span',{class:'tag',style:'background:'+tipoColor(s.tipo)+'22;color:'+tipoColor(s.tipo)},tipoLabel(s.tipo))),
-        el('div',{class:'sub',style:'margin-top:8px'}, (s.canali||[]).length+' canali'));
-      cards.append(card);
-    }
+    for(const s of schede) cards.append(schedaCard(s, meta.color));
     c.append(cards);
   }
+  // ---- Porte Ethernet (non entrano nel Quadro Incroci) ----
+  c.append(el('div',{class:'section-h',style:'color:'+ETH_TIPO.color+';border-color:'+ETH_TIPO.color+'55'},'🔌 Porte Ethernet'));
+  c.append(el('div',{class:'toolbar'},
+    el('button',{class:'btn sm',onclick:()=>nuovaPortaEth(u,m,'in')},'➕ Nuova porta Ethernet (ingresso)'),
+    el('button',{class:'btn sm',onclick:()=>nuovaPortaEth(u,m,'out')},'➕ Nuova porta Ethernet (uscita)')));
+  const eth=[...ethOf(m,'in'),...ethOf(m,'out')];
+  if(!eth.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px 12px'},'Nessuna porta Ethernet.')); }
+  else { const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const s of eth) cards.append(schedaCard(s, ETH_TIPO.color));
+    c.append(cards); }
 }
 function nuovaScheda(u,m,dir){
   const nome=prompt('Nome della nuova scheda di '+DIR_META[dir].label.toLowerCase()+':', DIR_META[dir].label);
   if(nome===null) return;
   const s=newScheda(dir, nome.trim()||DIR_META[dir].label, 'analogico', []);
+  (m.schede=m.schede||[]).push(s); markDirty(); location.hash='scheda/'+u._id+'/'+m._id+'/'+s._id;
+}
+function nuovaPortaEth(u,m,dir){
+  const nome=prompt('Nome della porta Ethernet ('+DIR_META[dir].label.toLowerCase()+'):','ETH');
+  if(nome===null) return;
+  const s=newScheda(dir, nome.trim()||'ETH', 'ethernet', []);
   (m.schede=m.schede||[]).push(s); markDirty(); location.hash='scheda/'+u._id+'/'+m._id+'/'+s._id;
 }
 
@@ -1716,8 +1751,9 @@ function viewScheda(c, uid_, mid, sid){
   c.append(dlPatch);
   const titleInp=el('input',{value:s.nome||'',style:'font-size:16px;font-weight:600;max-width:300px',
     onchange:e=>{ s.nome=e.target.value.trim()||meta.label; markDirty(); $('#viewTitle').textContent='Scheda · '+s.nome; }});
+  const tipoOpts=isEthScheda(s)?[ETH_TIPO]:TIPOLOGIE;
   const tipoSel=el('select',{style:'width:auto;min-width:130px',title:'Tipologia di segnale',onchange:e=>{ s.tipo=e.target.value; markDirty(); }},
-    ...TIPOLOGIE.map(t=>el('option',{value:t.id,selected:(s.tipo||'analogico')===t.id?'selected':null},t.label)));
+    ...tipoOpts.map(t=>el('option',{value:t.id,selected:(s.tipo||'analogico')===t.id?'selected':null},t.label)));
   c.append(el('div',{class:'toolbar'},
     el('span',{class:'tag',style:'background:'+meta.color+'22;color:'+meta.color},meta.ico+' '+meta.label), titleInp,
     el('span',{class:'muted',style:'font-size:12px;margin-left:6px'},'Tipologia:'), tipoSel, el('div',{class:'sp',style:'flex:1'}),
@@ -1842,6 +1878,7 @@ function viewPatch(c, uid_, pid){
     el('button',{class:'btn sm',onclick:()=>printPatch(pp)},'🖨 Stampa'),
     detailDupBtns(u,'patch',pp,'patch/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la patch «'+(pp.nome||'')+'»?')){ u.patch=u.patch.filter(x=>x!==pp); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina patch')));
+  c.append(metaFieldsRow(pp));
   // porta da evidenziare (arrivando da un doppio clic sul campo Patch di un canale)
   const hl = (pendingPatchHL && pendingPatchHL.patchId===pp._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
   const area=el('div'); c.append(area);
@@ -1898,7 +1935,7 @@ function printPatch(pp){
   const porte=pp.porte||[];
   const head='<th>Porta</th>'+porte.map((po,i)=>'<th>'+(i+1)+'</th>').join('');
   const body=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esc(po[r.key]==null?'':po[r.key])+'</td>').join('')+'</tr>').join('');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pp.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pp.nome)+' — patch audio</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pp.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pp.nome)+' — patch audio</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(pp)+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
 }
 
@@ -1949,6 +1986,7 @@ function viewSwitch(c, uid_, sid){
         el('button',{class:'btn sm',onclick:()=>switchProps(sw,u,render)},'✎ Proprietà'),
         el('button',{class:'btn sm',onclick:()=>exportSwitch(sw)},'⤓ Excel'),
         detailDupBtns(u,'switch',sw,'switch/'))));
+    wrap.append(metaFieldsRow(sw));
     // ---- legenda ----
     wrap.append(el('div',{class:'legend'},
       el('span',{class:'lg'}, el('i',{class:'occ'}), 'porta occupata'),
@@ -2115,7 +2153,7 @@ function printSwitch(sw){
   const trs=(sw.porte||[]).map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esc(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esc(po[c.key]==null?'':po[c.key])+'</td>')).join('')+'</tr>').join('');
   const meta=[]; if(String(sw.categoria||'').trim())meta.push(esc(sw.categoria)); if(String(sw.piano||'').trim())meta.push('Piano '+esc(sw.piano)); if(String(sw.armadio||'').trim())meta.push('Armadio '+esc(sw.armadio));
   const occN=(sw.porte||[]).filter(swPortOccupata).length;
-  const subp=(meta.length?meta.join(' · ')+' · ':'')+(sw.porte||[]).length+' porte · '+occN+' occupate · stampato il '+new Date().toLocaleString('it-IT');
+  const subp=(meta.length?meta.join(' · ')+' · ':'')+(sw.porte||[]).length+' porte · '+occN+' occupate · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(sw);
   w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(sw.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}</style></head><body><h2>'+esc(sw.nome)+' — switch</h2><p>'+subp+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
 }
@@ -2206,6 +2244,7 @@ function viewPannello(c, uid_, pid){
     el('button',{class:'btn sm',onclick:()=>printPannello(pl)},'🖨 Stampa'),
     detailDupBtns(u,'pannello',pl,'pannello/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il pannello «'+(pl.nome||'')+'»?')){ u.pannelli=u.pannelli.filter(x=>x!==pl); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina pannello')));
+  c.append(metaFieldsRow(pl));
   const hl = (pendingPatchHL && pendingPatchHL.patchId===pl._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
   const area=el('div'); c.append(area);
   function render(){
@@ -2276,7 +2315,7 @@ function printPannello(pl){
     if(r.type==='color') return '<tr><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td style="background:'+esc(po.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
     return '<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esc(po[r.key]==null?'':po[r.key])+'</td>').join('')+'</tr>';
   }).join('');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pl.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pl.nome)+' — pannello</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pl.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pl.nome)+' — pannello</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(pl)+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
 }
 
@@ -2346,6 +2385,7 @@ function viewBox(c, uid_, bid){
     el('button',{class:'btn sm',onclick:()=>printBox(box)},'🖨 Stampa'),
     detailDupBtns(u,'box',box,'box/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il box «'+(box.nome||'')+'»?')){ u.box=u.box.filter(x=>x!==box); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina box')));
+  c.append(metaFieldsRow(box));
   // coppia da evidenziare (arrivando da una destinazione «box» di un'altra cassetta)
   const hl = (pendingPatchHL && pendingPatchHL.patchId===box._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
   const area=el('div'); c.append(area);
@@ -2419,7 +2459,7 @@ function printBox(box){
   const rowDef=[['Tipologia XLR','tipoXlr'],['Nome Segnale','segnale'],['Pannello destinazione','destPannello'],['Posizione pannello','destPosizione']];
   const bodyRows=rowDef.map(rd=>'<tr><th>'+esc(rd[0])+'</th>'+coppie.map(cp=>'<td>'+esc(cp[rd[1]]==null?'':cp[rd[1]])+'</td>').join('')+'</tr>').join('')
     +'<tr><th>Colore cavo</th>'+coppie.map(cp=>'<td style="background:'+esc(cp.colore||'#fff')+'">&nbsp;</td>').join('')+'</tr>';
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(box.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}h3{margin:16px 0 6px;font-size:13px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}.fig{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #999;border-radius:8px;padding:12px;background:#f4f6fa}.cn{width:96px;border:1px solid #bbb;border-radius:8px;background:#fff;padding:8px 6px;text-align:center}.cn .nm{font-size:10px;color:#777}.cn .xl{width:38px;height:38px;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #666;font-size:12px}.cn .xl.rj45{border-radius:5px;font-size:9px}.cn .xl.bnc{box-shadow:inset 0 0 0 4px rgba(217,119,6,.28);font-size:10px}.cn .sg{font-size:11px;font-weight:600}.cn .cw{height:6px;border-radius:3px;margin-top:5px}.cn .dst{font-size:9.5px;color:#666;margin-top:3px}</style></head><body><h2>📦 '+esc(box.nome)+' — cassetta/box</h2><p>'+coppie.length+' coppie · stampato il '+new Date().toLocaleString('it-IT')+'</p><h3>Pannello frontale</h3><div class="fig">'+connHtml+'</div><h3>Coppie e destinazioni</h3><table><thead><tr>'+th+'</tr></thead><tbody>'+bodyRows+'</tbody></table></body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(box.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}h3{margin:16px 0 6px;font-size:13px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}.fig{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #999;border-radius:8px;padding:12px;background:#f4f6fa}.cn{width:96px;border:1px solid #bbb;border-radius:8px;background:#fff;padding:8px 6px;text-align:center}.cn .nm{font-size:10px;color:#777}.cn .xl{width:38px;height:38px;border-radius:50%;margin:4px auto;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #666;font-size:12px}.cn .xl.rj45{border-radius:5px;font-size:9px}.cn .xl.bnc{box-shadow:inset 0 0 0 4px rgba(217,119,6,.28);font-size:10px}.cn .sg{font-size:11px;font-weight:600}.cn .cw{height:6px;border-radius:3px;margin-top:5px}.cn .dst{font-size:9.5px;color:#666;margin-top:3px}</style></head><body><h2>📦 '+esc(box.nome)+' — cassetta/box</h2><p>'+coppie.length+' coppie · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(box)+'</p><h3>Pannello frontale</h3><div class="fig">'+connHtml+'</div><h3>Coppie e destinazioni</h3><table><thead><tr>'+th+'</tr></thead><tbody>'+bodyRows+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
 
