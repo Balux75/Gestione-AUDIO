@@ -842,6 +842,7 @@ const TIPOLOGIE=[
   {id:'analogico', label:'Analogici', color:'#f59e0b'},
   {id:'dante',     label:'Dante',     color:'#22c55e'},
   {id:'digitale',  label:'Digitali',  color:'#a855f7'},
+  {id:'sdi',       label:'SDI',       color:'#06b6d4'},
   {id:'madi',      label:'MADI',      color:'#3b82f6'},
   {id:'bealinx',   label:'Bealinx',   color:'#ec4899'},
 ];
@@ -917,11 +918,15 @@ function resolvePatch(u, text){
 }
 // apre il pannello patch della stanza collegato a un canale, evidenziando la porta
 function openPatchFrom(u, text){
-  if(!String(text||'').trim()){ toast('Nessuna patch indicata in questo canale'); return; }
+  const t=String(text||'').trim();
+  if(!t){ toast('Nessuna patch indicata in questo canale'); return; }
   const r=resolvePatch(u,text);
-  if(!r){ toast('Patch «'+String(text).trim()+'» non trovata nella stanza'); return; }
-  pendingPatchHL = r.po? {patchId:r.pp._id, portId:r.po._id} : null;
-  location.hash='patch/'+u._id+'/'+r.pp._id;
+  if(r){ pendingPatchHL = r.po? {patchId:r.pp._id, portId:r.po._id} : null; location.hash='patch/'+u._id+'/'+r.pp._id; return; }
+  // riferimento a un sezionamento (per nome)
+  const low=t.toLowerCase();
+  const sez=(u.sezionamenti||[]).find(z=>{ const n=String(z.nome||'').trim().toLowerCase(); return n && (low===n||low.startsWith(n)||n.startsWith(low)||low.includes(n)); });
+  if(sez){ location.hash='sezionamento/'+u._id+'/'+sez._id; return; }
+  toast('Patch «'+t+'» non trovata nella stanza');
 }
 // confronto per nome (locale IT, numerico: «SEZ. 2» prima di «SEZ. 10»)
 function byNome(a,b){ return String(a&&a.nome||'').localeCompare(String(b&&b.nome||''),'it',{numeric:true,sensitivity:'base'}); }
@@ -1816,8 +1821,9 @@ function viewScheda(c, uid_, mid, sid){
   c.append(el('datalist',{id:'ccrfMS'}, ...['Mono','Stereo','Mono/Stereo'].map(v=>el('option',{value:v}))));
   // suggerimenti per il campo Patch: pannelli e porte della stanza
   const dlPatch=el('datalist',{id:'patchList'});
-  for(const pp of (u.patch||[])){ dlPatch.append(el('option',{value:pp.nome}));
+  for(const pp of sortedByNome(u.patch)){ dlPatch.append(el('option',{value:pp.nome,label:'Patch'}));
     for(const po of (pp.porte||[])){ const lab=pp.nome+(po.cavo?(' · '+po.cavo):(po.numero?(' · '+po.numero):''))+(po.segnale?(' · '+po.segnale):''); dlPatch.append(el('option',{value:lab})); } }
+  for(const sez of sortedByNome(u.sezionamenti)) dlPatch.append(el('option',{value:sez.nome,label:'Sezionamento'}));
   c.append(dlPatch);
   const titleInp=el('input',{value:s.nome||'',style:'font-size:16px;font-weight:600;max-width:300px',
     onchange:e=>{ s.nome=e.target.value.trim()||meta.label; markDirty(); $('#viewTitle').textContent='Scheda · '+s.nome; }});

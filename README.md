@@ -47,7 +47,7 @@ Unità operativa   (la STANZA — es. «CCRF», «Regia A», …)
 
 Le **schede di ingresso** e di **uscita** sono tenute **separate** e distinte da un **colore**
 (azzurro gli ingressi, arancio le uscite). Ogni scheda ha una **tipologia** di segnale
-(Analogici / Dante / Digitali / MADI / Bealinx) usata per colorare e filtrare il Quadro Incroci.
+(Analogici / Dante / Digitali / SDI / MADI / Bealinx) usata per colorare e filtrare il Quadro Incroci.
 Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/stereo**, **note** e **slot**.
 
 ---
@@ -134,8 +134,8 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   linea (canale, macchina/segnale, CH, mono/stereo, **patch**, note, slot) con l'indicazione
   dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
   (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**. Il campo **Patch** collega il canale a un
-  pannello patch della stanza: **doppio clic** sul campo (o il pulsante **↗**) apre la patch
-  relativa; il campo ha i suggerimenti dei pannelli/porte della stanza.
+  **pannello patch** o a un **sezionamento** della stanza: **doppio clic** sul campo (o il pulsante
+  **↗**) apre l'elemento relativo; la lista a discesa suggerisce **patch/porte e sezionamenti** della stanza.
 - **📊 Dashboard** — riepilogo di incroci attivi, unità, macchine e canali.
 - **💽 Backup / Ripristino** — esporta/importa l'intero database in **JSON**, esporta tutto in
   **Excel** (Ingressi, Uscite, Incroci), **⤓ Scarica app (HTML)** per salvare una copia autonoma
