@@ -55,6 +55,8 @@ textarea{resize:vertical;min-height:64px}
 /* Cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.card-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.card-acts .btn.sm{padding:3px 8px;font-size:11px}
 .card .k{color:var(--muted);font-size:12px}
 .card .v{font-size:28px;font-weight:700;margin-top:6px}
 .card .sub{color:var(--muted);font-size:11px;margin-top:4px}
@@ -1291,6 +1293,56 @@ function viewUnita(c){
   }
   c.append(cards);
 }
+
+/* -------- Duplicazione elementi (macchine, patch, switch, pannelli, box) -------- */
+// rigenera ricorsivamente tutti gli _id mantenendo il prefisso (mac_, sch_, ch_, po_, sp_, pl_, bc_…)
+function regenIds(node){
+  if(Array.isArray(node)){ node.forEach(regenIds); }
+  else if(node && typeof node==='object'){
+    if(typeof node._id==='string'){ const pre=node._id.split('_')[0]; node._id=uid(pre?pre+'_':'id_'); }
+    for(const k in node){ if(k!=='_id') regenIds(node[k]); }
+  }
+}
+function deepCloneNewIds(obj){ const c=JSON.parse(JSON.stringify(obj)); regenIds(c); return c; }
+const DUP_KINDS={ macchina:{list:'macchine',nome:'Macchina'}, patch:{list:'patch',nome:'Patch'},
+  switch:{list:'switches',nome:'Switch'}, pannello:{list:'pannelli',nome:'Pannello'}, box:{list:'box',nome:'Box'} };
+// modale di scelta dell'unità operativa di destinazione
+function chooseUnitModal(title, onPick){
+  const units=(DB.unita||[]); if(!units.length){ toast('Nessuna unità disponibile'); return; }
+  const sel=el('select',{style:'width:100%'}, ...units.map(x=>el('option',{value:x._id},x.nome||'Unità')));
+  const applyBtn=el('button',{class:'btn primary'},'Duplica qui');
+  applyBtn.onclick=()=>{ const t=findUnita(sel.value); closeModal(); if(t) onPick(t); };
+  openModal(el('div',{}, el('div',{class:'mh'}, el('h3',{},title), el('button',{class:'x',onclick:closeModal},'×')),
+    el('div',{class:'mb'}, el('div',{class:'fld'}, el('label',{},'Unità operativa di destinazione'), sel)),
+    el('div',{class:'mf'}, el('button',{class:'btn',onclick:closeModal},'Annulla'), applyBtn)));
+}
+// duplica un elemento nella stessa unità (nome + « (copia)»); ritorna la copia
+function duplicaLocale(u, kind, obj, reload){
+  const meta=DUP_KINDS[kind]; const c=deepCloneNewIds(obj); c.nome=(obj.nome||meta.nome)+' (copia)';
+  (u[meta.list]=u[meta.list]||[]).push(c); markDirty(); buildNav(); reload&&reload(); toast(meta.nome+' duplicato');
+  return c;
+}
+// pulsanti «Duplica / → Altra unità» per le toolbar delle viste di dettaglio (naviga alla copia)
+function detailDupBtns(u, kind, obj, routePrefix){
+  return [ el('button',{class:'btn sm',onclick:()=>{ const c=duplicaLocale(u,kind,obj); location.hash=routePrefix+u._id+'/'+c._id; }},'⧉ Duplica'),
+           el('button',{class:'btn sm',onclick:()=>duplicaAltraUnita(u,kind,obj)},'⧉→ Altra unità') ];
+}
+// duplica un elemento in un'altra unità operativa (a scelta)
+function duplicaAltraUnita(u, kind, obj, reload){
+  const meta=DUP_KINDS[kind];
+  chooseUnitModal('Duplica '+meta.nome+' «'+(obj.nome||'')+'» in un\'altra unità', target=>{
+    const c=deepCloneNewIds(obj); (target[meta.list]=target[meta.list]||[]).push(c);
+    markDirty(); buildNav(); toast(meta.nome+' duplicato in «'+(target.nome||'')+'»');
+    if(target===u) reload&&reload();
+  });
+}
+// riga di azioni «Duplica / → Altra unità» in fondo a una card (ferma la navigazione della card)
+function cardDupActions(u, kind, obj, reload){
+  const stop=fn=>e=>{ e.stopPropagation(); fn(); };
+  return el('div',{class:'card-acts',onclick:e=>e.stopPropagation()},
+    el('button',{class:'btn sm',onclick:stop(()=>duplicaLocale(u,kind,obj,reload))},'⧉ Duplica'),
+    el('button',{class:'btn sm',onclick:stop(()=>duplicaAltraUnita(u,kind,obj,reload))},'⧉→ Altra unità'));
+}
 function viewUnitaDetail(c, id){
   const u=findUnita(id); if(!u){ location.hash='unita'; return; }
   u.macchine=u.macchine||[];
@@ -1319,7 +1371,8 @@ function viewUnitaDetail(c, id){
         el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛️ '+(m.nome||'Macchina')), el('div',{class:'b'},macCanali(m)+' canali')),
         el('div',{class:'chips',style:'margin-top:8px'},
           el('span',{class:'tag',style:'background:'+DIR_META.in.color+'22;color:'+DIR_META.in.color},'🎙️ '+ni+' schede ingresso'),
-          el('span',{class:'tag',style:'background:'+DIR_META.out.color+'22;color:'+DIR_META.out.color},'🔊 '+no+' schede uscita')));
+          el('span',{class:'tag',style:'background:'+DIR_META.out.color+'22;color:'+DIR_META.out.color},'🔊 '+no+' schede uscita')),
+        cardDupActions(u,'macchina',m,reloadUnit));
       cards.append(card);
     }
     c.append(cards);
@@ -1334,7 +1387,8 @@ function viewUnitaDetail(c, id){
     const pc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
     for(const pp of sortedByNome(u.patch)){
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #eab308'}); card.onclick=()=>location.hash='patch/'+u._id+'/'+pp._id;
-      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔌 '+(pp.nome||'Patch')), el('div',{class:'b'},(pp.porte||[]).length+' porte')));
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔌 '+(pp.nome||'Patch')), el('div',{class:'b'},(pp.porte||[]).length+' porte')),
+        cardDupActions(u,'patch',pp,reloadUnit));
       pc.append(card);
     }
     c.append(pc);
@@ -1351,7 +1405,8 @@ function viewUnitaDetail(c, id){
       const occ=(sw.porte||[]).filter(swPortOccupata).length;
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #06b6d4'}); card.onclick=()=>location.hash='switch/'+u._id+'/'+sw._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔀 '+(sw.nome||'Switch')), el('div',{class:'b'},(sw.porte||[]).length+' porte')),
-        el('div',{class:'sub',style:'margin-top:8px'}, occ+' porte occupate'));
+        el('div',{class:'sub',style:'margin-top:8px'}, occ+' porte occupate'),
+        cardDupActions(u,'switch',sw,reloadUnit));
       sc.append(card);
     }
     c.append(sc);
@@ -1366,7 +1421,8 @@ function viewUnitaDetail(c, id){
     const plc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
     for(const pl of sortedByNome(u.pannelli)){
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #14b8a6'}); card.onclick=()=>location.hash='pannello/'+u._id+'/'+pl._id;
-      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛 '+(pl.nome||'Pannello')), el('div',{class:'b'},(pl.porte||[]).length+' porte')));
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🎛 '+(pl.nome||'Pannello')), el('div',{class:'b'},(pl.porte||[]).length+' porte')),
+        cardDupActions(u,'pannello',pl,reloadUnit));
       plc.append(card);
     }
     c.append(plc);
@@ -1383,7 +1439,8 @@ function viewUnitaDetail(c, id){
       const usate=(box.coppie||[]).filter(cp=>String(cp.tipoXlr||'').toUpperCase()!=='LIBERO'&&String(cp.tipoXlr||'').trim()).length;
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #eab308'}); card.onclick=()=>location.hash='box/'+u._id+'/'+box._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'📦 '+(box.nome||'Box')), el('div',{class:'b'},(box.coppie||[]).length+' coppie')),
-        el('div',{class:'sub',style:'margin-top:8px'}, usate+' coppie attive'));
+        el('div',{class:'sub',style:'margin-top:8px'}, usate+' coppie attive'),
+        cardDupActions(u,'box',box,reloadUnit));
       bc.append(card);
     }
     c.append(bc);
@@ -1545,6 +1602,54 @@ function printUnita(u){
   html+='</body></html>';
   w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
+/* -------- Import / Export / Stampa a livello di MACCHINA -------- */
+function exportMacchina(m){
+  const chRows=dir=>{ const rows=[['Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Patch','Note','Slot']];
+    for(const s of (m.schede||[])){ if(s.dir!==dir)continue; (s.canali||[]).forEach((ch,i)=>rows.push([s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.patch,ch.note,ch.slot])); }
+    return rows; };
+  downloadBytes('macchina_'+String(m.nome||'macchina').replace(/[^\w]+/g,'_')+'.xlsx',
+    XLSX.build([{name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')}]),
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Macchina esportata');
+}
+function importMacchina(m, reload){
+  const inp=el('input',{type:'file',accept:'.xlsx',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{
+      const bytes=new Uint8Array(await f.arrayBuffer()); const names=await XLSX.sheetNames(bytes);
+      const getSheet=async re=>{ const n=names.find(x=>re.test(String(x))); return n?(await XLSX.readSheet(bytes,n)).rows:null; };
+      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i);
+      if(!rIn&&!rOut){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite)'); return; }
+      const chSpec={ scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']}, canale:{eq:['canale']},
+        segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']}, ch:{eq:['ch','l/r','l-r','lr']},
+        ms:{inc:['mono','stereo']}, patch:{eq:['patch']}, note:{inc:['note']}, slot:{inc:['slot']} };
+      const schede=[];
+      const build=(rows,dir)=>{ if(!rows||rows.length<2)return; const map=headerMap(rows[0],chSpec);
+        for(const r of rows.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
+          const sn=xcell(r,map.scheda)||(dir==='in'?'Ingressi':'Uscite'); const tp=labelToTipo(xcell(r,map.tipo))||'analogico';
+          let s=schede.find(x=>x.dir===dir&&x.nome===sn); if(!s){ s=newScheda(dir,sn,tp,[]); schede.push(s); } else if(tp) s.tipo=tp;
+          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),patch:xcell(r,map.patch),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
+      build(rIn,'in'); build(rOut,'out');
+      const nCan=schede.reduce((a,s)=>a+s.canali.length,0);
+      if(!confirm('Import macchina «'+(m.nome||'')+'»:\n· '+schede.length+' schede, '+nCan+' canali\n\nSostituisce le schede della macchina (gli incroci collegati verranno azzerati). Procedere?')) return;
+      purgeIncroci(collectChIds(m)); m.schede=schede; markDirty(); reload&&reload(); toast('Macchina importata ('+schede.length+' schede, '+nCan+' canali)');
+    }catch(err){ console.error(err); toast('Errore import: '+err.message); }
+  }}); document.body.append(inp); inp.click(); inp.remove();
+}
+function printMacchina(m){
+  const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const esctd=v=>esc(v==null?'':v);
+  const chTbl=s=>{ const th='<th>#</th>'+CH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+    const tr=(s.canali||[]).map((ch,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esctd(ch[c.key])+'</td>').join('')+'</tr>').join('');
+    return '<h4>'+esc((s.dir==='in'?'🎙 ':'🔊 ')+s.nome)+' <small>('+tipoLabel(s.tipo)+' · '+(s.canali||[]).length+' canali)</small></h4><table><thead><tr>'+th+'</tr></thead><tbody>'+tr+'</tbody></table>'; };
+  let html='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(m.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h1{margin:0 0 6px}h3{margin:12px 0 4px;color:#333}h4{margin:10px 0 4px;color:#444;font-weight:600}small{color:#777;font-weight:400}table{border-collapse:collapse;margin:2px 0 8px;font-size:10.5px}th,td{border:1px solid #999;padding:3px 6px;text-align:left}th{background:#eee}</style></head><body>';
+  html+='<h1>🎛 '+esc(m.nome||'Macchina')+'</h1><p style="color:#666;font-size:12px">'+macCanali(m)+' canali · stampato il '+new Date().toLocaleString('it-IT')+'</p>';
+  const ins=(m.schede||[]).filter(s=>s.dir==='in'), outs=(m.schede||[]).filter(s=>s.dir==='out');
+  if(ins.length){ html+='<h3>Schede di ingresso</h3>'; ins.forEach(s=>html+=chTbl(s)); }
+  if(outs.length){ html+='<h3>Schede di uscita</h3>'; outs.forEach(s=>html+=chTbl(s)); }
+  html+='</body></html>';
+  w.document.write(html); w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
+}
 function nuovaMacchina(u){
   const nome=prompt('Nome della nuova macchina (es. MATRICE CENTRALIZZATA, Mixer, Codec…):','MATRICE CENTRALIZZATA');
   if(nome===null) return;
@@ -1563,9 +1668,14 @@ function viewMacchina(c, uid_, mid){
   m.schede=m.schede||[];
   $('#viewTitle').textContent='Macchina · '+(m.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
+  const reloadMac=()=>{ const cc=$('#content'); cc.innerHTML=''; viewMacchina(cc, u._id, m._id); };
   const titleInp=el('input',{value:m.nome||'',style:'font-size:16px;font-weight:600;max-width:340px',
     onchange:e=>{ m.nome=e.target.value.trim()||'Macchina'; markDirty(); buildNav(); $('#viewTitle').textContent='Macchina · '+m.nome; }});
   c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🎛️'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>importMacchina(m,reloadMac)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportMacchina(m)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printMacchina(m)},'🖨 Stampa'),
+    detailDupBtns(u,'macchina',m,'macchina/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la macchina «'+(m.nome||'')+'»?')){ purgeIncroci(collectChIds(m)); u.macchine=u.macchine.filter(x=>x!==m); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina macchina')));
   for(const dir of ['in','out']){
     const meta=DIR_META[dir];
@@ -1730,6 +1840,7 @@ function viewPatch(c, uid_, pid){
     el('button',{class:'btn sm',onclick:()=>importPatch(pp,render)},'⤒ Importa'),
     el('button',{class:'btn sm',onclick:()=>exportPatch(pp)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printPatch(pp)},'🖨 Stampa'),
+    detailDupBtns(u,'patch',pp,'patch/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare la patch «'+(pp.nome||'')+'»?')){ u.patch=u.patch.filter(x=>x!==pp); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina patch')));
   // porta da evidenziare (arrivando da un doppio clic sul campo Patch di un canale)
   const hl = (pendingPatchHL && pendingPatchHL.patchId===pp._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
@@ -1836,7 +1947,8 @@ function viewSwitch(c, uid_, sid){
         el('button',{class:'btn sm',onclick:()=>importSwitch(sw,render)},'⤒ Importa (Excel/log)'),
         el('button',{class:'btn sm',onclick:()=>printSwitch(sw)},'🖨 Stampa'),
         el('button',{class:'btn sm',onclick:()=>switchProps(sw,u,render)},'✎ Proprietà'),
-        el('button',{class:'btn sm',onclick:()=>exportSwitch(sw)},'⤓ Excel'))));
+        el('button',{class:'btn sm',onclick:()=>exportSwitch(sw)},'⤓ Excel'),
+        detailDupBtns(u,'switch',sw,'switch/'))));
     // ---- legenda ----
     wrap.append(el('div',{class:'legend'},
       el('span',{class:'lg'}, el('i',{class:'occ'}), 'porta occupata'),
@@ -2092,6 +2204,7 @@ function viewPannello(c, uid_, pid){
     el('button',{class:'btn sm',onclick:()=>importPannello(pl,render)},'⤒ Importa'),
     el('button',{class:'btn sm',onclick:()=>exportPannello(pl)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printPannello(pl)},'🖨 Stampa'),
+    detailDupBtns(u,'pannello',pl,'pannello/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il pannello «'+(pl.nome||'')+'»?')){ u.pannelli=u.pannelli.filter(x=>x!==pl); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina pannello')));
   const hl = (pendingPatchHL && pendingPatchHL.patchId===pl._id)? pendingPatchHL.portId : null; pendingPatchHL=null;
   const area=el('div'); c.append(area);
@@ -2231,6 +2344,7 @@ function viewBox(c, uid_, bid){
     el('button',{class:'btn sm',onclick:()=>importBox(box,render)},'⤒ Importa'),
     el('button',{class:'btn sm',onclick:()=>exportBox(box)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printBox(box)},'🖨 Stampa'),
+    detailDupBtns(u,'box',box,'box/'),
     el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il box «'+(box.nome||'')+'»?')){ u.box=u.box.filter(x=>x!==box); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina box')));
   // coppia da evidenziare (arrivando da una destinazione «box» di un'altra cassetta)
   const hl = (pendingPatchHL && pendingPatchHL.patchId===box._id)? pendingPatchHL.portId : null; pendingPatchHL=null;

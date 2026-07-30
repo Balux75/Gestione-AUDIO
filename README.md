@@ -108,7 +108,12 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   (Excel/CSV), **Esporta** e **Stampa** (con la raffigurazione).
 - **🎛️ Dettaglio macchina** — nome modificabile e due sezioni distinte per colore: **🎙️ Schede di
   ingresso** e **🔊 Schede di uscita**. Con **➕ Nuova scheda ingresso/uscita** aggiungi le schede
-  (una per dispositivo: MADI 1, MADI 2, Dante 1…).
+  (una per dispositivo: MADI 1, MADI 2, Dante 1…). A livello di macchina sono disponibili **⤒ Importa**,
+  **⤓ Esporta** e **🖨 Stampa** (fogli *Ingressi*/*Uscite* con tutte le schede e i canali).
+- **⧉ Duplica / → Altra unità** — ogni **macchina, patch, switch, pannello e box** può essere
+  **duplicato** nella stessa stanza (con « (copia)» nel nome) o **duplicato in un'altra unità
+  operativa** a scelta, dai pulsanti sulle relative card e nelle toolbar di dettaglio. La copia riceve
+  nuovi identificativi (gli incroci non vengono ereditati).
 - **🎚️ Dettaglio scheda** — nome e **tipologia** modificabili; tabella dei **canali** editabile in
   linea (canale, macchina/segnale, CH, mono/stereo, **patch**, note, slot) con l'indicazione
   dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
