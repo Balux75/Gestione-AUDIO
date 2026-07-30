@@ -81,6 +81,13 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   segnale e provenienza/cavo). Aggiungi/elimina porte (o **+8** in blocco), con **Importa**
   (Excel/CSV), **Esporta** e **Stampa** (layout orizzontale). Le patch **non entrano** nel Quadro
   Incroci: servono a documentare i pannelli/cablaggi della stanza.
+- **🧩 Sezionamenti** — subito dopo le patch, ogni stanza può contenere dei **sezionamenti** dei cavi
+  multicoppia (sviluppo **orizzontale**: ogni colonna è una **posizione**). Le righe seguono lo schema
+  del foglio di sezionamento: **Cavo multicoppia, Numerazione, Colore, Provenienza, Canale, Posizione**
+  (lato sorgente), gli indicatori **Parallelo** e **Passante** (clic per attivarli), poi **Posizione,
+  Canale, Destinazione, Colore, Numerazione, Cavo multicoppia** (lato destinazione). La **Posizione** è
+  automatica (numero di colonna). Aggiungi/elimina posizioni (o **+8**), con **Importa** (Excel/CSV),
+  **Esporta** e **Stampa**. I sezionamenti **non entrano** nel Quadro Incroci.
 - **🔀 Switch** — dopo le patch, ogni stanza può contenere degli **switch di rete**: tabella
   verticale delle porte con **Porta, Patch/Stanza, Descrizione, IP, MAC, Subnet, Gateway, VLAN,
   Note, Colore** (schema del file Excel di configurazione). Creando uno switch scegli il numero

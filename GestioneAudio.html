@@ -210,6 +210,10 @@ table.patch tr.prov td input{font-weight:600}
 table.patch th.porthead.hlcol{box-shadow:inset 0 0 0 2px var(--accent2);background:#123a22}
 table.patch td.hlcol{box-shadow:inset 0 0 0 2px var(--accent2)}
 table.patch td.hlcol input{background:rgba(34,197,94,.12)}
+table.patch td.poscell{background:#39320f;color:#e9d27a;font-weight:700;text-align:center;padding:6px}
+table.patch td.togglecell{text-align:center;cursor:pointer;color:var(--muted);font-weight:700;padding:6px;user-select:none}
+table.patch td.togglecell.on{color:#22c55e;background:rgba(34,197,94,.14)}
+table.patch tr.prov td input{font-weight:600}
 table.patch td.colcell{padding:3px}
 table.patch td.colcell input[type=color]{width:100%;min-width:70px;height:26px;padding:0;border:1px solid var(--line);border-radius:4px;background:transparent;cursor:pointer}
 table.patch td.destcell{padding:0 2px;white-space:nowrap}
@@ -1004,7 +1008,7 @@ function buildNav(){
   const nav=$('#nav'); nav.innerHTML='';
   const cur=location.hash.slice(1)||'dashboard';
   const mkLink=(id,ico,label,extra,pad)=>{ const cnt=extra?null:navCount(id);
-    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')||cur.startsWith('pannello/')||cur.startsWith('box/')||cur.startsWith('switch/')));
+    const active=(cur===id)||(id==='unita'&&(cur==='unita'||cur.startsWith('unita/')||cur.startsWith('macchina/')||cur.startsWith('scheda/')||cur.startsWith('patch/')||cur.startsWith('sezionamento/')||cur.startsWith('pannello/')||cur.startsWith('box/')||cur.startsWith('switch/')));
     return el('a',{href:'#'+id, class:(active?'active':''), style:pad?'padding-left:'+pad:''},
       el('span',{class:'ico'},ico), el('span',{},label), cnt!=null?el('span',{class:'cnt'},String(cnt)):null); };
   for(const it of VIEWS){
@@ -1012,7 +1016,7 @@ function buildNav(){
     nav.append(mkLink(it.id,it.ico,it.label));
     if(it.id==='unita'){
       for(const u of sortedByNome(DB.unita)){
-        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/')||cur.startsWith('pannello/'+u._id+'/')||cur.startsWith('box/'+u._id+'/')||cur.startsWith('switch/'+u._id+'/');
+        const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/')||cur.startsWith('sezionamento/'+u._id+'/')||cur.startsWith('pannello/'+u._id+'/')||cur.startsWith('box/'+u._id+'/')||cur.startsWith('switch/'+u._id+'/');
         nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
           el('span',{class:'ico'},'🏢'), el('span',{},u.nome||'Unità'),
           el('span',{class:'cnt'},String((u.macchine||[]).length))));
@@ -1039,6 +1043,7 @@ function route(){
   else if(hash==='nuova-unita'){ nuovaUnita(); }
   else if(hash.startsWith('scheda/')){ const [,uid_,mid,sid]=hash.split('/'); viewScheda(c, uid_, mid, sid); }
   else if(hash.startsWith('patch/')){ const [,uid_,pid]=hash.split('/'); viewPatch(c, uid_, pid); }
+  else if(hash.startsWith('sezionamento/')){ const [,uid_,zid]=hash.split('/'); viewSezionamento(c, uid_, zid); }
   else if(hash.startsWith('pannello/')){ const [,uid_,pid]=hash.split('/'); viewPannello(c, uid_, pid); }
   else if(hash.startsWith('box/')){ const [,uid_,bid]=hash.split('/'); viewBox(c, uid_, bid); }
   else if(hash.startsWith('switch/')){ const [,uid_,sid]=hash.split('/'); viewSwitch(c, uid_, sid); }
@@ -1310,7 +1315,8 @@ function regenIds(node){
 }
 function deepCloneNewIds(obj){ const c=JSON.parse(JSON.stringify(obj)); regenIds(c); return c; }
 const DUP_KINDS={ macchina:{list:'macchine',nome:'Macchina'}, patch:{list:'patch',nome:'Patch'},
-  switch:{list:'switches',nome:'Switch'}, pannello:{list:'pannelli',nome:'Pannello'}, box:{list:'box',nome:'Box'} };
+  sezionamento:{list:'sezionamenti',nome:'Sezionamento'}, switch:{list:'switches',nome:'Switch'},
+  pannello:{list:'pannelli',nome:'Pannello'}, box:{list:'box',nome:'Box'} };
 // modale di scelta dell'unità operativa di destinazione
 function chooseUnitModal(title, onPick){
   const units=(DB.unita||[]); if(!units.length){ toast('Nessuna unità disponibile'); return; }
@@ -1410,6 +1416,22 @@ function viewUnitaDetail(c, id){
     }
     c.append(pc);
   }
+  // ---- Sezionamenti ----
+  u.sezionamenti=u.sezionamenti||[];
+  c.append(el('div',{class:'section-h',style:'margin-top:22px'},'🧩 Sezionamenti'));
+  c.append(el('div',{class:'toolbar'}, el('button',{class:'btn sm',onclick:()=>nuovaSezionamento(u)},'➕ Nuovo sezionamento'),
+    el('span',{class:'muted',style:'font-size:12px'},'sezionamenti dei cavi multicoppia (provenienza/destinazione per posizione)')));
+  if(!u.sezionamenti.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessun sezionamento.')); }
+  else {
+    const zc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
+    for(const sez of sortedByNome(u.sezionamenti)){
+      const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #8b5cf6'}); card.onclick=()=>location.hash='sezionamento/'+u._id+'/'+sez._id;
+      card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🧩 '+(sez.nome||'Sezionamento')), el('div',{class:'b'},(sez.colonne||[]).length+' posizioni')),
+        cardDupActions(u,'sezionamento',sez,reloadUnit));
+      zc.append(card);
+    }
+    c.append(zc);
+  }
   // ---- Switch (rete) ----
   u.switches=u.switches||[];
   c.append(el('div',{class:'section-h',style:'margin-top:22px'},'🔀 Switch'));
@@ -1503,6 +1525,9 @@ function exportUnitaXLSX(u){
   const prows=[['Pannello','Porta','Provenienza','n° cavo e coppia','N°','Tipologia','Segnale']];
   for(const pp of (u.patch||[])) (pp.porte||[]).forEach((po,i)=>prows.push([pp.nome,i+1,po.provenienza,po.cavo,po.numero,po.tipologia,po.segnale]));
   sheets.push({name:'Patch',rows:prows});
+  const zrows=[['Sezionamento','Posizione',...SEZ_EXP.map(x=>x[0])]];
+  for(const sez of (u.sezionamenti||[])) (sez.colonne||[]).forEach((co,i)=>zrows.push([sez.nome,i+1,...SEZ_EXP.map(x=>co[x[1]]||'')]));
+  sheets.push({name:'Sezionamenti',rows:zrows});
   const srows=[['Switch',...SWITCH_HEAD]];
   for(const sw of (u.switches||[])) (sw.porte||[]).forEach(po=>srows.push([sw.nome,...SWITCH_COLS.map(c=>po[c.key]||'')]));
   sheets.push({name:'Switch',rows:srows});
@@ -1521,8 +1546,8 @@ function importUnitaXLSX(u, reload){
     try{
       const bytes=new Uint8Array(await f.arrayBuffer()); const names=await XLSX.sheetNames(bytes);
       const getSheet=async re=>{ const n=names.find(x=>re.test(String(x))); return n? (await XLSX.readSheet(bytes,n)).rows : null; };
-      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i), rPat=await getSheet(/patch/i), rSw=await getSheet(/switch/i), rPnl=await getSheet(/pannell/i), rBox=await getSheet(/box|cassett/i);
-      if(!rIn&&!rOut&&!rPat&&!rSw&&!rPnl&&!rBox){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch, Switch, Pannelli, Box)'); return; }
+      const rIn=await getSheet(/ingress/i), rOut=await getSheet(/uscit/i), rPat=await getSheet(/patch/i), rSw=await getSheet(/switch/i), rPnl=await getSheet(/pannell/i), rBox=await getSheet(/box|cassett/i), rSez=await getSheet(/sezionament/i);
+      if(!rIn&&!rOut&&!rPat&&!rSw&&!rPnl&&!rBox&&!rSez){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch, Switch, Pannelli, Box, Sezionamenti)'); return; }
       const chSpec={ dev:{eq:['macchina']}, scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']},
         canale:{eq:['canale']}, segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']},
         ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, patch:{eq:['patch']}, note:{inc:['note']}, slot:{inc:['slot']} };
@@ -1567,17 +1592,27 @@ function importUnitaXLSX(u, reload){
         for(const r of rBox.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const bn=xcell(r,map.box)||'Box'; let bx=boxMap[bn]; if(!bx){ bx={_id:uid('box_'),nome:bn,coppie:[]}; boxMap[bn]=bx; boxOrder.push(bn); }
           bx.coppie.push(newBoxCoppia({tipoXlr:xcell(r,map.tipoXlr),segnale:xcell(r,map.segnale),colore:xcell(r,map.colore),destPannello:xcell(r,map.destPannello),destPosizione:xcell(r,map.destPosizione)})); } }
+      // sezionamenti
+      const sezMap={}, sezOrder=[];
+      if(rSez&&rSez.length>1){ const H=(rSez[0]||[]).map(h=>String(h||'').trim().toLowerCase());
+        const findCol=lbl=>{ lbl=lbl.toLowerCase(); let i=H.indexOf(lbl); if(i>=0)return i; return H.findIndex(h=>h.includes(lbl)); };
+        const sezNomeIdx=findCol('sezionamento'); const fieldCols=SEZ_EXP.map(x=>[x[1],findCol(x[0])]);
+        for(const r of rSez.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
+          const zn=(sezNomeIdx>=0?String(r[sezNomeIdx]||'').trim():'')||'Sezionamento';
+          let z=sezMap[zn]; if(!z){ z={_id:uid('sez_'),nome:zn,colonne:[]}; sezMap[zn]=z; sezOrder.push(zn); }
+          const o={}; for(const [k,i] of fieldCols) o[k]=i>=0?String(r[i]||'').trim():''; z.colonne.push(newSezColonna(o)); } }
       const newMac=order.map(k=>macMap[k]); const newPat=patOrder.map(k=>patMap[k]); const newSw=swOrder.map(k=>swMap[k]);
-      const newPnl=plOrder.map(k=>plMap[k]); const newBox=boxOrder.map(k=>boxMap[k]);
+      const newPnl=plOrder.map(k=>plMap[k]); const newBox=boxOrder.map(k=>boxMap[k]); const newSez=sezOrder.map(k=>sezMap[k]);
       const nCan=newMac.reduce((a,m)=>a+m.schede.reduce((b,s)=>b+s.canali.length,0),0);
-      if(!confirm('Import unità «'+(u.nome||'')+'»:\n· '+newMac.length+' macchine, '+nCan+' canali\n· '+newPat.length+' patch\n· '+newSw.length+' switch\n· '+newPnl.length+' pannelli\n· '+newBox.length+' box\n\nSostituisce i contenuti importati dell\'unità (gli incroci dell\'unità verranno azzerati). Procedere?')) return;
+      if(!confirm('Import unità «'+(u.nome||'')+'»:\n· '+newMac.length+' macchine, '+nCan+' canali\n· '+newPat.length+' patch\n· '+newSez.length+' sezionamenti\n· '+newSw.length+' switch\n· '+newPnl.length+' pannelli\n· '+newBox.length+' box\n\nSostituisce i contenuti importati dell\'unità (gli incroci dell\'unità verranno azzerati). Procedere?')) return;
       purgeIncroci(collectChIds(u));
       if(rIn||rOut) u.macchine=newMac;
       if(rPat) u.patch=newPat;
+      if(rSez) u.sezionamenti=newSez;
       if(rSw) u.switches=newSw;
       if(rPnl) u.pannelli=newPnl;
       if(rBox) u.box=newBox;
-      markDirty(); reload(); toast('Unità importata ('+newMac.length+' macchine, '+newPat.length+' patch, '+newSw.length+' switch, '+newPnl.length+' pannelli, '+newBox.length+' box)');
+      markDirty(); reload(); toast('Unità importata ('+newMac.length+' macchine, '+newPat.length+' patch, '+newSez.length+' sezionamenti, '+newSw.length+' switch, '+newPnl.length+' pannelli, '+newBox.length+' box)');
     }catch(err){ console.error(err); toast('Errore import: '+err.message); }
   }}); document.body.append(inp); inp.click(); inp.remove();
 }
@@ -1600,6 +1635,13 @@ function printUnita(u){
       const head='<th>Porta</th>'+porte.map((po,i)=>'<th>'+(i+1)+'</th>').join('');
       const rowsH=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esctd(po[r.key])+'</td>').join('')+'</tr>').join('');
       html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsH+'</tbody></table>'; } }
+  if((u.sezionamenti||[]).length){ html+='<h2>🧩 Sezionamenti</h2>';
+    for(const sez of sortedByNome(u.sezionamenti)){ const cols=sez.colonne||[]; html+='<h4>'+esc(sez.nome)+' <small>('+cols.length+' posizioni)</small></h4>';
+      const head='<th>Posizione</th>'+cols.map((co,i)=>'<th>'+(i+1)+'</th>').join('');
+      const rowsZ=SEZ_ROWS.map(r=>{ const cells=cols.map((co,i)=>{ if(r.pos)return '<td style="background:#fdf3b0;font-weight:600">'+(i+1)+'</td>';
+          if(r.toggle)return '<td>'+(String(co[r.key]||'').trim()?esc(r.toggle):'')+'</td>'; return '<td>'+esctd(co[r.key])+'</td>'; }).join('');
+        return '<tr'+(r.cls==='prov'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+cells+'</tr>'; }).join('');
+      html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsZ+'</tbody></table>'; } }
   if((u.switches||[]).length){ html+='<h2>🔀 Switch</h2>';
     for(const sw of sortedByNome(u.switches)){ const porte=sw.porte||[]; html+='<h4>'+esc(sw.nome)+' <small>('+porte.length+' porte)</small></h4>';
       const th=SWITCH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
@@ -1938,6 +1980,122 @@ function printPatch(pp){
   const body=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esc(po[r.key]==null?'':po[r.key])+'</td>').join('')+'</tr>').join('');
   w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(pp.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:11px}th,td{border:1px solid #999;padding:4px 8px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}tr.hl td{background:#fdf3b0}</style></head><body><h2>'+esc(pp.nome)+' — patch audio</h2><p>'+porte.length+' porte · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(pp)+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
+}
+
+/* ============================================================
+   SEZIONAMENTI — sezionamento dei cavi multicoppia. Sviluppo
+   orizzontale: ogni colonna è una POSIZIONE; le righe sono i campi
+   (provenienza/canale in alto, destinazione/canale in basso, con
+   parallelo/passante nel mezzo). Non entra nel Quadro Incroci.
+   ============================================================ */
+const SEZ_ROWS=[
+  {key:'cavoTop',     label:'Cavo multicoppia'},
+  {key:'numTop',      label:'Numerazione'},
+  {key:'colTop',      label:'Colore'},
+  {key:'provenienza', label:'Provenienza', cls:'prov'},
+  {key:'canaleTop',   label:'Canale'},
+  {key:'_pos',        label:'Posizione', pos:true},
+  {key:'parallelo',   label:'Parallelo', toggle:'⇇'},
+  {key:'passante',    label:'Passante',  toggle:'↓'},
+  {key:'_pos2',       label:'Posizione', pos:true},
+  {key:'canaleBot',   label:'Canale'},
+  {key:'destinazione',label:'Destinazione', cls:'prov'},
+  {key:'colBot',      label:'Colore'},
+  {key:'numBot',      label:'Numerazione'},
+  {key:'cavoBot',     label:'Cavo multicoppia'},
+];
+// campi memorizzati per colonna (le righe Posizione sono automatiche = indice+1)
+const SEZ_EXP=[
+  ['Cavo multicoppia (top)','cavoTop'],['Numerazione (top)','numTop'],['Colore (top)','colTop'],
+  ['Provenienza','provenienza'],['Canale (top)','canaleTop'],['Parallelo','parallelo'],['Passante','passante'],
+  ['Canale (bot)','canaleBot'],['Destinazione','destinazione'],['Colore (bot)','colBot'],
+  ['Numerazione (bot)','numBot'],['Cavo multicoppia (bot)','cavoBot'],
+];
+function newSezColonna(o){ return Object.assign({_id:uid('sc_'),cavoTop:'',numTop:'',colTop:'',provenienza:'',canaleTop:'',parallelo:'',passante:'',canaleBot:'',destinazione:'',colBot:'',numBot:'',cavoBot:''}, o||{}); }
+function nuovaSezionamento(u){
+  const nome=prompt('Nome del sezionamento (es. SEZIONAMENTO G1 (CCTV)):','SEZIONAMENTO');
+  if(nome===null) return;
+  let n=parseInt(prompt('Numero di posizioni:','32'),10); if(!(n>0)) n=32; if(n>256)n=256;
+  const colonne=[]; for(let i=0;i<n;i++) colonne.push(newSezColonna());
+  const sez={_id:uid('sez_'), nome:(nome.trim()||'Sezionamento'), colonne};
+  (u.sezionamenti=u.sezionamenti||[]).push(sez); markDirty(); location.hash='sezionamento/'+u._id+'/'+sez._id;
+}
+function viewSezionamento(c, uid_, sid){
+  const u=findUnita(uid_); if(!u){ location.hash='unita'; return; }
+  u.sezionamenti=u.sezionamenti||[]; const sez=u.sezionamenti.find(x=>x._id===sid); if(!sez){ location.hash='unita/'+uid_; return; }
+  sez.colonne=sez.colonne||[];
+  $('#viewTitle').textContent='Sezionamento · '+(sez.nome||'');
+  c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
+  const titleInp=el('input',{value:sez.nome||'',style:'font-size:16px;font-weight:600;max-width:380px',
+    onchange:e=>{ sez.nome=e.target.value.trim()||'Sezionamento'; markDirty(); buildNav(); $('#viewTitle').textContent='Sezionamento · '+sez.nome; }});
+  c.append(el('div',{class:'toolbar'}, el('span',{style:'font-size:20px'},'🧩'), titleInp, el('div',{class:'sp',style:'flex:1'}),
+    el('button',{class:'btn sm',onclick:()=>{ sez.colonne.push(newSezColonna()); markDirty(); render(); }},'➕ Aggiungi posizione'),
+    el('button',{class:'btn sm',onclick:()=>{ for(let k=0;k<8;k++) sez.colonne.push(newSezColonna()); markDirty(); render(); }},'➕ +8'),
+    el('button',{class:'btn sm',onclick:()=>importSezionamento(sez,render)},'⤒ Importa'),
+    el('button',{class:'btn sm',onclick:()=>exportSezionamento(sez)},'⤓ Esporta'),
+    el('button',{class:'btn sm',onclick:()=>printSezionamento(sez)},'🖨 Stampa'),
+    detailDupBtns(u,'sezionamento',sez,'sezionamento/'),
+    el('button',{class:'btn sm danger',onclick:()=>{ if(confirm('Eliminare il sezionamento «'+(sez.nome||'')+'»?')){ u.sezionamenti=u.sezionamenti.filter(x=>x!==sez); markDirty(); location.hash='unita/'+u._id; } }},'🗑 Elimina sezionamento')));
+  c.append(metaFieldsRow(sez));
+  const area=el('div'); c.append(area);
+  function render(){
+    area.innerHTML='';
+    area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(sez.colonne.length)+' posizioni · sviluppo orizzontale · clic su Parallelo/Passante per attivare'));
+    if(!sez.colonne.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna posizione — «➕ Aggiungi posizione».')); return; }
+    const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
+    const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Posizione'));
+    sez.colonne.forEach((co,i)=>{ hr.append(el('th',{class:'porthead'},
+      el('div',{class:'pn'},String(i+1)),
+      el('button',{class:'btn sm danger',style:'padding:0 6px;margin-top:3px;font-size:11px',title:'Elimina posizione',onclick:()=>{ sez.colonne.splice(i,1); markDirty(); render(); }},'🗑'))); });
+    thead.append(hr); tbl.append(thead);
+    const tb=el('tbody');
+    for(const r of SEZ_ROWS){ const tr=el('tr', r.cls?{class:r.cls}:{}); tr.append(el('th',{class:'rl'},r.label));
+      sez.colonne.forEach((co,i)=>{
+        if(r.pos){ tr.append(el('td',{class:'poscell'}, String(i+1))); }
+        else if(r.toggle){ const on=!!String(co[r.key]||'').trim();
+          tr.append(el('td',{class:'togglecell'+(on?' on':''),title:'clic per attivare/disattivare',onclick:()=>{ co[r.key]=on?'':r.toggle; markDirty(); render(); }}, on?r.toggle:'')); }
+        else { tr.append(el('td',{}, el('input',{value:co[r.key]||'',onchange:e=>{ co[r.key]=e.target.value; markDirty(); }}))); }
+      });
+      tb.append(tr); }
+    tbl.append(tb); wrap.append(tbl); area.append(wrap);
+  }
+  render();
+}
+function exportSezionamento(sez){
+  const rows=[['Posizione',...SEZ_EXP.map(x=>x[0])]];
+  (sez.colonne||[]).forEach((co,i)=>rows.push([i+1,...SEZ_EXP.map(x=>co[x[1]]||'')]));
+  downloadBytes((sez.nome||'sezionamento').replace(/[^\w]+/g,'_')+'.xlsx', XLSX.build([{name:(sez.nome||'Sezionamento').slice(0,31),rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  toast('Sezionamento esportato');
+}
+function importSezionamento(sez,reload){
+  const inp=el('input',{type:'file',accept:'.xlsx,.csv',style:'display:none',onchange:async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{ let rows; const nm=f.name.toLowerCase();
+      if(nm.endsWith('.xlsx')) rows=(await XLSX.read(new Uint8Array(await f.arrayBuffer()))).rows; else rows=parseCSV(await f.text());
+      if(!rows||rows.length<1){ toast('File vuoto'); return; }
+      const H=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
+      const findCol=lbl=>{ lbl=lbl.toLowerCase(); let i=H.indexOf(lbl); if(i>=0)return i; return H.findIndex(h=>h.includes(lbl)); };
+      const cols=SEZ_EXP.map(x=>[x[1],findCol(x[0])]);
+      const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
+      const parsed=data.map(r=>{ const o={}; for(const [k,i] of cols) o[k]=i>=0?String(r[i]||'').trim():''; return newSezColonna(o); });
+      if(!parsed.length){ toast('Nessuna riga valida'); return; }
+      const rep=confirm(parsed.length+' posizioni lette da «'+f.name+'».\n\nOK = SOSTITUISCI\nAnnulla = AGGIUNGI in coda');
+      sez.colonne=rep?parsed:(sez.colonne||[]).concat(parsed); markDirty(); reload(); toast((rep?'Sostituite ':'Aggiunte ')+parsed.length+' posizioni');
+    }catch(err){ console.error(err); toast('Errore import: '+err.message); }
+  }}); document.body.append(inp); inp.click(); inp.remove();
+}
+function printSezionamento(sez){
+  const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
+  const cols=sez.colonne||[];
+  const head='<th>Posizione</th>'+cols.map((co,i)=>'<th>'+(i+1)+'</th>').join('');
+  const body=SEZ_ROWS.map(r=>{
+    const cells=cols.map((co,i)=>{
+      if(r.pos) return '<td class="pos">'+(i+1)+'</td>';
+      if(r.toggle) return '<td>'+(String(co[r.key]||'').trim()?esc(r.toggle):'')+'</td>';
+      return '<td>'+esc(co[r.key]==null?'':co[r.key])+'</td>'; }).join('');
+    return '<tr'+(r.cls==='prov'?' class="prov"':'')+'><th>'+esc(r.label)+'</th>'+cells+'</tr>'; }).join('');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+esc(sez.nome)+'</title><style>body{font-family:Arial;padding:16px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;font-size:10px}th,td{border:1px solid #999;padding:3px 6px;text-align:center;white-space:nowrap}th:first-child,td:first-child{text-align:left;background:#eee;font-weight:600}td.pos{background:#fdf3b0;font-weight:600}tr.prov td{background:#eef4ff;font-weight:600}</style></head><body><h2>🧩 '+esc(sez.nome)+' — sezionamento</h2><p>'+cols.length+' posizioni · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(sez)+'</p><table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></body></html>');
+  w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },400);
 }
 
 /* ============================================================
@@ -2566,6 +2724,9 @@ function ensureModel(){
     // switch di rete della stanza
     if(!Array.isArray(u.switches)){ u.switches=[]; changed=true; }
     for(const sw of u.switches){ sw.porte=sw.porte||[]; for(const po of sw.porte) if(!po._id){ po._id=uid('sp_'); changed=true; } }
+    // sezionamenti dei cavi multicoppia
+    if(!Array.isArray(u.sezionamenti)){ u.sezionamenti=[]; changed=true; }
+    for(const sez of u.sezionamenti){ sez.colonne=sez.colonne||[]; for(const co of sez.colonne) if(!co._id){ co._id=uid('sc_'); changed=true; } }
     // pannelli (patch + colore) e box/cassette della stanza
     if(!Array.isArray(u.pannelli)){ u.pannelli=[]; changed=true; }
     for(const pl of u.pannelli){ pl.porte=pl.porte||[]; for(const po of pl.porte) if(!po._id){ po._id=uid('pl_'); changed=true; } }
