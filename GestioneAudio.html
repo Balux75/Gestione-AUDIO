@@ -1011,7 +1011,7 @@ function buildNav(){
     if(it.grp){ nav.append(el('div',{class:'grp'},it.grp)); continue; }
     nav.append(mkLink(it.id,it.ico,it.label));
     if(it.id==='unita'){
-      for(const u of (DB.unita||[])){
+      for(const u of sortedByNome(DB.unita)){
         const active=(cur==='unita/'+u._id)||cur.startsWith('macchina/'+u._id+'/')||cur.startsWith('scheda/'+u._id+'/')||cur.startsWith('patch/'+u._id+'/')||cur.startsWith('pannello/'+u._id+'/')||cur.startsWith('box/'+u._id+'/')||cur.startsWith('switch/'+u._id+'/');
         nav.append(el('a',{href:'#unita/'+u._id, class:(active?'active':''), style:'padding-left:26px;font-size:12.5px'},
           el('span',{class:'ico'},'🏢'), el('span',{},u.nome||'Unità'),
@@ -1288,7 +1288,7 @@ function viewUnita(c){
   c.append(el('div',{class:'toolbar'}, el('button',{class:'btn primary',onclick:nuovaUnita},'➕ Nuova unità operativa')));
   if(!DB.unita.length){ c.append(el('div',{class:'empty',style:'padding:20px'},'Nessuna unità: premi «➕ Nuova unità operativa».')); return; }
   const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(280px,1fr))'});
-  for(const u of DB.unita){
+  for(const u of sortedByNome(DB.unita)){
     const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='unita/'+u._id;
     card.append(
       el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🏢 '+(u.nome||'Unità')), el('div',{class:'b'},(u.macchine||[]).length+' macchine')),
@@ -1314,7 +1314,7 @@ const DUP_KINDS={ macchina:{list:'macchine',nome:'Macchina'}, patch:{list:'patch
 // modale di scelta dell'unità operativa di destinazione
 function chooseUnitModal(title, onPick){
   const units=(DB.unita||[]); if(!units.length){ toast('Nessuna unità disponibile'); return; }
-  const sel=el('select',{style:'width:100%'}, ...units.map(x=>el('option',{value:x._id},x.nome||'Unità')));
+  const sel=el('select',{style:'width:100%'}, ...sortedByNome(units).map(x=>el('option',{value:x._id},x.nome||'Unità')));
   const applyBtn=el('button',{class:'btn primary'},'Duplica qui');
   applyBtn.onclick=()=>{ const t=findUnita(sel.value); closeModal(); if(t) onPick(t); };
   openModal(el('div',{}, el('div',{class:'mh'}, el('h3',{},title), el('button',{class:'x',onclick:closeModal},'×')),
@@ -1381,7 +1381,7 @@ function viewUnitaDetail(c, id){
   if(!u.macchine.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px 12px'},'Nessuna macchina: premi «➕ Nuova macchina» (es. MATRICE CENTRALIZZATA, un mixer, un codec…).')); }
   else {
     const cards=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(280px,1fr))'});
-    for(const m of u.macchine){
+    for(const m of sortedByNome(u.macchine)){
       const card=el('div',{class:'card',style:'cursor:pointer'}); card.onclick=()=>location.hash='macchina/'+u._id+'/'+m._id;
       const ni=schedeOf(m,'in').length, no=schedeOf(m,'out').length;
       card.append(
@@ -1418,7 +1418,7 @@ function viewUnitaDetail(c, id){
   if(!u.switches.length){ c.append(el('div',{class:'empty',style:'padding:6px 2px'},'Nessuno switch.')); }
   else {
     const sc=el('div',{class:'cards',style:'grid-template-columns:repeat(auto-fill,minmax(240px,1fr))'});
-    for(const sw of u.switches){
+    for(const sw of sortedByNome(u.switches)){
       const occ=(sw.porte||[]).filter(swPortOccupata).length;
       const card=el('div',{class:'card',style:'cursor:pointer;border-left:4px solid #06b6d4'}); card.onclick=()=>location.hash='switch/'+u._id+'/'+sw._id;
       card.append(el('div',{class:'ccrf-dev'}, el('div',{class:'n'},'🔀 '+(sw.nome||'Switch')), el('div',{class:'b'},(sw.porte||[]).length+' porte')),
@@ -1589,10 +1589,11 @@ function printUnita(u){
     return '<h4>'+esc((s.dir==='in'?'🎙 ':'🔊 ')+s.nome)+' <small>('+tipoLabel(s.tipo)+' · '+(s.canali||[]).length+' canali)</small></h4><table><thead><tr>'+th+'</tr></thead><tbody>'+tr+'</tbody></table>'; };
   let html='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(u.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h1{margin:0 0 2px}h2{margin:18px 0 4px;border-bottom:2px solid #333;padding-bottom:2px}h3{margin:12px 0 4px;color:#333}h4{margin:10px 0 4px;color:#444;font-weight:600}small{color:#777;font-weight:400}table{border-collapse:collapse;margin:2px 0 8px;font-size:10.5px}th,td{border:1px solid #999;padding:3px 6px;text-align:left}th{background:#eee}table.h td,table.h th{text-align:center;white-space:nowrap}table.h th:first-child,table.h td:first-child{text-align:left;background:#eee;font-weight:600}table.h tr.hl td{background:#fdf3b0}</style></head><body>';
   html+='<h1>🏢 '+esc(u.nome||'Unità')+'</h1><p style="color:#666;font-size:12px">'+esc(u.descrizione||'')+' · stampato il '+new Date().toLocaleString('it-IT')+'</p>';
-  for(const m of (u.macchine||[])){ html+='<h2>🎛 '+esc(m.nome||'Macchina')+'</h2>';
-    const ins=(m.schede||[]).filter(s=>s.dir==='in'), outs=(m.schede||[]).filter(s=>s.dir==='out');
+  for(const m of sortedByNome(u.macchine)){ html+='<h2>🎛 '+esc(m.nome||'Macchina')+'</h2>';
+    const ins=schedeOf(m,'in'), outs=schedeOf(m,'out'), eth=[...ethOf(m,'in'),...ethOf(m,'out')];
     if(ins.length){ html+='<h3>Schede di ingresso</h3>'; ins.forEach(s=>html+=chTbl(s)); }
     if(outs.length){ html+='<h3>Schede di uscita</h3>'; outs.forEach(s=>html+=chTbl(s)); }
+    if(eth.length){ html+='<h3>Porte Ethernet</h3>'; eth.forEach(s=>html+=chTbl(s)); }
   }
   if((u.patch||[]).length){ html+='<h2>🔌 Patch audio</h2>';
     for(const pp of sortedByNome(u.patch)){ const porte=pp.porte||[]; html+='<h4>'+esc(pp.nome)+' <small>('+porte.length+' porte)</small></h4>';
@@ -1600,7 +1601,7 @@ function printUnita(u){
       const rowsH=PATCH_ROWS.map(r=>'<tr'+(r.cls==='hl-row'?' class="hl"':'')+'><th>'+esc(r.label)+'</th>'+porte.map(po=>'<td>'+esctd(po[r.key])+'</td>').join('')+'</tr>').join('');
       html+='<table class="h"><thead><tr>'+head+'</tr></thead><tbody>'+rowsH+'</tbody></table>'; } }
   if((u.switches||[]).length){ html+='<h2>🔀 Switch</h2>';
-    for(const sw of u.switches){ const porte=sw.porte||[]; html+='<h4>'+esc(sw.nome)+' <small>('+porte.length+' porte)</small></h4>';
+    for(const sw of sortedByNome(u.switches)){ const porte=sw.porte||[]; html+='<h4>'+esc(sw.nome)+' <small>('+porte.length+' porte)</small></h4>';
       const th=SWITCH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
       const trs=porte.map(po=>'<tr>'+SWITCH_COLS.map(c=>c.key==='colore'?('<td style="background:'+esctd(po.colore||'#fff')+'">&nbsp;</td>'):('<td>'+esctd(po[c.key])+'</td>')).join('')+'</tr>').join('');
       html+='<table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table>'; } }
