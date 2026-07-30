@@ -86,8 +86,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   del foglio di sezionamento: **Cavo multicoppia, Numerazione, Colore, Provenienza, Canale, Posizione**
   (lato sorgente), gli indicatori **Parallelo** e **Passante** (clic per attivarli), poi **Posizione,
   Canale, Destinazione, Colore, Numerazione, Cavo multicoppia** (lato destinazione). La **Posizione** è
-  automatica (numero di colonna). Aggiungi/elimina posizioni (o **+8**), con **Importa** (Excel/CSV),
-  **Esporta** e **Stampa**. I sezionamenti **non entrano** nel Quadro Incroci.
+  automatica (numero di colonna). I campi **Provenienza** e **Destinazione** sono **collegabili**: hanno
+  una lista a discesa con **Macchine, Patch, Pannelli e Box** della stanza e, con **doppio clic** (o il
+  pulsante **↗**), aprono il riferimento selezionato; resta comunque possibile inserire **testo libero**.
+  Aggiungi/elimina posizioni (o **+8**), con **Importa** (Excel/CSV), **Esporta** e **Stampa**. I
+  sezionamenti **non entrano** nel Quadro Incroci.
 - **🔀 Switch** — dopo le patch, ogni stanza può contenere degli **switch di rete**: tabella
   verticale delle porte con **Porta, Patch/Stanza, Descrizione, IP, MAC, Subnet, Gateway, VLAN,
   Note, Colore** (schema del file Excel di configurazione). Creando uno switch scegli il numero
