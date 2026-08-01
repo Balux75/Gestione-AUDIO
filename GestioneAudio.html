@@ -842,14 +842,18 @@ const TIPOLOGIE=[
   {id:'analogico', label:'Analogici', color:'#f59e0b'},
   {id:'dante',     label:'Dante',     color:'#22c55e'},
   {id:'digitale',  label:'Digitali',  color:'#a855f7'},
-  {id:'sdi',       label:'SDI',       color:'#06b6d4'},
+  {id:'sdi',       label:'SDI',       color:'#06b6d4', noMatrix:true},
   {id:'madi',      label:'MADI',      color:'#3b82f6'},
   {id:'bealinx',   label:'Bealinx',   color:'#ec4899'},
 ];
+// tipologie che compaiono nel Quadro Incroci (SDI ne è escluso, come le porte Ethernet)
+const MATRIX_TIPI=TIPOLOGIE.filter(t=>!t.noMatrix);
 // tipologia speciale per le porte Ethernet (fuori dal Quadro Incroci e dai filtri audio)
 const ETH_TIPO={id:'ethernet', label:'Ethernet', color:'#14b8a6'};
 function isEthScheda(s){ return !!s && s.tipo==='ethernet'; }
 function tipoDef(id){ return TIPOLOGIE.find(t=>t.id===id)||(id==='ethernet'?ETH_TIPO:null); }
+// una scheda non entra nel Quadro Incroci se è Ethernet o di una tipologia noMatrix (es. SDI)
+function tipoNoMatrix(tipo){ if(tipo==='ethernet') return true; const d=tipoDef(tipo); return !!(d&&d.noMatrix); }
 function tipoColor(t){ const d=tipoDef(t); return d?d.color:'var(--line)'; }
 function tipoLabel(t){ const d=tipoDef(t); return d?d.label:'—'; }
 function tipoDot(t){ return el('span',{style:'display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;background:'+tipoColor(t)}); }
@@ -1016,7 +1020,7 @@ function chLabelFull(id){ const f=chFind(id); if(!f)return ''; return f.u.nome+'
 // gruppi per il Quadro Incroci: una scheda = un gruppo
 function schedeGroups(dir){ const out=[];
   for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){
-    if(s.dir!==dir || isEthScheda(s)) continue; const canali=s.canali||[]; if(!canali.length) continue;   // le porte Ethernet non entrano nel Quadro Incroci
+    if(s.dir!==dir || tipoNoMatrix(s.tipo)) continue; const canali=s.canali||[]; if(!canali.length) continue;   // Ethernet e SDI non entrano nel Quadro Incroci
     out.push({id:s._id, nome:s.nome, unitNome:u.nome, macNome:m.nome, tipo:s.tipo||'', canali}); }
   return out; }
 // etichetta del raggruppamento nel Quadro Incroci: STANZA · MACCHINA · scheda
@@ -1141,7 +1145,7 @@ function buildIncrociHTML(){
   const ntd=(v,t)=>'<td style="background:'+hexRgba(tipoHex(t),0.18)+'">'+esc(v==null?'':v)+'</td>';
   const trs=data.map(r=>'<tr><td>'+esc(r.out.n)+'</td>'+ntd(r.out.nome,r.out.tipo)+tcell(r.out.tipo)+'<td>'+esc(r.out.loc)+'</td><td>'+esc(r.out.ch)+'</td>'+
     '<td>'+esc(r.in.n)+'</td>'+ntd(r.in.nome,r.in.tipo)+tcell(r.in.tipo)+'<td>'+esc(r.in.loc)+'</td><td>'+esc(r.in.ch)+'</td></tr>').join('');
-  const legend=TIPOLOGIE.map(t=>'<span style="display:inline-block;margin-right:14px;white-space:nowrap"><span style="display:inline-block;width:13px;height:13px;background:'+t.color+';border:1px solid #777;vertical-align:middle;margin-right:5px"></span>'+esc(t.label)+'</span>').join('');
+  const legend=MATRIX_TIPI.map(t=>'<span style="display:inline-block;margin-right:14px;white-space:nowrap"><span style="display:inline-block;width:13px;height:13px;background:'+t.color+';border:1px solid #777;vertical-align:middle;margin-right:5px"></span>'+esc(t.label)+'</span>').join('');
   return '<!doctype html><html><head><meta charset="utf-8"><title>Quadro Incroci</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 8px;font-size:12px}.leg{margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:#eee}@media print{body{padding:0}}</style></head><body><h2>Quadro Incroci — instradamenti (uscite → ingressi)</h2><p>'+data.length+' incroci · stampato il '+new Date().toLocaleString('it-IT')+'</p><div class="leg"><b>Tipologie:</b> '+legend+'</div><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>';
 }
 function exportIncroci(){ const rows=incrociRows(); if(!rows.length){ toast('Nessun incrocio attivo'); return; }
@@ -1174,9 +1178,19 @@ function viewIncroci(c){
   const tipoSel=(which)=>{ const cur=which==='in'?xpUI.tipoIn:xpUI.tipoOut;
     return el('select',{style:'width:auto;min-width:120px',onchange:e=>{ if(which==='in')xpUI.tipoIn=e.target.value; else xpUI.tipoOut=e.target.value; render(); }},
       el('option',{value:'',selected:cur===''?'selected':null},'Tutte le tipologie'),
-      ...TIPOLOGIE.map(t=>el('option',{value:t.id,selected:cur===t.id?'selected':null},t.label))); };
+      ...MATRIX_TIPI.map(t=>el('option',{value:t.id,selected:cur===t.id?'selected':null},t.label))); };
   const expandAll=(which,val)=>{ const set=which==='in'?xpUI.expIn:xpUI.expOut; const groups=which==='in'?inGroupsVis():outGroupsVis();
-    if(val) groups.forEach(g=>set.add(g.id)); else groups.forEach(g=>set.delete(g.id)); render(); };
+    if(val){
+      // stima della dimensione della matrice risultante per evitare blocchi con molti canali
+      const inExp=which==='in'? new Set(inGroupsVis().map(g=>g.id)) : xpUI.expIn;
+      const outExp=which==='out'? new Set(outGroupsVis().map(g=>g.id)) : xpUI.expOut;
+      let cols=0; for(const g of inGroupsVis()) cols+= inExp.has(g.id)? Math.max(inChansVis(g).length,1):1;
+      let rows=0; for(const g of outGroupsVis()) rows+= outExp.has(g.id)? Math.max(outChansVis(g).length,1):1;
+      const cells=cols*rows;
+      if(cells>60000 && !confirm('L\'espansione completa genera una matrice molto grande (≈ '+cols+'×'+rows+' = '+cells.toLocaleString('it-IT')+' celle) e può rallentare la vista.\nConsiglio: usa i filtri per tipologia/ricerca oppure espandi solo i dispositivi che ti servono.\n\nProcedere comunque?')) return;
+      groups.forEach(g=>set.add(g.id));
+    } else groups.forEach(g=>set.delete(g.id));
+    render(); };
   bar.append(
     el('span',{class:'xp-stat'},'Ingressi:'), tipoSel('in'),
     el('div',{class:'grpbtn'}, el('button',{onclick:()=>expandAll('in',true)},'▸ espandi'), el('button',{onclick:()=>expandAll('in',false)},'▾ comprimi')),
@@ -1191,7 +1205,7 @@ function viewIncroci(c){
   );
   c.append(bar);
   const leg=el('div',{class:'legend',style:'flex-wrap:wrap'}); leg.append(el('span',{},'Tipologie:'));
-  for(const t of TIPOLOGIE) leg.append(el('span',{style:'display:flex;align-items:center;gap:5px'},
+  for(const t of MATRIX_TIPI) leg.append(el('span',{style:'display:flex;align-items:center;gap:5px'},
     el('span',{style:'display:inline-block;width:10px;height:10px;border-radius:50%;background:'+t.color}), t.label));
   c.append(leg);
   c.append(el('div',{style:'margin-bottom:10px'},stat));

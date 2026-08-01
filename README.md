@@ -47,7 +47,8 @@ Unità operativa   (la STANZA — es. «CCRF», «Regia A», …)
 
 Le **schede di ingresso** e di **uscita** sono tenute **separate** e distinte da un **colore**
 (azzurro gli ingressi, arancio le uscite). Ogni scheda ha una **tipologia** di segnale
-(Analogici / Dante / Digitali / SDI / MADI / Bealinx) usata per colorare e filtrare il Quadro Incroci.
+(Analogici / Dante / Digitali / MADI / Bealinx) usata per colorare e filtrare il Quadro Incroci.
+Le tipologie **SDI** ed **Ethernet** sono ammesse sulle schede ma **non entrano** nel Quadro Incroci.
 Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/stereo**, **note** e **slot**.
 
 ---
