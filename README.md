@@ -87,9 +87,11 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   del foglio di sezionamento: **Cavo multicoppia, Numerazione, Colore, Provenienza, Canale, Posizione**
   (lato sorgente), gli indicatori **Parallelo** e **Passante** (clic per attivarli), poi **Posizione,
   Canale, Destinazione, Colore, Numerazione, Cavo multicoppia** (lato destinazione). La **Posizione** è
-  automatica (numero di colonna). I campi **Provenienza** e **Destinazione** sono **collegabili**: hanno
-  una lista a discesa con **Macchine, Patch, Pannelli e Box** della stanza e, con **doppio clic** (o il
-  pulsante **↗**), aprono il riferimento selezionato; resta comunque possibile inserire **testo libero**.
+  automatica (numero di colonna). I campi **Provenienza** e **Destinazione** (visualizzati più larghi)
+  sono **collegabili**: la lista a discesa è alimentata con le **sorgenti e destinazioni di tutto il
+  database** — nomi e segnali contenuti in **Macchine, Patch, Pannelli e Box** di ogni unità — e con
+  **doppio clic** (o il pulsante **↗**) aprono il riferimento selezionato, anche se si trova in
+  un'altra unità; resta comunque possibile inserire **testo libero**.
   Aggiungi/elimina posizioni (o **+8**), con **Importa** (Excel/CSV), **Esporta** e **Stampa**. I
   sezionamenti **non entrano** nel Quadro Incroci.
 - **🔀 Switch** — dopo le patch, ogni stanza può contenere degli **switch di rete**: tabella

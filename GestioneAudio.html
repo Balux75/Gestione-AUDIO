@@ -219,6 +219,9 @@ table.patch td.colcell input[type=color]{width:100%;min-width:70px;height:26px;p
 table.patch td.destcell{padding:0 2px;white-space:nowrap}
 table.patch td.destcell input{width:calc(100% - 26px);min-width:70px;display:inline-block;vertical-align:middle}
 table.patch td.destcell .destgo{display:inline-flex;align-items:center;vertical-align:middle;margin-left:2px;padding:1px 6px;border:none;font-size:12px}
+table.patch.sez td.destcell{min-width:230px}
+table.patch.sez td.destcell input{min-width:200px;text-align:left;padding-left:8px}
+table.patch.sez tr.prov td input{text-align:left;padding-left:8px}
 .boxfig{border:1px solid var(--line);border-radius:10px;background:#0f1520;padding:14px;margin:12px 0;max-width:100%;overflow-x:auto}
 .boxfig .panel{background:linear-gradient(#1b2536,#151d29);border:1px solid #2a3550;border-radius:8px;padding:12px;min-width:520px}
 .boxfig .top{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-bottom:10px;margin-bottom:12px;border-bottom:1px dashed #33405e}
@@ -976,32 +979,43 @@ function openDest(u, srcId, name, pos, segnale){
 function openBoxDest(u, box, cp){ openDest(u, box&&box._id, cp.destPannello, cp.destPosizione, cp.segnale); }
 // porta del pannello -> destinazione (campo «Patch» + «Posizione patch»)
 function openPnlDest(u, pl, po){ openDest(u, pl&&pl._id, po.provenienza, po.numero, po.segnale); }
-// riferimenti collegabili dai Sezionamenti (Provenienza/Destinazione): Macchine, Patch, Pannelli, Box
-function sezTargets(u){
-  const out=[];
-  for(const m of sortedByNome(u.macchine)) out.push({kind:'macchina',obj:m,label:'Macchina'});
-  for(const p of sortedByNome(u.patch)) out.push({kind:'patch',obj:p,label:'Patch'});
-  for(const p of sortedByNome(u.pannelli)) out.push({kind:'pannello',obj:p,label:'Pannello'});
-  for(const p of sortedByNome(u.box)) out.push({kind:'box',obj:p,label:'Box'});
-  return out;
+// suggerimenti DB-wide per Provenienza/Destinazione dei sezionamenti:
+// nomi degli elementi (macchine/patch/pannelli/box) + le sorgenti/destinazioni (segnali) contenute
+function sezSuggestions(){
+  const seen=new Set(); const opts=[];
+  const add=(val,label)=>{ val=String(val==null?'':val).trim(); if(!val) return; const k=val.toLowerCase(); if(seen.has(k)) return; seen.add(k); opts.push({value:val,label}); };
+  for(const u of (DB.unita||[])){
+    for(const m of (u.macchine||[])){ add(m.nome,'Macchina · '+(u.nome||''));
+      for(const s of (m.schede||[])) for(const c of (s.canali||[])) add(c.macchina||c.canale,'Macchina · '+(m.nome||'')); }
+    for(const pp of (u.patch||[])){ add(pp.nome,'Patch · '+(u.nome||''));
+      for(const po of (pp.porte||[])){ add(po.segnale,'Patch · '+(pp.nome||'')); add(po.provenienza,'Patch · '+(pp.nome||'')); } }
+    for(const pl of (u.pannelli||[])){ add(pl.nome,'Pannello · '+(u.nome||''));
+      for(const po of (pl.porte||[])){ add(po.segnale,'Pannello · '+(pl.nome||'')); add(po.provenienza,'Pannello · '+(pl.nome||'')); } }
+    for(const box of (u.box||[])){ add(box.nome,'Box · '+(u.nome||''));
+      for(const cp of (box.coppie||[])) add(cp.segnale,'Box · '+(box.nome||'')); }
+  }
+  opts.sort((a,b)=>a.value.localeCompare(b.value,'it',{numeric:true,sensitivity:'base'}));
+  return opts;
 }
-function findSezTarget(u, name){
-  name=String(name||'').trim(); if(!name) return null; const low=name.toLowerCase();
-  const cands=sezTargets(u);
-  for(const c of cands){ if(String(c.obj.nome||'').trim().toLowerCase()===low) return c; }
-  let best=null, bestLen=-1;
-  for(const c of cands){ const n=String(c.obj.nome||'').trim().toLowerCase();
-    if(n && (low.startsWith(n)||n.startsWith(low)||low.includes(n)||n.includes(low))){ if(n.length>bestLen){ best=c; bestLen=n.length; } } }
-  return best;
-}
-// apre il riferimento (macchina/patch/pannello/box) indicato in Provenienza/Destinazione
-function openSezTarget(u, text){
-  const t=String(text||'').trim();
-  if(!t){ toast('Nessun riferimento indicato'); return; }
-  const d=findSezTarget(u, t);
-  if(!d){ toast('«'+t+'» non trovato tra macchine/patch/pannelli/box'); return; }
-  const pre=d.kind==='macchina'?'macchina/':d.kind==='patch'?'patch/':d.kind==='pannello'?'pannello/':'box/';
-  location.hash=pre+u._id+'/'+d.obj._id;
+// apre il riferimento indicato in Provenienza/Destinazione cercandolo in TUTTO il database
+function openSezRef(text){
+  const t=String(text||'').trim(); if(!t){ toast('Nessun riferimento indicato'); return; }
+  const low=t.toLowerCase();
+  // 1) nome di macchina/patch/pannello/box in qualunque unità
+  for(const u of (DB.unita||[])){
+    for(const m of (u.macchine||[])) if(String(m.nome||'').trim().toLowerCase()===low){ location.hash='macchina/'+u._id+'/'+m._id; return; }
+    for(const pp of (u.patch||[])) if(String(pp.nome||'').trim().toLowerCase()===low){ location.hash='patch/'+u._id+'/'+pp._id; return; }
+    for(const pl of (u.pannelli||[])) if(String(pl.nome||'').trim().toLowerCase()===low){ location.hash='pannello/'+u._id+'/'+pl._id; return; }
+    for(const box of (u.box||[])) if(String(box.nome||'').trim().toLowerCase()===low){ location.hash='box/'+u._id+'/'+box._id; return; }
+  }
+  // 2) segnale contenuto in un pannello/patch/box (apri evidenziando la porta) o in una macchina
+  for(const u of (DB.unita||[])){
+    for(const pl of (u.pannelli||[])){ const po=(pl.porte||[]).find(x=>String(x.segnale||'').trim().toLowerCase()===low||String(x.provenienza||'').trim().toLowerCase()===low); if(po){ pendingPatchHL={patchId:pl._id,portId:po._id}; location.hash='pannello/'+u._id+'/'+pl._id; return; } }
+    for(const pp of (u.patch||[])){ const po=(pp.porte||[]).find(x=>String(x.segnale||'').trim().toLowerCase()===low||String(x.provenienza||'').trim().toLowerCase()===low); if(po){ pendingPatchHL={patchId:pp._id,portId:po._id}; location.hash='patch/'+u._id+'/'+pp._id; return; } }
+    for(const box of (u.box||[])){ const cp=(box.coppie||[]).find(x=>String(x.segnale||'').trim().toLowerCase()===low); if(cp){ pendingPatchHL={patchId:box._id,portId:cp._id}; location.hash='box/'+u._id+'/'+box._id; return; } }
+    for(const m of (u.macchine||[])) for(const s of (m.schede||[])) if((s.canali||[]).some(c=>String(c.macchina||'').trim().toLowerCase()===low||String(c.canale||'').trim().toLowerCase()===low)){ location.hash='macchina/'+u._id+'/'+m._id; return; }
+  }
+  toast('«'+t+'» non trovato tra macchine/patch/pannelli/box del database');
 }
 function ensureChId(c){ if(!c._id) c._id=uid('ch_'); return c; }
 function newScheda(dir,nome,tipo,canali){ return {_id:uid('sch_'),nome:nome||(DIR_META[dir].label),dir:dir,tipo:tipo||'analogico',canali:canali||[]}; }
@@ -2074,7 +2088,7 @@ function viewSezionamento(c, uid_, sid){
   $('#viewTitle').textContent='Sezionamento · '+(sez.nome||'');
   c.append(el('span',{class:'backlink',onclick:()=>location.hash='unita/'+u._id},'‹ '+(u.nome||'Unità')));
   const dlDest=el('datalist',{id:'sezDestList'});
-  for(const t of sezTargets(u)) dlDest.append(el('option',{value:t.obj.nome,label:t.label}));
+  for(const o of sezSuggestions()) dlDest.append(el('option',{value:o.value,label:o.label}));
   c.append(dlDest);
   const titleInp=el('input',{value:sez.nome||'',style:'font-size:16px;font-weight:600;max-width:380px',
     onchange:e=>{ sez.nome=e.target.value.trim()||'Sezionamento'; markDirty(); buildNav(); $('#viewTitle').textContent='Sezionamento · '+sez.nome; }});
@@ -2092,7 +2106,7 @@ function viewSezionamento(c, uid_, sid){
     area.innerHTML='';
     area.append(el('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},(sez.colonne.length)+' posizioni · sviluppo orizzontale · clic su Parallelo/Passante per attivare'));
     if(!sez.colonne.length){ area.append(el('div',{class:'empty',style:'padding:16px'},'Nessuna posizione — «➕ Aggiungi posizione».')); return; }
-    const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch'});
+    const wrap=el('div',{class:'patchwrap'}); const tbl=el('table',{class:'patch sez'});
     const thead=el('thead'); const hr=el('tr'); hr.append(el('th',{class:'rl'},'Posizione'));
     sez.colonne.forEach((co,i)=>{ hr.append(el('th',{class:'porthead'},
       el('div',{class:'pn'},String(i+1)),
@@ -2106,9 +2120,9 @@ function viewSezionamento(c, uid_, sid){
           tr.append(el('td',{class:'togglecell'+(on?' on':''),title:'clic per attivare/disattivare',onclick:()=>{ co[r.key]=on?'':r.toggle; markDirty(); render(); }}, on?r.toggle:'')); }
         else if(r.dest){
           const inp=el('input',{value:co[r.key]||'',list:'sezDestList',title:'doppio clic per aprire il riferimento (macchina / patch / pannello / box) · campo libero',onchange:e=>{ co[r.key]=e.target.value; markDirty(); }});
-          inp.addEventListener('dblclick',()=>openSezTarget(u,co[r.key]));
+          inp.addEventListener('dblclick',()=>openSezRef(co[r.key]));
           tr.append(el('td',{class:'destcell'}, inp,
-            el('button',{class:'pill destgo',title:'Apri riferimento',onmousedown:e=>{ e.preventDefault(); openSezTarget(u,co[r.key]); }},'↗')));
+            el('button',{class:'pill destgo',title:'Apri riferimento',onmousedown:e=>{ e.preventDefault(); openSezRef(co[r.key]); }},'↗')));
         }
         else { tr.append(el('td',{}, el('input',{value:co[r.key]||'',onchange:e=>{ co[r.key]=e.target.value; markDirty(); }}))); }
       });
