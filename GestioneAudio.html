@@ -870,6 +870,7 @@ const CH_COLS=[
   {key:'macchina',label:'Macchina / Segnale'},
   {key:'ch',label:'CH',w:'46px'},
   {key:'ms',label:'Mono/Stereo',list:'ccrfMS',w:'120px'},
+  {key:'numCavo',label:'Numerazione cavo',w:'150px'},
   {key:'patch',label:'Collegato a',list:'patchList',w:'170px'},
   {key:'note',label:'Note'},
   {key:'slot',label:'Slot',w:'130px'},
@@ -896,7 +897,7 @@ const CCRF_COLS=[
 ];
 
 /* -------------------- helper modello -------------------- */
-function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',patch:'',note:'',slot:''}, o||{}); }
+function newCh(o){ return Object.assign({_id:uid('ch_'),canale:'',macchina:'',ch:'',ms:'',numCavo:'',patch:'',note:'',slot:''}, o||{}); }
 // evidenziazione temporanea della porta al momento dell'apertura del pannello
 let pendingPatchHL=null;
 // risolve un riferimento patch di un canale nel pannello + porta specifica.
@@ -1420,16 +1421,15 @@ function metaFieldsRow(obj){
   const fld=(label,key)=>el('div',{class:'fld'}, el('label',{},label),
     el('input',{value:obj[key]||'',placeholder:'—',onchange:e=>{ obj[key]=e.target.value; markDirty(); }}));
   return el('div',{class:'meta-row'}, fld('Matricola inventario','matricola'), fld('Serial number','serial'), fld('Telaio','telaio'),
-    fld('Posizione telaio','posTelaio'), fld('Numero unità rack','numRack'), fld('Numerazione cavo','numCavo'));
+    fld('Posizione telaio','posTelaio'), fld('Numero unità rack','numRack'));
 }
-// riga meta per le stampe (Matricola/S.N./Telaio/Pos. telaio/N° rack/Num. cavo, se valorizzati)
+// riga meta per le stampe (Matricola/S.N./Telaio/Pos. telaio/N° rack, se valorizzati)
 function metaLineHtml(obj){ const p=[];
   if(String(obj.matricola||'').trim())p.push('Matricola: '+esc(obj.matricola));
   if(String(obj.serial||'').trim())p.push('S/N: '+esc(obj.serial));
   if(String(obj.telaio||'').trim())p.push('Telaio: '+esc(obj.telaio));
   if(String(obj.posTelaio||'').trim())p.push('Pos. telaio: '+esc(obj.posTelaio));
   if(String(obj.numRack||'').trim())p.push('N° unità rack: '+esc(obj.numRack));
-  if(String(obj.numCavo||'').trim())p.push('Num. cavo: '+esc(obj.numCavo));
   return p.length?(' · '+p.join(' · ')):''; }
 function viewUnitaDetail(c, id){
   const u=findUnita(id); if(!u){ location.hash='unita'; return; }
@@ -1582,9 +1582,9 @@ function headerMap(headerRow, spec){
 function xcell(r,i){ return i>=0?String(r[i]==null?'':r[i]).trim():''; }
 function exportUnitaXLSX(u){
   const sheets=[];
-  const chRows=dir=>{ const rows=[['Macchina','Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Collegato a','Note','Slot']];
+  const chRows=dir=>{ const rows=[['Macchina','Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Numerazione cavo','Collegato a','Note','Slot']];
     for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir)continue;
-      (s.canali||[]).forEach((ch,i)=>rows.push([m.nome,s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.patch,ch.note,ch.slot])); }
+      (s.canali||[]).forEach((ch,i)=>rows.push([m.nome,s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.numCavo,ch.patch,ch.note,ch.slot])); }
     return rows; };
   sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
   const prows=[['Pannello','Porta','Provenienza','n° cavo e coppia','N°','Tipologia','Segnale']];
@@ -1615,14 +1615,14 @@ function importUnitaXLSX(u, reload){
       if(!rIn&&!rOut&&!rPat&&!rSw&&!rPnl&&!rBox&&!rSez){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite, Patch, Switch, Pannelli, Box, Sezionamenti)'); return; }
       const chSpec={ dev:{eq:['macchina']}, scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']},
         canale:{eq:['canale']}, segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']},
-        ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, patch:{eq:['collegato a','patch'],inc:['collegato']}, note:{inc:['note']}, slot:{inc:['slot']} };
+        ch:{eq:['ch','l/r','l-r','lr']}, ms:{inc:['mono','stereo']}, numCavo:{eq:['numerazione cavo'],inc:['numerazione cavo','num cavo','n° cavo']}, patch:{eq:['collegato a','patch'],inc:['collegato']}, note:{inc:['note']}, slot:{inc:['slot']} };
       const macMap={}; const order=[];
       const build=(rows,dir)=>{ if(!rows||rows.length<2)return; const map=headerMap(rows[0],chSpec);
         for(const r of rows.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const dev=xcell(r,map.dev)||'Macchina'; const sn=xcell(r,map.scheda)||(dir==='in'?'Ingressi':'Uscite'); const tp=labelToTipo(xcell(r,map.tipo))||'analogico';
           let m=macMap[dev]; if(!m){ m={_id:uid('mac_'),nome:dev,schede:[]}; macMap[dev]=m; order.push(dev); }
           let s=m.schede.find(x=>x.dir===dir&&x.nome===sn); if(!s){ s=newScheda(dir,sn,tp,[]); m.schede.push(s); } else if(tp) s.tipo=tp;
-          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),patch:xcell(r,map.patch),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
+          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),numCavo:xcell(r,map.numCavo),patch:xcell(r,map.patch),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
       build(rIn,'in'); build(rOut,'out');
       // patch
       const pSpec={ pannello:{eq:['pannello'],inc:['pannello']}, provenienza:{inc:['provenien','pnl']}, cavo:{inc:['cavo','coppia']},
@@ -1730,8 +1730,8 @@ function printUnita(u){
 }
 /* -------- Import / Export / Stampa a livello di MACCHINA -------- */
 function exportMacchina(m){
-  const chRows=dir=>{ const rows=[['Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Collegato a','Note','Slot']];
-    for(const s of (m.schede||[])){ if(s.dir!==dir)continue; (s.canali||[]).forEach((ch,i)=>rows.push([s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.patch,ch.note,ch.slot])); }
+  const chRows=dir=>{ const rows=[['Scheda','Tipologia','#','Canale','Macchina/Segnale','CH','Mono/Stereo','Numerazione cavo','Collegato a','Note','Slot']];
+    for(const s of (m.schede||[])){ if(s.dir!==dir)continue; (s.canali||[]).forEach((ch,i)=>rows.push([s.nome,tipoLabel(s.tipo),i+1,ch.canale,ch.macchina,ch.ch,ch.ms,ch.numCavo,ch.patch,ch.note,ch.slot])); }
     return rows; };
   downloadBytes('macchina_'+String(m.nome||'macchina').replace(/[^\w]+/g,'_')+'.xlsx',
     XLSX.build([{name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')}]),
@@ -1748,13 +1748,13 @@ function importMacchina(m, reload){
       if(!rIn&&!rOut){ toast('Fogli non riconosciuti (attesi: Ingressi, Uscite)'); return; }
       const chSpec={ scheda:{eq:['scheda']}, tipo:{eq:['tipologia'],inc:['tipolog']}, canale:{eq:['canale']},
         segnale:{inc:['segnale'],eq:['macchina/segnale','macchina / segnale']}, ch:{eq:['ch','l/r','l-r','lr']},
-        ms:{inc:['mono','stereo']}, patch:{eq:['collegato a','patch'],inc:['collegato']}, note:{inc:['note']}, slot:{inc:['slot']} };
+        ms:{inc:['mono','stereo']}, numCavo:{eq:['numerazione cavo'],inc:['numerazione cavo','num cavo','n° cavo']}, patch:{eq:['collegato a','patch'],inc:['collegato']}, note:{inc:['note']}, slot:{inc:['slot']} };
       const schede=[];
       const build=(rows,dir)=>{ if(!rows||rows.length<2)return; const map=headerMap(rows[0],chSpec);
         for(const r of rows.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const sn=xcell(r,map.scheda)||(dir==='in'?'Ingressi':'Uscite'); const tp=labelToTipo(xcell(r,map.tipo))||'analogico';
           let s=schede.find(x=>x.dir===dir&&x.nome===sn); if(!s){ s=newScheda(dir,sn,tp,[]); schede.push(s); } else if(tp) s.tipo=tp;
-          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),patch:xcell(r,map.patch),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
+          s.canali.push(newCh({canale:xcell(r,map.canale),macchina:xcell(r,map.segnale),ch:xcell(r,map.ch),ms:xcell(r,map.ms),numCavo:xcell(r,map.numCavo),patch:xcell(r,map.patch),note:xcell(r,map.note),slot:xcell(r,map.slot)})); } };
       build(rIn,'in'); build(rOut,'out');
       const nCan=schede.reduce((a,s)=>a+s.canali.length,0);
       if(!confirm('Import macchina «'+(m.nome||'')+'»:\n· '+schede.length+' schede, '+nCan+' canali\n\nSostituisce le schede della macchina (gli incroci collegati verranno azzerati). Procedere?')) return;
@@ -1934,10 +1934,12 @@ function importCanali(s,reload){
       const inc=(...v)=>find(h=>v.some(x=>h.includes(x)));
       let cCanale=eq('canale','canale l','canale l/r'); if(cCanale<0) cCanale=find(h=>h.startsWith('canale'));
       const map={ canale:cCanale, macchina:inc('macchina','segnale'), ch:eq('ch','l/r','l-r','lr','canale l/r'),
-                  ms:inc('mono','stereo'), patch:(eq('collegato a','patch')>=0?eq('collegato a','patch'):inc('collegato')), note:inc('note'), slot:inc('slot') };
+                  ms:inc('mono','stereo'), numCavo:(eq('numerazione cavo')>=0?eq('numerazione cavo'):inc('numerazione cavo','num cavo','n° cavo')),
+                  patch:(eq('collegato a','patch')>=0?eq('collegato a','patch'):inc('collegato')), note:inc('note'), slot:inc('slot') };
       const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
-      const parsed=data.map(r=>newCh({canale:map.canale>=0?String(r[map.canale]||'').trim():'',macchina:map.macchina>=0?String(r[map.macchina]||'').trim():'',
-        ch:map.ch>=0?String(r[map.ch]||'').trim():'',ms:map.ms>=0?String(r[map.ms]||'').trim():'',patch:map.patch>=0?String(r[map.patch]||'').trim():'',note:map.note>=0?String(r[map.note]||'').trim():'',slot:map.slot>=0?String(r[map.slot]||'').trim():''}));
+      const g=(r,i)=>i>=0?String(r[i]||'').trim():'';
+      const parsed=data.map(r=>newCh({canale:g(r,map.canale),macchina:g(r,map.macchina),
+        ch:g(r,map.ch),ms:g(r,map.ms),numCavo:g(r,map.numCavo),patch:g(r,map.patch),note:g(r,map.note),slot:g(r,map.slot)}));
       if(!parsed.length){ toast('Nessuna riga valida'); return; }
       const rep=confirm(parsed.length+' canali letti da «'+f.name+'».\n\nOK = SOSTITUISCI i canali attuali\nAnnulla = AGGIUNGI in coda');
       if(rep){ for(const ch of s.canali){ delete DB.incroci[ch._id]; for(const k in DB.incroci) if(DB.incroci[k]===ch._id) delete DB.incroci[k]; } s.canali=parsed; }
@@ -2841,9 +2843,9 @@ function importJSON(){
 }
 function exportTuttoXLSX(){
   const sheets=[];
-  const chRows=dir=>{ const rows=[['Unità','Macchina','Scheda','Tipologia','Canale','Macchina/Segnale','CH','Mono/Stereo','Collegato a','Note','Slot']];
+  const chRows=dir=>{ const rows=[['Unità','Macchina','Scheda','Tipologia','Canale','Macchina/Segnale','CH','Mono/Stereo','Numerazione cavo','Collegato a','Note','Slot']];
     for(const u of (DB.unita||[])) for(const m of (u.macchine||[])) for(const s of (m.schede||[])){ if(s.dir!==dir) continue;
-      for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.patch,ch.note,ch.slot]); } return rows; };
+      for(const ch of (s.canali||[])) rows.push([u.nome,m.nome,s.nome,tipoLabel(s.tipo),ch.canale,ch.macchina,ch.ch,ch.ms,ch.numCavo,ch.patch,ch.note,ch.slot]); } return rows; };
   sheets.push({name:'Ingressi',rows:chRows('in')},{name:'Uscite',rows:chRows('out')});
   sheets.push({name:'Incroci',rows:[INCROCI_HEAD,...incrociRows()]});
   downloadBytes('gestione_audio_'+new Date().toISOString().slice(0,10)+'.xlsx', XLSX.build(sheets), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

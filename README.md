@@ -129,14 +129,15 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   operativa** a scelta, dai pulsanti sulle relative card e nelle toolbar di dettaglio. La copia riceve
   nuovi identificativi (gli incroci non vengono ereditati).
 - **🏷️ Identificativi** — ogni **macchina, patch, sezionamento, switch, pannello e box** ha i campi
-  **Matricola inventario**, **Serial number**, **Telaio**, **Posizione telaio**, **Numero unità rack**
-  e **Numerazione cavo** (riportati anche nelle stampe).
+  **Matricola inventario**, **Serial number**, **Telaio**, **Posizione telaio** e **Numero unità rack**
+  (riportati anche nelle stampe). La **Numerazione cavo** è invece un dato del **singolo cavo/canale**
+  (vedi la tabella dei canali, subito prima di «Collegato a»).
 - **🔌 Porte Ethernet** — dentro il dettaglio di ogni **macchina**, oltre alle schede di ingresso/uscita,
   c'è la sezione **Porte Ethernet**: con **➕ Nuova porta Ethernet (ingresso/uscita)** aggiungi porte di
   rete (tipologia *Ethernet*, con la stessa tabella canali e import/export/stampa delle schede). Le
   porte Ethernet **non entrano** nel Quadro Incroci.
 - **🎚️ Dettaglio scheda** — nome e **tipologia** modificabili; tabella dei **canali** editabile in
-  linea (canale, macchina/segnale, CH, mono/stereo, **patch**, note, slot) con l'indicazione
+  linea (canale, macchina/segnale, CH, mono/stereo, **numerazione cavo**, **collegato a**, note, slot) con l'indicazione
   dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
   (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**. Il campo **Collegato a** collega il canale a un
   **pannello patch** o a un **sezionamento** della stanza: **doppio clic** sul campo (o il pulsante
