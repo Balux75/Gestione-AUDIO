@@ -129,7 +129,8 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   operativa** a scelta, dai pulsanti sulle relative card e nelle toolbar di dettaglio. La copia riceve
   nuovi identificativi (gli incroci non vengono ereditati).
 - **🏷️ Identificativi** — ogni **macchina, patch, sezionamento, switch, pannello e box** ha i campi
-  **Matricola inventario**, **Serial number**, **Telaio** e **Numerazione cavo** (riportati anche nelle stampe).
+  **Matricola inventario**, **Serial number**, **Telaio**, **Posizione telaio**, **Numero unità rack**
+  e **Numerazione cavo** (riportati anche nelle stampe).
 - **🔌 Porte Ethernet** — dentro il dettaglio di ogni **macchina**, oltre alle schede di ingresso/uscita,
   c'è la sezione **Porte Ethernet**: con **➕ Nuova porta Ethernet (ingresso/uscita)** aggiungi porte di
   rete (tipologia *Ethernet*, con la stessa tabella canali e import/export/stampa delle schede). Le

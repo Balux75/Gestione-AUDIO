@@ -1419,13 +1419,16 @@ function cardDupActions(u, kind, obj, reload){
 function metaFieldsRow(obj){
   const fld=(label,key)=>el('div',{class:'fld'}, el('label',{},label),
     el('input',{value:obj[key]||'',placeholder:'—',onchange:e=>{ obj[key]=e.target.value; markDirty(); }}));
-  return el('div',{class:'meta-row'}, fld('Matricola inventario','matricola'), fld('Serial number','serial'), fld('Telaio','telaio'), fld('Numerazione cavo','numCavo'));
+  return el('div',{class:'meta-row'}, fld('Matricola inventario','matricola'), fld('Serial number','serial'), fld('Telaio','telaio'),
+    fld('Posizione telaio','posTelaio'), fld('Numero unità rack','numRack'), fld('Numerazione cavo','numCavo'));
 }
-// riga meta per le stampe (Matricola/S.N./Telaio/Num. cavo, se valorizzati)
+// riga meta per le stampe (Matricola/S.N./Telaio/Pos. telaio/N° rack/Num. cavo, se valorizzati)
 function metaLineHtml(obj){ const p=[];
   if(String(obj.matricola||'').trim())p.push('Matricola: '+esc(obj.matricola));
   if(String(obj.serial||'').trim())p.push('S/N: '+esc(obj.serial));
   if(String(obj.telaio||'').trim())p.push('Telaio: '+esc(obj.telaio));
+  if(String(obj.posTelaio||'').trim())p.push('Pos. telaio: '+esc(obj.posTelaio));
+  if(String(obj.numRack||'').trim())p.push('N° unità rack: '+esc(obj.numRack));
   if(String(obj.numCavo||'').trim())p.push('Num. cavo: '+esc(obj.numCavo));
   return p.length?(' · '+p.join(' · ')):''; }
 function viewUnitaDetail(c, id){
