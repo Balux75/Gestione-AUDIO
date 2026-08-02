@@ -875,6 +875,9 @@ const CH_COLS=[
   {key:'note',label:'Note'},
   {key:'slot',label:'Slot',w:'130px'},
 ];
+// colonne dei canali per una scheda: le porte Ethernet non hanno CH né Mono/Stereo
+const ETH_SKIP_COLS=['ch','ms'];
+function chColsFor(s){ return isEthScheda(s)? CH_COLS.filter(c=>!ETH_SKIP_COLS.includes(c.key)) : CH_COLS; }
 
 /* -------- accostamento dispositivi CCRF (per il preload) -------- */
 const CCRF_MACHINES=[
@@ -1685,8 +1688,8 @@ function importUnitaXLSX(u, reload){
 function printUnita(u){
   const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
   const esctd=v=>esc(v==null?'':v);
-  const chTbl=s=>{ const th='<th>#</th>'+CH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
-    const tr=(s.canali||[]).map((ch,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esctd(ch[c.key])+'</td>').join('')+'</tr>').join('');
+  const chTbl=s=>{ const cols=chColsFor(s); const th='<th>#</th>'+cols.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+    const tr=(s.canali||[]).map((ch,i)=>'<tr><td>'+(i+1)+'</td>'+cols.map(c=>'<td>'+esctd(ch[c.key])+'</td>').join('')+'</tr>').join('');
     return '<h4>'+esc((s.dir==='in'?'🎙 ':'🔊 ')+s.nome)+' <small>('+tipoLabel(s.tipo)+' · '+(s.canali||[]).length+' canali)</small></h4><table><thead><tr>'+th+'</tr></thead><tbody>'+tr+'</tbody></table>'; };
   let html='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(u.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h1{margin:0 0 2px}h2{margin:18px 0 4px;border-bottom:2px solid #333;padding-bottom:2px}h3{margin:12px 0 4px;color:#333}h4{margin:10px 0 4px;color:#444;font-weight:600}small{color:#777;font-weight:400}table{border-collapse:collapse;margin:2px 0 8px;font-size:10.5px}th,td{border:1px solid #999;padding:3px 6px;text-align:left}th{background:#eee}table.h td,table.h th{text-align:center;white-space:nowrap}table.h th:first-child,table.h td:first-child{text-align:left;background:#eee;font-weight:600}table.h tr.hl td{background:#fdf3b0}</style></head><body>';
   html+='<h1>🏢 '+esc(u.nome||'Unità')+'</h1><p style="color:#666;font-size:12px">'+esc(u.descrizione||'')+' · stampato il '+new Date().toLocaleString('it-IT')+'</p>';
@@ -1766,8 +1769,8 @@ function importMacchina(m, reload){
 function printMacchina(m){
   const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
   const esctd=v=>esc(v==null?'':v);
-  const chTbl=s=>{ const th='<th>#</th>'+CH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
-    const tr=(s.canali||[]).map((ch,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esctd(ch[c.key])+'</td>').join('')+'</tr>').join('');
+  const chTbl=s=>{ const cols=chColsFor(s); const th='<th>#</th>'+cols.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+    const tr=(s.canali||[]).map((ch,i)=>'<tr><td>'+(i+1)+'</td>'+cols.map(c=>'<td>'+esctd(ch[c.key])+'</td>').join('')+'</tr>').join('');
     return '<h4>'+esc((s.dir==='in'?'🎙 ':'🔊 ')+s.nome)+' <small>('+tipoLabel(s.tipo)+' · '+(s.canali||[]).length+' canali)</small></h4><table><thead><tr>'+th+'</tr></thead><tbody>'+tr+'</tbody></table>'; };
   let html='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(m.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h1{margin:0 0 6px}h3{margin:12px 0 4px;color:#333}h4{margin:10px 0 4px;color:#444;font-weight:600}small{color:#777;font-weight:400}table{border-collapse:collapse;margin:2px 0 8px;font-size:10.5px}th,td{border:1px solid #999;padding:3px 6px;text-align:left}th{background:#eee}</style></head><body>';
   html+='<h1>🎛 '+esc(m.nome||'Macchina')+'</h1><p style="color:#666;font-size:12px">'+macCanali(m)+' canali · stampato il '+new Date().toLocaleString('it-IT')+metaLineHtml(m)+'</p>';
@@ -1881,13 +1884,14 @@ function chTable(s, u, reload){
     el('button',{class:'btn sm',onclick:()=>exportCanali(s)},'⤓ Esporta'),
     el('button',{class:'btn sm',onclick:()=>printCanali(s)},'🖨 Stampa'),
     el('span',{class:'muted',style:'font-size:12px;margin-left:auto'},(s.canali.length)+' canali · doppio clic sul campo «Collegato a» per aprire il riferimento')));
+  const cols=chColsFor(s);
   const tw=el('div',{class:'tablewrap'}); const tbl=el('table');
-  tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...CH_COLS.map(col=>el('th',{},col.label)), el('th',{},s.dir==='out'?'◂ Ingressi alimentati':'→ Uscita'), el('th',{},''))));
+  tbl.append(el('thead',{},el('tr',{}, el('th',{},'#'), ...cols.map(col=>el('th',{},col.label)), el('th',{},s.dir==='out'?'◂ Ingressi alimentati':'→ Uscita'), el('th',{},''))));
   const tb=el('tbody');
-  if(!s.canali.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(CH_COLS.length+3)},'Nessun canale — «➕ Aggiungi canale» o «⤒ Importa».')));
+  if(!s.canali.length) tb.append(el('tr',{},el('td',{class:'empty',colspan:String(cols.length+3)},'Nessun canale — «➕ Aggiungi canale» o «⤒ Importa».')));
   s.canali.forEach((row,i)=>{
     const tr=el('tr'); tr.append(el('td',{},String(i+1)));
-    for(const col of CH_COLS){
+    for(const col of cols){
       const inp=el('input',{value:row[col.key]||'',list:col.list||null,style:'padding:4px 6px'+(col.w?';max-width:'+col.w:''),onchange:e=>{ row[col.key]=e.target.value; markDirty(); }});
       if(col.key==='patch'){
         inp.title='doppio clic per aprire il riferimento collegato';
@@ -1910,7 +1914,8 @@ function chTable(s, u, reload){
   tbl.append(tb); tw.append(tbl); wrap.append(tw); return wrap;
 }
 function exportCanali(s){
-  const rows=[CH_COLS.map(c=>c.label)]; for(const r of s.canali) rows.push(CH_COLS.map(c=>r[c.key]==null?'':r[c.key]));
+  const cols=chColsFor(s);
+  const rows=[cols.map(c=>c.label)]; for(const r of s.canali) rows.push(cols.map(c=>r[c.key]==null?'':r[c.key]));
   const nm=(s.nome||'scheda').replace(/[^\w]+/g,'_');
   downloadBytes(nm+'.xlsx', XLSX.build([{name:(s.nome||'Scheda').slice(0,31),rows}]), 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   toast('Esportato: '+nm+'.xlsx');
@@ -1918,8 +1923,9 @@ function exportCanali(s){
 function printCanali(s){
   const w=window.open('','_blank'); if(!w){ toast('Consenti i popup per stampare'); return; }
   const meta=DIR_META[s.dir]||DIR_META.in;
-  const th='<th>#</th>'+CH_COLS.map(c=>'<th>'+esc(c.label)+'</th>').join('');
-  const trs=s.canali.map((r,i)=>'<tr><td>'+(i+1)+'</td>'+CH_COLS.map(c=>'<td>'+esc(r[c.key]==null?'':r[c.key])+'</td>').join('')+'</tr>').join('');
+  const cols=chColsFor(s);
+  const th='<th>#</th>'+cols.map(c=>'<th>'+esc(c.label)+'</th>').join('');
+  const trs=s.canali.map((r,i)=>'<tr><td>'+(i+1)+'</td>'+cols.map(c=>'<td>'+esc(r[c.key]==null?'':r[c.key])+'</td>').join('')+'</tr>').join('');
   w.document.write('<html><head><title>'+esc(s.nome)+'</title><style>body{font-family:Arial;padding:18px;color:#111}h2{margin:0 0 4px}p{color:#555;margin:0 0 12px;font-size:12px}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #999;padding:4px 6px;text-align:left}th{background:'+meta.color+'22}</style></head><body><h2>'+esc(s.nome)+' — '+meta.label+'</h2><p>'+s.canali.length+' canali · stampato il '+new Date().toLocaleString('it-IT')+'</p><table><thead><tr>'+th+'</tr></thead><tbody>'+trs+'</tbody></table></body></html>');
   w.document.close(); w.focus(); setTimeout(()=>{ try{w.print();}catch(e){} },350);
 }

@@ -134,8 +134,8 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   (vedi la tabella dei canali, subito prima di «Collegato a»).
 - **🔌 Porte Ethernet** — dentro il dettaglio di ogni **macchina**, oltre alle schede di ingresso/uscita,
   c'è la sezione **Porte Ethernet**: con **➕ Nuova porta Ethernet (ingresso/uscita)** aggiungi porte di
-  rete (tipologia *Ethernet*, con la stessa tabella canali e import/export/stampa delle schede). Le
-  porte Ethernet **non entrano** nel Quadro Incroci.
+  rete (tipologia *Ethernet*, con la stessa tabella canali e import/export/stampa delle schede, ma
+  **senza i campi CH e Mono/Stereo**). Le porte Ethernet **non entrano** nel Quadro Incroci.
 - **🎚️ Dettaglio scheda** — nome e **tipologia** modificabili; tabella dei **canali** editabile in
   linea (canale, macchina/segnale, CH, mono/stereo, **numerazione cavo**, **collegato a**, note, slot) con l'indicazione
   dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
