@@ -84,9 +84,9 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   Incroci: servono a documentare i pannelli/cablaggi della stanza.
 - **🧩 Sezionamenti** — subito dopo le patch, ogni stanza può contenere dei **sezionamenti** dei cavi
   multicoppia (sviluppo **orizzontale**: ogni colonna è una **posizione**). Le righe seguono lo schema
-  del foglio di sezionamento: **Cavo multicoppia, Numerazione, Colore, Provenienza, Canale, Posizione**
+  del foglio di sezionamento: **Cavo multicoppia, Numerazione cavo, Colore, Provenienza, Canale, Posizione**
   (lato sorgente), gli indicatori **Parallelo** e **Passante** (clic per attivarli), poi **Posizione,
-  Canale, Destinazione, Colore, Numerazione, Cavo multicoppia** (lato destinazione). La **Posizione** è
+  Canale, Destinazione, Colore, Numerazione cavo, Cavo multicoppia** (lato destinazione). La **Posizione** è
   automatica (numero di colonna). Oltre a **Provenienza** e **Destinazione** (testo libero) c'è un
   campo **Collegato a** (sia lato top che lato down, visualizzato più largo) che è **collegabile**: la
   lista a discesa è alimentata con le **sorgenti e destinazioni di tutto il database** — nomi e segnali

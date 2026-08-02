@@ -1661,7 +1661,8 @@ function importUnitaXLSX(u, reload){
       const sezMap={}, sezOrder=[];
       if(rSez&&rSez.length>1){ const H=(rSez[0]||[]).map(h=>String(h||'').trim().toLowerCase());
         const findCol=lbl=>{ lbl=lbl.toLowerCase(); let i=H.indexOf(lbl); if(i>=0)return i; return H.findIndex(h=>h.includes(lbl)); };
-        const sezNomeIdx=findCol('sezionamento'); const fieldCols=SEZ_EXP.map(x=>[x[1],findCol(x[0])]);
+        const findAny=x=>{ let i=findCol(x[0]); if(i<0&&x[2]) for(const alt of x[2]){ i=findCol(alt); if(i>=0)break; } return i; };
+        const sezNomeIdx=findCol('sezionamento'); const fieldCols=SEZ_EXP.map(x=>[x[1],findAny(x)]);
         for(const r of rSez.slice(1)){ if(!r.some(v=>String(v||'').trim()!==''))continue;
           const zn=(sezNomeIdx>=0?String(r[sezNomeIdx]||'').trim():'')||'Sezionamento';
           let z=sezMap[zn]; if(!z){ z={_id:uid('sez_'),nome:zn,colonne:[]}; sezMap[zn]=z; sezOrder.push(zn); }
@@ -2058,7 +2059,7 @@ function printPatch(pp){
    ============================================================ */
 const SEZ_ROWS=[
   {key:'cavoTop',     label:'Cavo multicoppia'},
-  {key:'numTop',      label:'Numerazione'},
+  {key:'numTop',      label:'Numerazione cavo'},
   {key:'colTop',      label:'Colore'},
   {key:'provenienza', label:'Provenienza', cls:'prov'},
   {key:'collegatoTop',label:'Collegato a', cls:'prov', dest:true},
@@ -2071,15 +2072,16 @@ const SEZ_ROWS=[
   {key:'collegatoBot',label:'Collegato a', cls:'prov', dest:true},
   {key:'destinazione',label:'Destinazione', cls:'prov'},
   {key:'colBot',      label:'Colore'},
-  {key:'numBot',      label:'Numerazione'},
+  {key:'numBot',      label:'Numerazione cavo'},
   {key:'cavoBot',     label:'Cavo multicoppia'},
 ];
 // campi memorizzati per colonna (le righe Posizione sono automatiche = indice+1)
+// terzo elemento facoltativo: intestazioni alternative accettate in import (compatibilità)
 const SEZ_EXP=[
-  ['Cavo multicoppia (top)','cavoTop'],['Numerazione (top)','numTop'],['Colore (top)','colTop'],
+  ['Cavo multicoppia (top)','cavoTop'],['Numerazione cavo (top)','numTop',['Numerazione (top)']],['Colore (top)','colTop'],
   ['Provenienza','provenienza'],['Collegato a (top)','collegatoTop'],['Canale (top)','canaleTop'],['Parallelo','parallelo'],['Passante','passante'],
   ['Canale (bot)','canaleBot'],['Collegato a (bot)','collegatoBot'],['Destinazione','destinazione'],['Colore (bot)','colBot'],
-  ['Numerazione (bot)','numBot'],['Cavo multicoppia (bot)','cavoBot'],
+  ['Numerazione cavo (bot)','numBot',['Numerazione (bot)']],['Cavo multicoppia (bot)','cavoBot'],
 ];
 function newSezColonna(o){ return Object.assign({_id:uid('sc_'),cavoTop:'',numTop:'',colTop:'',provenienza:'',collegatoTop:'',canaleTop:'',parallelo:'',passante:'',canaleBot:'',collegatoBot:'',destinazione:'',colBot:'',numBot:'',cavoBot:''}, o||{}); }
 function nuovaSezionamento(u){
@@ -2154,7 +2156,8 @@ function importSezionamento(sez,reload){
       if(!rows||rows.length<1){ toast('File vuoto'); return; }
       const H=(rows[0]||[]).map(h=>String(h||'').trim().toLowerCase());
       const findCol=lbl=>{ lbl=lbl.toLowerCase(); let i=H.indexOf(lbl); if(i>=0)return i; return H.findIndex(h=>h.includes(lbl)); };
-      const cols=SEZ_EXP.map(x=>[x[1],findCol(x[0])]);
+      const findAny=x=>{ let i=findCol(x[0]); if(i<0&&x[2]) for(const alt of x[2]){ i=findCol(alt); if(i>=0)break; } return i; };
+      const cols=SEZ_EXP.map(x=>[x[1],findAny(x)]);
       const data=rows.slice(1).filter(r=>r.some(v=>String(v||'').trim()!==''));
       const parsed=data.map(r=>{ const o={}; for(const [k,i] of cols) o[k]=i>=0?String(r[i]||'').trim():''; return newSezColonna(o); });
       if(!parsed.length){ toast('Nessuna riga valida'); return; }
