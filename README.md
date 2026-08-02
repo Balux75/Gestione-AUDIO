@@ -87,12 +87,12 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   del foglio di sezionamento: **Cavo multicoppia, Numerazione, Colore, Provenienza, Canale, Posizione**
   (lato sorgente), gli indicatori **Parallelo** e **Passante** (clic per attivarli), poi **Posizione,
   Canale, Destinazione, Colore, Numerazione, Cavo multicoppia** (lato destinazione). La **Posizione** è
-  automatica (numero di colonna). I campi **Provenienza** e **Destinazione** (visualizzati più larghi)
-  sono **collegabili**: la lista a discesa è alimentata con le **sorgenti e destinazioni di tutto il
-  database** — nomi e segnali contenuti in **Macchine, Patch, Pannelli e Box** di ogni unità (esclusi
-  i collegamenti **Dante** delle macchine) — e con
-  **doppio clic** (o il pulsante **↗**) aprono il riferimento selezionato, anche se si trova in
-  un'altra unità; resta comunque possibile inserire **testo libero**.
+  automatica (numero di colonna). Oltre a **Provenienza** e **Destinazione** (testo libero) c'è un
+  campo **Collegato a** (sia lato top che lato down, visualizzato più largo) che è **collegabile**: la
+  lista a discesa è alimentata con le **sorgenti e destinazioni di tutto il database** — nomi e segnali
+  contenuti in **Macchine, Patch, Pannelli e Box** di ogni unità (esclusi i collegamenti **Dante**
+  delle macchine) — e con **doppio clic** (o il pulsante **↗**) apre il riferimento selezionato, anche
+  se si trova in un'altra unità; resta comunque possibile inserire **testo libero**.
   Aggiungi/elimina posizioni (o **+8**), con **Importa** (Excel/CSV), **Esporta** e **Stampa**. I
   sezionamenti **non entrano** nel Quadro Incroci.
 - **🔀 Switch** — dopo le patch, ogni stanza può contenere degli **switch di rete**: tabella
@@ -137,7 +137,7 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
 - **🎚️ Dettaglio scheda** — nome e **tipologia** modificabili; tabella dei **canali** editabile in
   linea (canale, macchina/segnale, CH, mono/stereo, **patch**, note, slot) con l'indicazione
   dell'**instradamento** sul Quadro Incroci, e i pulsanti **➕ Aggiungi canale**, **⤒ Importa**
-  (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**. Il campo **Patch** collega il canale a un
+  (Excel/CSV), **⤓ Esporta** (Excel) e **🖨 Stampa**. Il campo **Collegato a** collega il canale a un
   **pannello patch** o a un **sezionamento** della stanza: **doppio clic** sul campo (o il pulsante
   **↗**) apre l'elemento relativo; la lista a discesa suggerisce **patch/porte e sezionamenti** della stanza.
 - **📊 Dashboard** — riepilogo di incroci attivi, unità, macchine e canali.
