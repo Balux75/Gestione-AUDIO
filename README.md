@@ -89,7 +89,8 @@ Ogni **canale** ha: **canale**, **macchina/segnale**, **CH** (L/R/M), **mono/ste
   Canale, Destinazione, Colore, Numerazione, Cavo multicoppia** (lato destinazione). La **Posizione** è
   automatica (numero di colonna). I campi **Provenienza** e **Destinazione** (visualizzati più larghi)
   sono **collegabili**: la lista a discesa è alimentata con le **sorgenti e destinazioni di tutto il
-  database** — nomi e segnali contenuti in **Macchine, Patch, Pannelli e Box** di ogni unità — e con
+  database** — nomi e segnali contenuti in **Macchine, Patch, Pannelli e Box** di ogni unità (esclusi
+  i collegamenti **Dante** delle macchine) — e con
   **doppio clic** (o il pulsante **↗**) aprono il riferimento selezionato, anche se si trova in
   un'altra unità; resta comunque possibile inserire **testo libero**.
   Aggiungi/elimina posizioni (o **+8**), con **Importa** (Excel/CSV), **Esporta** e **Stampa**. I

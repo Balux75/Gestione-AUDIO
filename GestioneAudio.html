@@ -986,7 +986,8 @@ function sezSuggestions(){
   const add=(val,label)=>{ val=String(val==null?'':val).trim(); if(!val) return; const k=val.toLowerCase(); if(seen.has(k)) return; seen.add(k); opts.push({value:val,label}); };
   for(const u of (DB.unita||[])){
     for(const m of (u.macchine||[])){ add(m.nome,'Macchina · '+(u.nome||''));
-      for(const s of (m.schede||[])) for(const c of (s.canali||[])) add(c.macchina||c.canale,'Macchina · '+(m.nome||'')); }
+      for(const s of (m.schede||[])){ if(s.tipo==='dante') continue; /* esclude i collegamenti Dante */
+        for(const c of (s.canali||[])) add(c.macchina||c.canale,'Macchina · '+(m.nome||'')); } }
     for(const pp of (u.patch||[])){ add(pp.nome,'Patch · '+(u.nome||''));
       for(const po of (pp.porte||[])){ add(po.segnale,'Patch · '+(pp.nome||'')); add(po.provenienza,'Patch · '+(pp.nome||'')); } }
     for(const pl of (u.pannelli||[])){ add(pl.nome,'Pannello · '+(u.nome||''));
