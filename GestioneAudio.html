@@ -55,7 +55,7 @@ textarea{resize:vertical;min-height:64px}
 /* Cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
-.meta-row{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:12px;max-width:920px;margin:2px 0 14px}
+.meta-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;max-width:1180px;margin:2px 0 14px}
 .card-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .card-acts .btn.sm{padding:3px 8px;font-size:11px}
 .card .k{color:var(--muted);font-size:12px}
@@ -1419,13 +1419,14 @@ function cardDupActions(u, kind, obj, reload){
 function metaFieldsRow(obj){
   const fld=(label,key)=>el('div',{class:'fld'}, el('label',{},label),
     el('input',{value:obj[key]||'',placeholder:'—',onchange:e=>{ obj[key]=e.target.value; markDirty(); }}));
-  return el('div',{class:'meta-row'}, fld('Matricola inventario','matricola'), fld('Serial number','serial'), fld('Telaio','telaio'));
+  return el('div',{class:'meta-row'}, fld('Matricola inventario','matricola'), fld('Serial number','serial'), fld('Telaio','telaio'), fld('Numerazione cavo','numCavo'));
 }
-// riga meta per le stampe (Matricola/S.N./Telaio, se valorizzati)
+// riga meta per le stampe (Matricola/S.N./Telaio/Num. cavo, se valorizzati)
 function metaLineHtml(obj){ const p=[];
   if(String(obj.matricola||'').trim())p.push('Matricola: '+esc(obj.matricola));
   if(String(obj.serial||'').trim())p.push('S/N: '+esc(obj.serial));
   if(String(obj.telaio||'').trim())p.push('Telaio: '+esc(obj.telaio));
+  if(String(obj.numCavo||'').trim())p.push('Num. cavo: '+esc(obj.numCavo));
   return p.length?(' · '+p.join(' · ')):''; }
 function viewUnitaDetail(c, id){
   const u=findUnita(id); if(!u){ location.hash='unita'; return; }
